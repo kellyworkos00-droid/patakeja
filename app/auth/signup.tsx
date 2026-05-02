@@ -136,7 +136,7 @@ export default function SignupScreen() {
       >
         {/* Hero image */}
         <View style={{ marginBottom: 24, borderRadius: 28, overflow: "hidden" }}>
-          <Image source={images.signupDirection} style={{ width: "100%", height: 210 }} resizeMode="cover" />
+          <Image source={images.authHero} style={{ width: "100%", height: 210 }} resizeMode="cover" />
           <LinearGradient
             colors={["transparent", "rgba(15,23,42,0.45)"]}
             style={{ position: "absolute", width: "100%", height: "100%" }}
