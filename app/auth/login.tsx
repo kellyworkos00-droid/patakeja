@@ -73,7 +73,7 @@ export default function LoginScreen() {
         paddingHorizontal: 20, paddingTop: 6, paddingBottom: 10,
       }}>
         <Pressable
-          onPress={() => router.back()}
+          onPress={() => router.canGoBack() ? router.back() : router.replace("/onboarding")}
           style={{
             width: 44, height: 44, borderRadius: 22,
             backgroundColor: "#fff",
