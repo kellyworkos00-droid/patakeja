@@ -1,8 +1,8 @@
 import "@/global.css";
 import { useEffect } from "react";
-import { Stack } from "expo-router";
+import { Stack, router, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { ClerkProvider } from "@clerk/clerk-expo";
+import { ClerkProvider, useAuth } from "@clerk/clerk-expo";
 import * as SecureStore from "expo-secure-store";
 
 const tokenCache = {
@@ -22,6 +22,25 @@ const tokenCache = {
   },
 };
 
+// Handles auth-based redirects reactively — fixes race condition
+// between Clerk setActive and Expo Router navigation.
+function AuthGuard() {
+  const { isSignedIn, isLoaded } = useAuth();
+  const segments = useSegments();
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    const inTabs = segments[0] === "tabs";
+    if (isSignedIn && !inTabs) {
+      router.replace("/tabs/home");
+    } else if (!isSignedIn && inTabs) {
+      router.replace("/auth/login");
+    }
+  }, [isSignedIn, isLoaded]);
+
+  return null;
+}
+
 export default function RootLayout() {
   return (
     <ClerkProvider
@@ -30,6 +49,7 @@ export default function RootLayout() {
     >
       <>
         <StatusBar style="dark" />
+        <AuthGuard />
         <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
         <Stack.Screen name="onboarding/index" />
