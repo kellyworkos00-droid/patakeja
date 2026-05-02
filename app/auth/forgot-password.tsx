@@ -1,17 +1,20 @@
 import { useEffect, useRef, useState } from "react";
-import { Alert, BackHandler, Image, Pressable, Text, TextInput, View } from "react-native";
+import {
+  Alert, BackHandler, Image, Pressable, ScrollView,
+  StatusBar, Text, TextInput, View,
+} from "react-native";
 import { router } from "expo-router";
-import { Eye, EyeOff, LockKeyhole, Mail, ShieldCheck } from "lucide-react-native";
+import { ArrowLeft, Eye, EyeOff, HelpCircle, LockKeyhole, Mail, ShieldCheck } from "lucide-react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSignIn } from "@clerk/clerk-expo";
 import { images } from "@/constants/assets";
 import { colors } from "@/constants/colors";
-import { AppButton } from "@/components/ui/AppButton";
-import { AppInput } from "@/components/ui/AppInput";
-import { FloatingHeader } from "@/components/layout/FloatingHeader";
-import { ScreenContainer } from "@/components/layout/ScreenContainer";
 
 export default function ForgotPasswordScreen() {
   const { signIn, setActive, isLoaded } = useSignIn();
+  const insets = useSafeAreaInsets();
+
   const [step, setStep] = useState<"request" | "reset">("request");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
@@ -21,55 +24,57 @@ export default function ForgotPasswordScreen() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const codeInputRef = useRef<TextInput>(null);
-  const newPasswordInputRef = useRef<TextInput>(null);
-  const confirmPasswordInputRef = useRef<TextInput>(null);
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [codeFocused, setCodeFocused] = useState(false);
+  const [newPassFocused, setNewPassFocused] = useState(false);
+  const [confirmPassFocused, setConfirmPassFocused] = useState(false);
+
+  const codeRef = useRef<TextInput>(null);
+  const newPasswordRef = useRef<TextInput>(null);
+  const confirmPasswordRef = useRef<TextInput>(null);
 
   const goBack = () => {
     if (step === "reset") {
       setStep("request");
-      setCode("");
-      setNewPassword("");
-      setConfirmPassword("");
-      setShowNewPassword(false);
-      setShowConfirmPassword(false);
+      setCode(""); setNewPassword(""); setConfirmPassword("");
+      setShowNewPassword(false); setShowConfirmPassword(false);
     } else {
-      router.back();
+      router.canGoBack() ? router.back() : router.replace("/auth/login");
     }
   };
 
   useEffect(() => {
     const sub = BackHandler.addEventListener("hardwareBackPress", () => {
-      if (step === "reset") {
-        goBack();
-        return true; // consume the event
-      }
+      if (step === "reset") { goBack(); return true; }
       return false;
     });
     return () => sub.remove();
   }, [step]);
 
-  const validateEmail = (value: string) => /\S+@\S+\.\S+/.test(value.trim());
+  const inputStyle = (focused: boolean) => ({
+    flexDirection: "row" as const, alignItems: "center" as const,
+    backgroundColor: "#fff", borderRadius: 16,
+    borderWidth: 1.5, borderColor: focused ? colors.primary : "#E2E8F0",
+    paddingHorizontal: 16, height: 56, gap: 10,
+    shadowColor: focused ? colors.primary : "#0F172A",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: focused ? 0.12 : 0.04,
+    shadowRadius: 6, elevation: focused ? 3 : 1,
+  });
 
   const sendResetCode = async () => {
     if (!isLoaded) return;
-
     const normalizedEmail = email.trim().toLowerCase();
-    if (!validateEmail(normalizedEmail)) {
+    if (!/\S+@\S+\.\S+/.test(normalizedEmail)) {
       Alert.alert("Invalid email", "Please enter a valid email address.");
       return;
     }
-
     setLoading(true);
     try {
-      await signIn.create({
-        strategy: "reset_password_email_code",
-        identifier: normalizedEmail,
-      });
-
+      await signIn.create({ strategy: "reset_password_email_code", identifier: normalizedEmail });
       setStep("reset");
-      setTimeout(() => codeInputRef.current?.focus(), 120);
-      Alert.alert("Code sent", "We sent a verification code to your email.");
+      setTimeout(() => codeRef.current?.focus(), 120);
+      Alert.alert("Code sent", "Check your email for a 6-digit verification code.");
     } catch (err: any) {
       Alert.alert("Reset failed", err.errors?.[0]?.message || "Could not send reset code.");
     } finally {
@@ -79,22 +84,9 @@ export default function ForgotPasswordScreen() {
 
   const resetPassword = async () => {
     if (!isLoaded) return;
-
-    if (!code.trim()) {
-      Alert.alert("Missing code", "Enter the verification code sent to your email.");
-      return;
-    }
-
-    if (newPassword.length < 8) {
-      Alert.alert("Weak password", "Your new password must be at least 8 characters.");
-      return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      Alert.alert("Passwords do not match", "Please confirm the same new password.");
-      return;
-    }
-
+    if (!code.trim()) { Alert.alert("Missing code", "Enter the verification code from your email."); return; }
+    if (newPassword.length < 8) { Alert.alert("Weak password", "Password must be at least 8 characters."); return; }
+    if (newPassword !== confirmPassword) { Alert.alert("Passwords don't match", "Please confirm the same password."); return; }
     setLoading(true);
     try {
       const result = await signIn.attemptFirstFactor({
@@ -102,16 +94,14 @@ export default function ForgotPasswordScreen() {
         code: code.trim(),
         password: newPassword,
       });
-
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
         Alert.alert("Password updated", "Your password has been reset successfully.", [
-          { text: "Continue", onPress: () => router.replace("/auth/login") },
+          { text: "Log in", onPress: () => router.replace("/auth/login") },
         ]);
         return;
       }
-
-      Alert.alert("Additional verification needed", "Please complete any additional verification steps.");
+      Alert.alert("Verification needed", "Please complete additional verification steps.");
     } catch (err: any) {
       Alert.alert("Reset failed", err.errors?.[0]?.message || "Could not reset password.");
     } finally {
@@ -120,130 +110,294 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <ScreenContainer contentClassName="pt-2">
-      <FloatingHeader
-        title="Forgot password"
-        subtitle={step === "request" ? "We will send reset instructions to your email" : "Enter your code and set a new password"}
-        onBack={goBack}
-      />
-      <Image source={images.forgotDirection} className="mb-5 h-52 w-full rounded-[32px]" resizeMode="cover" />
-      <View className="rounded-[32px] bg-white p-5">
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#F8FAFC" }} edges={["top", "left", "right", "bottom"]}>
+      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
+
+      {/* Nav bar */}
+      <View style={{
+        flexDirection: "row", alignItems: "center", justifyContent: "space-between",
+        paddingHorizontal: 20, paddingTop: 6, paddingBottom: 10,
+      }}>
+        <Pressable
+          onPress={goBack}
+          style={{
+            width: 44, height: 44, borderRadius: 22,
+            backgroundColor: "#fff",
+            borderWidth: 1, borderColor: "#E2E8F0",
+            alignItems: "center", justifyContent: "center",
+            shadowColor: "#0F172A", shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.08, shadowRadius: 6, elevation: 3,
+          }}
+        >
+          <ArrowLeft size={20} color={colors.navy} strokeWidth={2.5} />
+        </Pressable>
+
+        <Pressable
+          onPress={() => router.push("/settings")}
+          style={{
+            flexDirection: "row", alignItems: "center", gap: 5,
+            backgroundColor: "#fff",
+            borderWidth: 1, borderColor: "#E2E8F0",
+            borderRadius: 22, paddingHorizontal: 14, paddingVertical: 9,
+            shadowColor: "#0F172A", shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.08, shadowRadius: 6, elevation: 3,
+          }}
+        >
+          <HelpCircle size={15} color={colors.primary} strokeWidth={2.5} />
+          <Text style={{ fontSize: 13, fontWeight: "700", color: colors.primary, letterSpacing: 0.2 }}>Help</Text>
+        </Pressable>
+      </View>
+
+      <ScrollView
+        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: Math.max(insets.bottom + 24, 32) }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* Hero */}
+        <View style={{ marginBottom: 24, borderRadius: 28, overflow: "hidden" }}>
+          <Image source={images.authHero} style={{ width: "100%", height: 210 }} resizeMode="cover" />
+          <LinearGradient
+            colors={["transparent", "rgba(15,23,42,0.5)"]}
+            style={{ position: "absolute", width: "100%", height: "100%" }}
+          />
+          {/* Step dots */}
+          <View style={{ position: "absolute", top: 16, right: 16 }}>
+            <View style={{
+              flexDirection: "row", gap: 6, alignItems: "center",
+              backgroundColor: "rgba(255,255,255,0.2)", borderRadius: 20,
+              paddingHorizontal: 12, paddingVertical: 6,
+            }}>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: "#fff" }} />
+              <View style={{
+                width: 8, height: 8, borderRadius: 4,
+                backgroundColor: step === "reset" ? "#fff" : "rgba(255,255,255,0.35)",
+              }} />
+            </View>
+          </View>
+          <View style={{ position: "absolute", bottom: 18, left: 20 }}>
+            <Text style={{ fontSize: 11, fontWeight: "700", color: "rgba(255,255,255,0.75)", letterSpacing: 1.5 }}>PATAKEJA</Text>
+          </View>
+        </View>
+
         {step === "request" ? (
           <>
-            <Text className="text-2xl font-extrabold text-navy">Reset your password</Text>
-            <Text className="mt-2 text-base leading-6 text-navy/65">Enter the email linked to your PataKeja account.</Text>
-            <View className="mt-6">
-              <AppInput
-                label="Email address"
-                placeholder="Enter your email"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                value={email}
-                onChangeText={setEmail}
-                editable={!loading}
-                icon={<Mail color={colors.navy} size={20} />}
-              />
+            <Text style={{ fontSize: 32, fontWeight: "800", color: colors.navy, letterSpacing: -0.8, lineHeight: 40 }}>
+              Forgot your{"\n"}password?
+            </Text>
+            <Text style={{ fontSize: 15, color: "#64748B", marginTop: 8, lineHeight: 24 }}>
+              No worries — enter your email and we'll send a reset code.
+            </Text>
+
+            <View style={{ marginTop: 28 }}>
+              <Text style={{ fontSize: 13, fontWeight: "700", color: colors.navy, marginBottom: 8, letterSpacing: 0.2 }}>Email address</Text>
+              <View style={inputStyle(emailFocused)}>
+                <Mail size={18} color={emailFocused ? colors.primary : "#94A3B8"} />
+                <TextInput
+                  placeholder="Enter your email"
+                  placeholderTextColor="#CBD5E1"
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  editable={!loading}
+                  returnKeyType="send"
+                  onSubmitEditing={sendResetCode}
+                  onFocus={() => setEmailFocused(true)}
+                  onBlur={() => setEmailFocused(false)}
+                  style={{ flex: 1, fontSize: 15, color: colors.navy }}
+                />
+              </View>
             </View>
-            <AppButton title="Send Reset Code" full loading={loading} onPress={sendResetCode} style={{ marginTop: 22 }} />
+
+            {/* Info notice */}
+            <View style={{
+              marginTop: 18, flexDirection: "row", gap: 12,
+              backgroundColor: "#EFF6FF", borderRadius: 16,
+              borderWidth: 1, borderColor: "#BFDBFE", padding: 14,
+            }}>
+              <ShieldCheck size={18} color="#3B82F6" strokeWidth={2.5} />
+              <Text style={{ flex: 1, fontSize: 13, color: "#1D4ED8", fontWeight: "600", lineHeight: 20 }}>
+                We'll send a secure 6-digit code to your email. It expires in 10 minutes.
+              </Text>
+            </View>
+
+            <Pressable
+              onPress={sendResetCode}
+              disabled={loading || !email}
+              style={({ pressed }) => ({
+                marginTop: 28, backgroundColor: colors.primary,
+                borderRadius: 18, paddingVertical: 18, alignItems: "center",
+                shadowColor: colors.primary, shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.4, shadowRadius: 16, elevation: 10,
+                opacity: pressed || loading || !email ? 0.65 : 1,
+              })}
+            >
+              <Text style={{ fontSize: 16, fontWeight: "800", color: "#fff", letterSpacing: 0.4 }}>
+                {loading ? "Sending code…" : "Send Reset Code"}
+              </Text>
+            </Pressable>
+
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginTop: 22, gap: 4 }}>
+              <Text style={{ fontSize: 14, color: "#94A3B8" }}>Remember your password?</Text>
+              <Pressable onPress={() => router.replace("/auth/login")} disabled={loading}>
+                <Text style={{ fontSize: 14, fontWeight: "800", color: colors.primary }}> Log in</Text>
+              </Pressable>
+            </View>
           </>
         ) : (
           <>
-            <Text className="text-2xl font-extrabold text-navy">Create a new password</Text>
-            <Text className="mt-2 text-base leading-6 text-navy/65">Use the code sent to {email.trim().toLowerCase()} and set your new password.</Text>
+            <Text style={{ fontSize: 32, fontWeight: "800", color: colors.navy, letterSpacing: -0.8, lineHeight: 40 }}>
+              Create new{"\n"}password
+            </Text>
+            <Text style={{ fontSize: 15, color: "#64748B", marginTop: 8, lineHeight: 24 }}>
+              Code sent to{" "}
+              <Text style={{ fontWeight: "700", color: colors.navy }}>{email.trim().toLowerCase()}</Text>
+            </Text>
 
-            <View className="mt-6 gap-4">
-              <AppInput
-                ref={codeInputRef}
-                label="Verification code"
-                placeholder="Enter 6-digit code"
-                value={code}
-                onChangeText={(value) => {
-                  const sanitized = value.replace(/\D/g, "").slice(0, 6);
-                  setCode(sanitized);
-                  if (sanitized.length === 6) {
-                    newPasswordInputRef.current?.focus();
-                  }
-                }}
-                editable={!loading}
-                autoCapitalize="none"
-                autoCorrect={false}
-                keyboardType="number-pad"
-                textContentType="oneTimeCode"
-                maxLength={6}
-                returnKeyType="next"
-                onSubmitEditing={() => newPasswordInputRef.current?.focus()}
-                icon={<ShieldCheck color={colors.navy} size={20} />}
-              />
+            <View style={{ marginTop: 28, gap: 16 }}>
+              {/* Code */}
+              <View>
+                <Text style={{ fontSize: 13, fontWeight: "700", color: colors.navy, marginBottom: 8, letterSpacing: 0.2 }}>Verification code</Text>
+                <View style={inputStyle(codeFocused)}>
+                  <ShieldCheck size={18} color={codeFocused ? colors.primary : "#94A3B8"} />
+                  <TextInput
+                    ref={codeRef}
+                    placeholder="6-digit code"
+                    placeholderTextColor="#CBD5E1"
+                    value={code}
+                    onChangeText={(val) => {
+                      const s = val.replace(/\D/g, "").slice(0, 6);
+                      setCode(s);
+                      if (s.length === 6) newPasswordRef.current?.focus();
+                    }}
+                    keyboardType="number-pad"
+                    textContentType="oneTimeCode"
+                    maxLength={6}
+                    returnKeyType="next"
+                    onSubmitEditing={() => newPasswordRef.current?.focus()}
+                    editable={!loading}
+                    onFocus={() => setCodeFocused(true)}
+                    onBlur={() => setCodeFocused(false)}
+                    style={{ flex: 1, fontSize: 22, fontWeight: "800", color: colors.navy, letterSpacing: 8 }}
+                  />
+                  {code.length === 6 && (
+                    <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: colors.primary, alignItems: "center", justifyContent: "center" }}>
+                      <Text style={{ color: "#fff", fontSize: 13, fontWeight: "800" }}>✓</Text>
+                    </View>
+                  )}
+                </View>
+              </View>
 
-              <AppInput
-                ref={newPasswordInputRef}
-                label="New password"
-                placeholder="At least 8 characters"
-                secureTextEntry={!showNewPassword}
-                value={newPassword}
-                onChangeText={setNewPassword}
-                editable={!loading}
-                autoCapitalize="none"
-                autoCorrect={false}
-                maxLength={128}
-                returnKeyType="next"
-                onSubmitEditing={() => confirmPasswordInputRef.current?.focus()}
-                icon={<LockKeyhole color={colors.navy} size={20} />}
-                right={
-                  <Pressable onPress={() => setShowNewPassword((prev) => !prev)} hitSlop={10}>
-                    {showNewPassword ? <EyeOff color={colors.navy} size={20} /> : <Eye color={colors.navy} size={20} />}
+              {/* New password */}
+              <View>
+                <Text style={{ fontSize: 13, fontWeight: "700", color: colors.navy, marginBottom: 8, letterSpacing: 0.2 }}>New password</Text>
+                <View style={inputStyle(newPassFocused)}>
+                  <LockKeyhole size={18} color={newPassFocused ? colors.primary : "#94A3B8"} />
+                  <TextInput
+                    ref={newPasswordRef}
+                    placeholder="At least 8 characters"
+                    placeholderTextColor="#CBD5E1"
+                    value={newPassword}
+                    onChangeText={setNewPassword}
+                    secureTextEntry={!showNewPassword}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    maxLength={128}
+                    returnKeyType="next"
+                    onSubmitEditing={() => confirmPasswordRef.current?.focus()}
+                    editable={!loading}
+                    onFocus={() => setNewPassFocused(true)}
+                    onBlur={() => setNewPassFocused(false)}
+                    style={{ flex: 1, fontSize: 15, color: colors.navy }}
+                  />
+                  <Pressable onPress={() => setShowNewPassword((p) => !p)} hitSlop={10}>
+                    {showNewPassword ? <EyeOff size={18} color="#94A3B8" /> : <Eye size={18} color="#94A3B8" />}
                   </Pressable>
-                }
-              />
+                </View>
+              </View>
 
-              <AppInput
-                ref={confirmPasswordInputRef}
-                label="Confirm new password"
-                placeholder="Re-enter new password"
-                secureTextEntry={!showConfirmPassword}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                editable={!loading}
-                autoCapitalize="none"
-                autoCorrect={false}
-                maxLength={128}
-                returnKeyType="done"
-                onSubmitEditing={resetPassword}
-                icon={<LockKeyhole color={colors.navy} size={20} />}
-                right={
-                  <Pressable onPress={() => setShowConfirmPassword((prev) => !prev)} hitSlop={10}>
-                    {showConfirmPassword ? <EyeOff color={colors.navy} size={20} /> : <Eye color={colors.navy} size={20} />}
+              {/* Confirm password */}
+              <View>
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                  <Text style={{ fontSize: 13, fontWeight: "700", color: colors.navy, letterSpacing: 0.2 }}>Confirm password</Text>
+                  {confirmPassword.length > 0 && (
+                    <Text style={{
+                      fontSize: 11, fontWeight: "800", letterSpacing: 0.3,
+                      color: newPassword === confirmPassword ? colors.primary : "#EF4444",
+                    }}>
+                      {newPassword === confirmPassword ? "Matches ✓" : "No match"}
+                    </Text>
+                  )}
+                </View>
+                <View style={inputStyle(confirmPassFocused)}>
+                  <LockKeyhole size={18} color={confirmPassFocused ? colors.primary : "#94A3B8"} />
+                  <TextInput
+                    ref={confirmPasswordRef}
+                    placeholder="Re-enter new password"
+                    placeholderTextColor="#CBD5E1"
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    secureTextEntry={!showConfirmPassword}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    maxLength={128}
+                    returnKeyType="done"
+                    onSubmitEditing={resetPassword}
+                    editable={!loading}
+                    onFocus={() => setConfirmPassFocused(true)}
+                    onBlur={() => setConfirmPassFocused(false)}
+                    style={{ flex: 1, fontSize: 15, color: colors.navy }}
+                  />
+                  <Pressable onPress={() => setShowConfirmPassword((p) => !p)} hitSlop={10}>
+                    {showConfirmPassword ? <EyeOff size={18} color="#94A3B8" /> : <Eye size={18} color="#94A3B8" />}
                   </Pressable>
-                }
-              />
+                </View>
+              </View>
             </View>
 
-            <AppButton title="Reset Password" full loading={loading} onPress={resetPassword} style={{ marginTop: 22 }} />
-            <AppButton
-              title="Resend Code"
-              variant="outline"
-              full
-              disabled={loading}
-              onPress={sendResetCode}
-              style={{ marginTop: 12 }}
-            />
-            <AppButton
-              title="Use a different email"
-              variant="ghost"
-              full
-              disabled={loading}
-              onPress={() => {
-                setStep("request");
-                setCode("");
-                setNewPassword("");
-                setConfirmPassword("");
-              }}
-              style={{ marginTop: 8 }}
-            />
+            {/* Reset CTA */}
+            <Pressable
+              onPress={resetPassword}
+              disabled={loading || !code || !newPassword || !confirmPassword}
+              style={({ pressed }) => ({
+                marginTop: 28, backgroundColor: colors.primary,
+                borderRadius: 18, paddingVertical: 18, alignItems: "center",
+                shadowColor: colors.primary, shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.4, shadowRadius: 16, elevation: 10,
+                opacity: pressed || loading || !code || !newPassword || !confirmPassword ? 0.65 : 1,
+              })}
+            >
+              <Text style={{ fontSize: 16, fontWeight: "800", color: "#fff", letterSpacing: 0.4 }}>
+                {loading ? "Resetting password…" : "Reset Password"}
+              </Text>
+            </Pressable>
+
+            {/* Secondary */}
+            <View style={{ marginTop: 14, gap: 8 }}>
+              <Pressable
+                onPress={sendResetCode}
+                disabled={loading}
+                style={({ pressed }) => ({
+                  borderRadius: 16, borderWidth: 1.5, borderColor: "#E2E8F0",
+                  paddingVertical: 15, alignItems: "center", backgroundColor: "#fff",
+                  opacity: pressed || loading ? 0.65 : 1,
+                })}
+              >
+                <Text style={{ fontSize: 15, fontWeight: "700", color: colors.navy }}>Resend Code</Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => { setStep("request"); setCode(""); setNewPassword(""); setConfirmPassword(""); }}
+                disabled={loading}
+                style={{ paddingVertical: 12, alignItems: "center" }}
+              >
+                <Text style={{ fontSize: 14, fontWeight: "600", color: "#64748B" }}>Use a different email</Text>
+              </Pressable>
+            </View>
           </>
         )}
-      </View>
-    </ScreenContainer>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
