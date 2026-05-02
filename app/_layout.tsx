@@ -31,12 +31,20 @@ function AuthGuard() {
   useEffect(() => {
     if (!isLoaded) return;
     const inTabs = segments[0] === "tabs";
-    if (isSignedIn && !inTabs) {
+    const currentTab = segments[1];
+    const authRoute = segments[0] === "auth";
+    const onboardingRoute = segments[0] === "onboarding";
+
+    // Allow signed-out users to browse public tabs.
+    const publicTabs = new Set(["home", "explore"]);
+    const inProtectedTab = inTabs && !publicTabs.has(currentTab || "");
+
+    if (isSignedIn && (authRoute || onboardingRoute)) {
       router.replace("/tabs/home");
-    } else if (!isSignedIn && inTabs) {
+    } else if (!isSignedIn && inProtectedTab) {
       router.replace("/auth/login");
     }
-  }, [isSignedIn, isLoaded]);
+  }, [isSignedIn, isLoaded, segments]);
 
   return null;
 }
@@ -56,6 +64,7 @@ export default function RootLayout() {
         <Stack.Screen name="auth/login" />
         <Stack.Screen name="auth/signup" />
         <Stack.Screen name="auth/forgot-password" />
+        <Stack.Screen name="auth/help" />
         <Stack.Screen name="tabs" />
         <Stack.Screen name="listing/[id]" />
         <Stack.Screen name="listing/post" />
