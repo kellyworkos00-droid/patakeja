@@ -113,7 +113,7 @@ export default function ForgotPasswordScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: "#F8FAFC" }} edges={["top", "left", "right", "bottom"]}>
       <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
 
-      {/* Nav bar */}
+      {/* ── Nav bar ── */}
       <View style={{
         flexDirection: "row", alignItems: "center", justifyContent: "space-between",
         paddingHorizontal: 20, paddingTop: 6, paddingBottom: 10,
@@ -153,39 +153,45 @@ export default function ForgotPasswordScreen() {
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Hero */}
+        {/* ── Hero ── */}
         <View style={{ marginBottom: 24, borderRadius: 28, overflow: "hidden" }}>
-          <Image source={images.authHero} style={{ width: "100%", height: 210 }} resizeMode="cover" />
+          <Image source={images.authHero} style={{ width: "100%", height: 200 }} resizeMode="cover" />
           <LinearGradient
-            colors={["transparent", "rgba(15,23,42,0.5)"]}
+            colors={["transparent", "rgba(15,23,42,0.6)"]}
             style={{ position: "absolute", width: "100%", height: "100%" }}
           />
-          {/* Step dots */}
-          <View style={{ position: "absolute", top: 16, right: 16 }}>
-            <View style={{
-              flexDirection: "row", gap: 6, alignItems: "center",
-              backgroundColor: "rgba(255,255,255,0.2)", borderRadius: 20,
-              paddingHorizontal: 12, paddingVertical: 6,
-            }}>
-              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: "#fff" }} />
-              <View style={{
-                width: 8, height: 8, borderRadius: 4,
-                backgroundColor: step === "reset" ? "#fff" : "rgba(255,255,255,0.35)",
-              }} />
-            </View>
-          </View>
           <View style={{ position: "absolute", bottom: 18, left: 20 }}>
             <Text style={{ fontSize: 11, fontWeight: "700", color: "rgba(255,255,255,0.75)", letterSpacing: 1.5 }}>PATAKEJA</Text>
           </View>
         </View>
 
+        {/* ── Step progress bar ── */}
+        <View style={{ flexDirection: "row", gap: 8, marginBottom: 28 }}>
+          <View style={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: colors.primary }} />
+          <View style={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: step === "reset" ? colors.primary : "#E2E8F0" }} />
+        </View>
+
         {step === "request" ? (
           <>
+            {/* Icon badge */}
+            <View style={{ marginBottom: 20, alignSelf: "flex-start" }}>
+              <View style={{
+                width: 64, height: 64, borderRadius: 22,
+                backgroundColor: "#EFF6FF",
+                borderWidth: 1.5, borderColor: "#BFDBFE",
+                alignItems: "center", justifyContent: "center",
+                shadowColor: "#3B82F6", shadowOffset: { width: 0, height: 6 },
+                shadowOpacity: 0.15, shadowRadius: 14, elevation: 5,
+              }}>
+                <Mail size={28} color="#3B82F6" strokeWidth={2.2} />
+              </View>
+            </View>
+
             <Text style={{ fontSize: 32, fontWeight: "800", color: colors.navy, letterSpacing: -0.8, lineHeight: 40 }}>
               Forgot your{"\n"}password?
             </Text>
             <Text style={{ fontSize: 15, color: "#64748B", marginTop: 8, lineHeight: 24 }}>
-              No worries — enter your email and we'll send a reset code.
+              No worries — enter your email and we'll send a reset code instantly.
             </Text>
 
             <View style={{ marginTop: 28 }}>
@@ -210,32 +216,50 @@ export default function ForgotPasswordScreen() {
               </View>
             </View>
 
-            {/* Info notice */}
+            {/* Info card */}
             <View style={{
-              marginTop: 18, flexDirection: "row", gap: 12,
-              backgroundColor: "#EFF6FF", borderRadius: 16,
-              borderWidth: 1, borderColor: "#BFDBFE", padding: 14,
+              marginTop: 16,
+              backgroundColor: "#EFF6FF",
+              borderRadius: 18,
+              borderWidth: 1.5, borderColor: "#BFDBFE",
+              padding: 16,
+              shadowColor: "#3B82F6",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.08, shadowRadius: 10, elevation: 3,
             }}>
-              <ShieldCheck size={18} color="#3B82F6" strokeWidth={2.5} />
-              <Text style={{ flex: 1, fontSize: 13, color: "#1D4ED8", fontWeight: "600", lineHeight: 20 }}>
-                We'll send a secure 6-digit code to your email. It expires in 10 minutes.
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                <View style={{
+                  width: 32, height: 32, borderRadius: 10,
+                  backgroundColor: "#DBEAFE",
+                  alignItems: "center", justifyContent: "center",
+                }}>
+                  <ShieldCheck size={16} color="#2563EB" strokeWidth={2.5} />
+                </View>
+                <Text style={{ fontSize: 14, fontWeight: "800", color: "#1E40AF" }}>Secure reset process</Text>
+              </View>
+              <Text style={{ fontSize: 13, color: "#1D4ED8", fontWeight: "500", lineHeight: 20 }}>
+                We'll email you a <Text style={{ fontWeight: "800" }}>6-digit code</Text> that expires in{" "}
+                <Text style={{ fontWeight: "800" }}>10 minutes</Text>. Check your spam folder if it doesn't arrive.
               </Text>
             </View>
 
+            {/* CTA */}
             <Pressable
               onPress={sendResetCode}
               disabled={loading || !email}
-              style={({ pressed }) => ({
-                marginTop: 28, backgroundColor: colors.primary,
-                borderRadius: 18, paddingVertical: 18, alignItems: "center",
-                shadowColor: colors.primary, shadowOffset: { width: 0, height: 8 },
-                shadowOpacity: 0.4, shadowRadius: 16, elevation: 10,
-                opacity: pressed || loading || !email ? 0.65 : 1,
-              })}
+              style={({ pressed }) => ({ opacity: pressed || loading || !email ? 0.65 : 1 })}
             >
-              <Text style={{ fontSize: 16, fontWeight: "800", color: "#fff", letterSpacing: 0.4 }}>
-                {loading ? "Sending code…" : "Send Reset Code"}
-              </Text>
+              <View style={{
+                marginTop: 28,
+                backgroundColor: colors.primary,
+                borderRadius: 20, paddingVertical: 18, alignItems: "center",
+                shadowColor: colors.primary, shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.4, shadowRadius: 18, elevation: 10,
+              }}>
+                <Text style={{ fontSize: 16, fontWeight: "800", color: "#fff", letterSpacing: 0.4 }}>
+                  {loading ? "Sending code…" : "Send Reset Code"}
+                </Text>
+              </View>
             </Pressable>
 
             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginTop: 22, gap: 4 }}>
@@ -247,6 +271,20 @@ export default function ForgotPasswordScreen() {
           </>
         ) : (
           <>
+            {/* Icon badge */}
+            <View style={{ marginBottom: 20, alignSelf: "flex-start" }}>
+              <View style={{
+                width: 64, height: 64, borderRadius: 22,
+                backgroundColor: "#F0FDF4",
+                borderWidth: 1.5, borderColor: "#BBF7D0",
+                alignItems: "center", justifyContent: "center",
+                shadowColor: colors.primary, shadowOffset: { width: 0, height: 6 },
+                shadowOpacity: 0.15, shadowRadius: 14, elevation: 5,
+              }}>
+                <LockKeyhole size={28} color={colors.primary} strokeWidth={2.2} />
+              </View>
+            </View>
+
             <Text style={{ fontSize: 32, fontWeight: "800", color: colors.navy, letterSpacing: -0.8, lineHeight: 40 }}>
               Create new{"\n"}password
             </Text>
@@ -254,6 +292,18 @@ export default function ForgotPasswordScreen() {
               Code sent to{" "}
               <Text style={{ fontWeight: "700", color: colors.navy }}>{email.trim().toLowerCase()}</Text>
             </Text>
+
+            {/* Email chip */}
+            <View style={{
+              marginTop: 12, alignSelf: "flex-start",
+              flexDirection: "row", alignItems: "center", gap: 6,
+              backgroundColor: "#F0FDF4", borderRadius: 12,
+              borderWidth: 1, borderColor: "#BBF7D0",
+              paddingHorizontal: 12, paddingVertical: 6,
+            }}>
+              <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary }} />
+              <Text style={{ fontSize: 12, fontWeight: "700", color: colors.primary }}>{email.trim().toLowerCase()}</Text>
+            </View>
 
             <View style={{ marginTop: 28, gap: 16 }}>
               {/* Code */}
@@ -263,7 +313,7 @@ export default function ForgotPasswordScreen() {
                   <ShieldCheck size={18} color={codeFocused ? colors.primary : "#94A3B8"} />
                   <TextInput
                     ref={codeRef}
-                    placeholder="6-digit code"
+                    placeholder="● ● ● ● ● ●"
                     placeholderTextColor="#CBD5E1"
                     value={code}
                     onChangeText={(val) => {
@@ -279,13 +329,19 @@ export default function ForgotPasswordScreen() {
                     editable={!loading}
                     onFocus={() => setCodeFocused(true)}
                     onBlur={() => setCodeFocused(false)}
-                    style={{ flex: 1, fontSize: 22, fontWeight: "800", color: colors.navy, letterSpacing: 8 }}
+                    style={{ flex: 1, fontSize: 22, fontWeight: "800", color: colors.navy, letterSpacing: 10 }}
                   />
                   {code.length === 6 && (
-                    <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: colors.primary, alignItems: "center", justifyContent: "center" }}>
-                      <Text style={{ color: "#fff", fontSize: 13, fontWeight: "800" }}>✓</Text>
+                    <View style={{ width: 26, height: 26, borderRadius: 13, backgroundColor: colors.primary, alignItems: "center", justifyContent: "center" }}>
+                      <Text style={{ color: "#fff", fontSize: 14, fontWeight: "800" }}>✓</Text>
                     </View>
                   )}
+                </View>
+                {/* Code progress */}
+                <View style={{ flexDirection: "row", gap: 4, marginTop: 8 }}>
+                  {[0,1,2,3,4,5].map((i) => (
+                    <View key={i} style={{ flex: 1, height: 3, borderRadius: 2, backgroundColor: i < code.length ? colors.primary : "#E2E8F0" }} />
+                  ))}
                 </View>
               </View>
 
@@ -360,31 +416,36 @@ export default function ForgotPasswordScreen() {
             <Pressable
               onPress={resetPassword}
               disabled={loading || !code || !newPassword || !confirmPassword}
-              style={({ pressed }) => ({
-                marginTop: 28, backgroundColor: colors.primary,
-                borderRadius: 18, paddingVertical: 18, alignItems: "center",
-                shadowColor: colors.primary, shadowOffset: { width: 0, height: 8 },
-                shadowOpacity: 0.4, shadowRadius: 16, elevation: 10,
-                opacity: pressed || loading || !code || !newPassword || !confirmPassword ? 0.65 : 1,
-              })}
+              style={({ pressed }) => ({ opacity: pressed || loading || !code || !newPassword || !confirmPassword ? 0.65 : 1 })}
             >
-              <Text style={{ fontSize: 16, fontWeight: "800", color: "#fff", letterSpacing: 0.4 }}>
-                {loading ? "Resetting password…" : "Reset Password"}
-              </Text>
+              <View style={{
+                marginTop: 28,
+                backgroundColor: colors.primary,
+                borderRadius: 20, paddingVertical: 18, alignItems: "center",
+                shadowColor: colors.primary, shadowOffset: { width: 0, height: 8 },
+                shadowOpacity: 0.4, shadowRadius: 18, elevation: 10,
+              }}>
+                <Text style={{ fontSize: 16, fontWeight: "800", color: "#fff", letterSpacing: 0.4 }}>
+                  {loading ? "Resetting password…" : "Reset Password"}
+                </Text>
+              </View>
             </Pressable>
 
-            {/* Secondary */}
-            <View style={{ marginTop: 14, gap: 8 }}>
+            {/* Secondary actions */}
+            <View style={{ marginTop: 14, gap: 10 }}>
               <Pressable
                 onPress={sendResetCode}
                 disabled={loading}
-                style={({ pressed }) => ({
-                  borderRadius: 16, borderWidth: 1.5, borderColor: "#E2E8F0",
-                  paddingVertical: 15, alignItems: "center", backgroundColor: "#fff",
-                  opacity: pressed || loading ? 0.65 : 1,
-                })}
+                style={({ pressed }) => ({ opacity: pressed || loading ? 0.65 : 1 })}
               >
-                <Text style={{ fontSize: 15, fontWeight: "700", color: colors.navy }}>Resend Code</Text>
+                <View style={{
+                  borderRadius: 18, borderWidth: 1.5, borderColor: "#E2E8F0",
+                  paddingVertical: 15, alignItems: "center", backgroundColor: "#fff",
+                  shadowColor: "#0F172A", shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.05, shadowRadius: 6, elevation: 2,
+                }}>
+                  <Text style={{ fontSize: 15, fontWeight: "700", color: colors.navy }}>Resend Code</Text>
+                </View>
               </Pressable>
 
               <Pressable
