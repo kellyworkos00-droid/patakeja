@@ -1,5 +1,5 @@
-import { useRef, useState } from "react";
-import { Alert, Image, Pressable, Text, TextInput, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Alert, BackHandler, Image, Pressable, Text, TextInput, View } from "react-native";
 import { router } from "expo-router";
 import { Eye, EyeOff, LockKeyhole, Mail, ShieldCheck } from "lucide-react-native";
 import { useSignIn } from "@clerk/clerk-expo";
@@ -24,6 +24,30 @@ export default function ForgotPasswordScreen() {
   const codeInputRef = useRef<TextInput>(null);
   const newPasswordInputRef = useRef<TextInput>(null);
   const confirmPasswordInputRef = useRef<TextInput>(null);
+
+  const goBack = () => {
+    if (step === "reset") {
+      setStep("request");
+      setCode("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setShowNewPassword(false);
+      setShowConfirmPassword(false);
+    } else {
+      router.back();
+    }
+  };
+
+  useEffect(() => {
+    const sub = BackHandler.addEventListener("hardwareBackPress", () => {
+      if (step === "reset") {
+        goBack();
+        return true; // consume the event
+      }
+      return false;
+    });
+    return () => sub.remove();
+  }, [step]);
 
   const validateEmail = (value: string) => /\S+@\S+\.\S+/.test(value.trim());
 
@@ -100,6 +124,7 @@ export default function ForgotPasswordScreen() {
       <FloatingHeader
         title="Forgot password"
         subtitle={step === "request" ? "We will send reset instructions to your email" : "Enter your code and set a new password"}
+        onBack={goBack}
       />
       <Image source={images.forgotDirection} className="mb-5 h-52 w-full rounded-[32px]" resizeMode="cover" />
       <View className="rounded-[32px] bg-white p-5">

@@ -8,17 +8,18 @@ type FloatingHeaderProps = {
   title: string;
   subtitle?: string;
   showBack?: boolean;
+  onBack?: () => void;
   right?: ReactNode;
 };
 
-export function FloatingHeader({ title, subtitle, showBack = true, right }: FloatingHeaderProps) {
+export function FloatingHeader({ title, subtitle, showBack = true, onBack, right }: FloatingHeaderProps) {
   return (
     <View className="mb-5 mt-2 flex-row items-center gap-4">
       {showBack ? (
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Go back"
-          onPress={() => router.back()}
+          onPress={onBack ?? (() => router.back())}
           className="h-11 w-11 items-center justify-center rounded-full bg-white"
         >
           <ArrowLeft color={colors.navy} size={23} />
