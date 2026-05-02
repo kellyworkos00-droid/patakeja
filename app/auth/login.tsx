@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Image, Pressable, ScrollView, StatusBar, Text, View, TextInput, Alert } from "react-native";
 import { router } from "expo-router";
 import { LockKeyhole, Mail, ArrowLeft } from "lucide-react-native";
+import { Image as ExpoImage } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useSignIn, useOAuth } from "@clerk/clerk-expo";
@@ -121,7 +122,9 @@ export default function LoginScreen() {
               opacity: loading ? 0.6 : 1,
             }}
           >
-            <Image source={images.googleIcon} style={{ width: 20, height: 20 }} resizeMode="contain" />
+            <View style={{ width: 24, height: 24, borderRadius: 12, alignItems: "center", justifyContent: "center", backgroundColor: "#fff" }}>
+              <ExpoImage source={images.googleIcon} style={{ width: 18, height: 18 }} contentFit="contain" />
+            </View>
             <Text style={{ fontSize: 15, fontWeight: "700", color: colors.navy }}>Continue with Google</Text>
           </Pressable>
 
@@ -141,7 +144,9 @@ export default function LoginScreen() {
               opacity: loading ? 0.6 : 1,
             }}
           >
-            <Image source={images.tikTokIcon} style={{ width: 20, height: 20 }} resizeMode="contain" />
+            <View style={{ width: 24, height: 24, borderRadius: 12, alignItems: "center", justifyContent: "center", backgroundColor: "#fff" }}>
+              <ExpoImage source={images.tikTokIcon} style={{ width: 18, height: 18 }} contentFit="contain" />
+            </View>
             <Text style={{ fontSize: 15, fontWeight: "700", color: colors.navy }}>Continue with TikTok</Text>
           </Pressable>
         </View>
