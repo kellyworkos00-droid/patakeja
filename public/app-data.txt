@@ -1,0 +1,46 @@
+PataKeja App Data
+
+Core services
+- Clerk = authentication
+- Supabase = database
+- Daraja = M-Pesa payments
+- Escrow provider = econfirm
+- Google Maps = location
+
+Asset naming convention
+- Lowercase kebab-case
+- Keep all screen images in public/
+- Use constants/assets.ts as the single import source for UI screen images
+
+UI screen asset manifest
+- logo -> public/patakeja-logo.png
+- onboardingIntro -> public/onboarding-first-screen.png
+- onboardingTrust -> public/onboarding-screens.png
+- onboardingHome -> public/onboarding-last-2.png
+- onboardingPerson -> public/onboarding-last-1.png
+- propertyLiving -> public/onboarding-last-2.png
+- propertyHouse -> public/onboarding-last-3.png
+- propertyDetailMock -> public/concept-property-detail.png
+- homeDirection -> public/concept-home-feed.png
+- exploreDirection -> public/concept-explore-map.png
+- chatDirection -> public/concept-chat-list.png
+- profileDirection -> public/concept-profile.png
+- postListingDirection -> public/concept-post-listing.png
+- chatDetailDirection -> public/concept-chat-detail.png
+- bookingsDirection -> public/bookings.png
+- paymentDirection -> public/payment-screen.png
+- savedDirection -> public/saved.png
+- verificationDirection -> public/verification.png
+- settingsDirection -> public/settings.png
+- reportDirection -> public/report.png
+- notificationsDirection -> public/notification-screen.png
+- loginDirection -> public/login.png
+- signupDirection -> public/signup.png
+- forgotDirection -> public/forgot-password.png
+- forgotDirectionAlt -> public/forgot-password-alt.png
+- searchDirection -> public/search-screen.png
+- profileSettingsDirection -> public/profile.png
+
+Duplicate decision
+- Final forgot-password image: public/forgot-password.png
+- Alternate kept for exploration: public/forgot-password-alt.png
