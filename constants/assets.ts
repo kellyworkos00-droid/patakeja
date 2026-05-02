@@ -1,4 +1,6 @@
 export const images = {
+  googleIcon: require("../google-logo-icon.webp"),
+  tikTokIcon: require("../tik-tok-icon.avif"),
   logo: require("../public/patakeja-logo.png"),
   onboardingIntro: require("../public/onboarding-first-screen.png"),
   onboardingTrust: require("../public/onboarding-screens.png"),

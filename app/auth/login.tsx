@@ -121,7 +121,7 @@ export default function LoginScreen() {
               opacity: loading ? 0.6 : 1,
             }}
           >
-            <Text style={{ fontSize: 18 }}>🔵</Text>
+            <Image source={images.googleIcon} style={{ width: 20, height: 20 }} resizeMode="contain" />
             <Text style={{ fontSize: 15, fontWeight: "700", color: colors.navy }}>Continue with Google</Text>
           </Pressable>
 
@@ -141,7 +141,7 @@ export default function LoginScreen() {
               opacity: loading ? 0.6 : 1,
             }}
           >
-            <Text style={{ fontSize: 18 }}>♪</Text>
+            <Image source={images.tikTokIcon} style={{ width: 20, height: 20 }} resizeMode="contain" />
             <Text style={{ fontSize: 15, fontWeight: "700", color: colors.navy }}>Continue with TikTok</Text>
           </Pressable>
         </View>
