@@ -148,7 +148,7 @@ function NearYouCard({ listing }: { listing: Listing }) {
 
 export default function HomeScreen() {
   return (
-    <ScreenContainer contentClassName="pb-24" showsFloatingTabBar>
+    <ScreenContainer contentClassName="pb-24">
       {/* Floating Search Bar */}
       <View style={{ zIndex: 2 }} className="mb-2 mt-2 flex-row items-center justify-between px-1">
         <Pressable className="h-12 w-12 items-center justify-center rounded-full bg-white" style={cardShadow}>

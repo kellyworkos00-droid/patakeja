@@ -42,9 +42,8 @@ export default function SignupScreen() {
         password,
       });
 
-      const completeSignUp = await signUp.createEmailLinkFlow();
-      if (completeSignUp.status === "complete") {
-        await setActive({ session: completeSignUp.createdSessionId });
+      if (signUp.status === "complete") {
+        await setActive({ session: signUp.createdSessionId });
         router.replace("/tabs/home");
       }
     } catch (err: any) {
