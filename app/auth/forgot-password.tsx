@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { Alert, Image, Text, View } from "react-native";
+import { useRef, useState } from "react";
+import { Alert, Image, Pressable, Text, TextInput, View } from "react-native";
 import { router } from "expo-router";
-import { LockKeyhole, Mail, ShieldCheck } from "lucide-react-native";
+import { Eye, EyeOff, LockKeyhole, Mail, ShieldCheck } from "lucide-react-native";
 import { useSignIn } from "@clerk/clerk-expo";
 import { images } from "@/constants/assets";
 import { colors } from "@/constants/colors";
@@ -17,7 +17,13 @@ export default function ForgotPasswordScreen() {
   const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const codeInputRef = useRef<TextInput>(null);
+  const newPasswordInputRef = useRef<TextInput>(null);
+  const confirmPasswordInputRef = useRef<TextInput>(null);
 
   const validateEmail = (value: string) => /\S+@\S+\.\S+/.test(value.trim());
 
@@ -38,6 +44,7 @@ export default function ForgotPasswordScreen() {
       });
 
       setStep("reset");
+      setTimeout(() => codeInputRef.current?.focus(), 120);
       Alert.alert("Code sent", "We sent a verification code to your email.");
     } catch (err: any) {
       Alert.alert("Reset failed", err.errors?.[0]?.message || "Could not send reset code.");
@@ -75,7 +82,7 @@ export default function ForgotPasswordScreen() {
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
         Alert.alert("Password updated", "Your password has been reset successfully.", [
-          { text: "Continue", onPress: () => router.replace("/tabs/home") },
+          { text: "Continue", onPress: () => router.replace("/auth/login") },
         ]);
         return;
       }
@@ -122,38 +129,68 @@ export default function ForgotPasswordScreen() {
 
             <View className="mt-6 gap-4">
               <AppInput
+                ref={codeInputRef}
                 label="Verification code"
-                placeholder="Enter code"
+                placeholder="Enter 6-digit code"
                 value={code}
-                onChangeText={setCode}
+                onChangeText={(value) => {
+                  const sanitized = value.replace(/\D/g, "").slice(0, 6);
+                  setCode(sanitized);
+                  if (sanitized.length === 6) {
+                    newPasswordInputRef.current?.focus();
+                  }
+                }}
                 editable={!loading}
                 autoCapitalize="none"
                 autoCorrect={false}
+                keyboardType="number-pad"
+                textContentType="oneTimeCode"
+                maxLength={6}
+                returnKeyType="next"
+                onSubmitEditing={() => newPasswordInputRef.current?.focus()}
                 icon={<ShieldCheck color={colors.navy} size={20} />}
               />
 
               <AppInput
+                ref={newPasswordInputRef}
                 label="New password"
                 placeholder="At least 8 characters"
-                secureTextEntry
+                secureTextEntry={!showNewPassword}
                 value={newPassword}
                 onChangeText={setNewPassword}
                 editable={!loading}
                 autoCapitalize="none"
                 autoCorrect={false}
+                maxLength={128}
+                returnKeyType="next"
+                onSubmitEditing={() => confirmPasswordInputRef.current?.focus()}
                 icon={<LockKeyhole color={colors.navy} size={20} />}
+                right={
+                  <Pressable onPress={() => setShowNewPassword((prev) => !prev)} hitSlop={10}>
+                    {showNewPassword ? <EyeOff color={colors.navy} size={20} /> : <Eye color={colors.navy} size={20} />}
+                  </Pressable>
+                }
               />
 
               <AppInput
+                ref={confirmPasswordInputRef}
                 label="Confirm new password"
                 placeholder="Re-enter new password"
-                secureTextEntry
+                secureTextEntry={!showConfirmPassword}
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 editable={!loading}
                 autoCapitalize="none"
                 autoCorrect={false}
+                maxLength={128}
+                returnKeyType="done"
+                onSubmitEditing={resetPassword}
                 icon={<LockKeyhole color={colors.navy} size={20} />}
+                right={
+                  <Pressable onPress={() => setShowConfirmPassword((prev) => !prev)} hitSlop={10}>
+                    {showConfirmPassword ? <EyeOff color={colors.navy} size={20} /> : <Eye color={colors.navy} size={20} />}
+                  </Pressable>
+                }
               />
             </View>
 
