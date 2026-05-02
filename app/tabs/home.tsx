@@ -28,22 +28,32 @@ const filters: { label: string; icon: ElementType }[] = [
 
 const heroSlides = [
   {
-    image: images.propertyLiving,
-    tag: "Find your next",
-    title: "Home with\nConfidence.",
-    sub: "Verified homes. Secure chat. Safe payments.",
+    image: images.onboardingIntro,
+    tag: "Welcome Home",
+    title: "Find your next\nhome, the smart way.",
+    sub: "Discover verified homes across Kenya with confidence.",
+    chip: "Kenya's #1 Rental App",
   },
   {
-    image: images.propertyHouse,
-    tag: "New listings",
-    title: "Premium Homes\nNear You.",
-    sub: "Fresh listings added daily — be first to view.",
+    image: images.onboardingTrust,
+    tag: "Trust First",
+    title: "Built on trust.\nAlways.",
+    sub: "Every listing is checked, every chat is private.",
+    chip: "Verified and Secure",
   },
   {
-    image: images.propertyDetailMock,
-    tag: "Safe & secure",
-    title: "Pay with\nEscrow.",
-    sub: "Your money is protected until you move in.",
+    image: images.onboardingHome,
+    tag: "Nearby Homes",
+    title: "Premium homes\nnear your vibe.",
+    sub: "Fresh listings added daily near where you want to be.",
+    chip: "Updated Daily",
+  },
+  {
+    image: images.onboardingPerson,
+    tag: "Safe Payments",
+    title: "Pay securely\nwith escrow.",
+    sub: "Your money stays protected until move-in is confirmed.",
+    chip: "Escrow Protected",
   },
 ];
 
@@ -242,15 +252,17 @@ export default function HomeScreen() {
   const [heroIndex, setHeroIndex] = useState(0);
   const heroRef = useRef<ScrollView>(null);
 
-  // auto-scroll hero every 4 s
+  // auto-scroll hero every 4.5 s
   useEffect(() => {
     const timer = setInterval(() => {
-      const next = (heroIndex + 1) % heroSlides.length;
-      heroRef.current?.scrollTo({ x: next * (SW - 40), animated: true });
-      setHeroIndex(next);
-    }, 4000);
+      setHeroIndex((prev) => {
+        const next = (prev + 1) % heroSlides.length;
+        heroRef.current?.scrollTo({ x: next * (SW - 40), animated: true });
+        return next;
+      });
+    }, 4500);
     return () => clearInterval(timer);
-  }, [heroIndex]);
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#F8FAFC" }} edges={["top", "left", "right"]}>
@@ -319,7 +331,7 @@ export default function HomeScreen() {
         </ScrollView>
 
         {/* ── Hero carousel ── */}
-        <View style={{ marginHorizontal: 20, marginBottom: 24, borderRadius: 28, overflow: "hidden" }}>
+        <View style={{ marginHorizontal: 20, marginBottom: 24, borderRadius: 30, overflow: "hidden" }}>
           <ScrollView
             ref={heroRef}
             horizontal
@@ -330,19 +342,42 @@ export default function HomeScreen() {
               const idx = Math.round(e.nativeEvent.contentOffset.x / (SW - 40));
               setHeroIndex(idx);
             }}
-            style={{ borderRadius: 28 }}
+            style={{ borderRadius: 30 }}
           >
             {heroSlides.map((slide, i) => (
-              <View key={i} style={{ width: SW - 40, height: 220, borderRadius: 28, overflow: "hidden" }}>
+              <View key={i} style={{ width: SW - 40, height: 254, borderRadius: 30, overflow: "hidden" }}>
                 <Image source={slide.image} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
                 <LinearGradient
-                  colors={["rgba(15,23,42,0.15)", "rgba(15,23,42,0.75)"]}
+                  colors={["rgba(0,0,0,0.18)", "rgba(2,6,23,0.76)"]}
                   style={{ position: "absolute", inset: 0 } as any}
                 />
-                <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: 20 }}>
-                  <Text style={{ fontSize: 12, fontWeight: "800", color: colors.primary, letterSpacing: 1 }}>{slide.tag.toUpperCase()}</Text>
-                  <Text style={{ fontSize: 26, fontWeight: "800", color: "#fff", lineHeight: 32, marginTop: 2 }}>{slide.title}</Text>
-                  <Text style={{ fontSize: 13, color: "rgba(255,255,255,0.8)", marginTop: 4 }}>{slide.sub}</Text>
+
+                <View style={{ position: "absolute", top: 14, left: 14, flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "rgba(255,255,255,0.18)", borderRadius: 18, paddingHorizontal: 10, paddingVertical: 7 }}>
+                  <Image source={images.logo} style={{ width: 18, height: 18, borderRadius: 5 }} resizeMode="contain" />
+                  <Text style={{ fontSize: 12, fontWeight: "800", color: "#fff" }}>PataKeja</Text>
+                </View>
+
+                <View style={{ position: "absolute", top: 14, right: 14, backgroundColor: "rgba(22,163,74,0.2)", borderRadius: 18, paddingHorizontal: 10, paddingVertical: 7 }}>
+                  <Text style={{ fontSize: 11, fontWeight: "800", color: "#DCFCE7", letterSpacing: 0.5 }}>{slide.chip}</Text>
+                </View>
+
+                <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, paddingHorizontal: 20, paddingTop: 20, paddingBottom: 18 }}>
+                  <Text style={{ fontSize: 11, fontWeight: "800", color: "#A7F3D0", letterSpacing: 1.1 }}>{slide.tag.toUpperCase()}</Text>
+                  <Text style={{ fontSize: 25, fontWeight: "800", color: "#fff", lineHeight: 31, marginTop: 3 }}>{slide.title}</Text>
+                  <Text style={{ fontSize: 13, color: "rgba(255,255,255,0.86)", marginTop: 6 }}>{slide.sub}</Text>
+
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: 10 }}>
+                    <View style={{ backgroundColor: "rgba(255,255,255,0.16)", borderRadius: 99, paddingHorizontal: 9, paddingVertical: 5 }}>
+                      <Text style={{ fontSize: 11, fontWeight: "700", color: "#fff" }}>Verified</Text>
+                    </View>
+                    <View style={{ backgroundColor: "rgba(255,255,255,0.16)", borderRadius: 99, paddingHorizontal: 9, paddingVertical: 5 }}>
+                      <Text style={{ fontSize: 11, fontWeight: "700", color: "#fff" }}>Secure Chat</Text>
+                    </View>
+                    <View style={{ backgroundColor: "rgba(255,255,255,0.16)", borderRadius: 99, paddingHorizontal: 9, paddingVertical: 5 }}>
+                      <Text style={{ fontSize: 11, fontWeight: "700", color: "#fff" }}>Escrow</Text>
+                    </View>
+                  </View>
+
                   <Pressable
                     onPress={() => router.push("/search")}
                     style={{ marginTop: 12, backgroundColor: colors.primary, borderRadius: 14, paddingVertical: 10, paddingHorizontal: 20, alignSelf: "flex-start",
@@ -355,9 +390,9 @@ export default function HomeScreen() {
             ))}
           </ScrollView>
           {/* Dot indicators */}
-          <View style={{ flexDirection: "row", gap: 6, position: "absolute", top: 14, right: 14 }}>
+          <View style={{ flexDirection: "row", gap: 6, position: "absolute", bottom: 14, right: 14 }}>
             {heroSlides.map((_, i) => (
-              <View key={i} style={{ width: heroIndex === i ? 20 : 7, height: 7, borderRadius: 4, backgroundColor: heroIndex === i ? "#fff" : "rgba(255,255,255,0.4)", transition: "width 0.3s" } as any} />
+              <View key={i} style={{ width: heroIndex === i ? 20 : 7, height: 7, borderRadius: 4, backgroundColor: heroIndex === i ? "#fff" : "rgba(255,255,255,0.4)" }} />
             ))}
           </View>
         </View>
