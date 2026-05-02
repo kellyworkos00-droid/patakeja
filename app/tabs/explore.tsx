@@ -1,81 +1,225 @@
-import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import { useState } from "react";
+import {
+  Image, Pressable, ScrollView, StatusBar, Text, View,
+} from "react-native";
 import { router } from "expo-router";
-import { BedDouble, ChevronDown, Grid2X2, Home, LocateFixed, Map, Search, SlidersHorizontal } from "lucide-react-native";
+import {
+  BedDouble, ChevronDown, Grid2X2, Heart, Home,
+  LocateFixed, LockKeyhole, Map, MapPin, MoreVertical,
+  Search, ShieldCheck, SlidersHorizontal,
+} from "lucide-react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { listings } from "@/data/mockListings";
 import { images } from "@/constants/assets";
 import { colors } from "@/constants/colors";
-import { ListingCard } from "@/components/cards/ListingCard";
-import { ScreenContainer } from "@/components/layout/ScreenContainer";
 
 const filters = [
-  { label: "All", icon: Grid2X2 },
+  { label: "All",        icon: Grid2X2 },
   { label: "Bedsitters", icon: Home },
-  { label: "1 Bedroom", icon: BedDouble },
-  { label: "2 Bedroom", icon: BedDouble },
+  { label: "1 Bedroom",  icon: BedDouble },
+  { label: "2 Bedroom",  icon: BedDouble },
   { label: "3+ Bedroom", icon: BedDouble },
 ];
 
-export default function ExploreScreen() {
+const clusters = [
+  { label: "12", top: "42%", left: "14%" },
+  { label: "28", top: "54%", left: "42%" },
+  { label: "15", top: "46%", left: "70%" },
+];
+
+const shadow = {
+  shadowColor: "#0F172A",
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.07,
+  shadowRadius: 12,
+  elevation: 4,
+};
+
+const shadowMd = {
+  shadowColor: "#0F172A",
+  shadowOffset: { width: 0, height: 6 },
+  shadowOpacity: 0.10,
+  shadowRadius: 18,
+  elevation: 7,
+};
+
+function TrustPill({ type }: { type: "Verified" | "Secure Chat" | "Escrow" }) {
+  const cfg = {
+    Verified:      { icon: ShieldCheck, bg: "#DCFCE7", color: colors.primary },
+    "Secure Chat": { icon: LockKeyhole, bg: "#FEF3C7", color: "#D97706" },
+    Escrow:        { icon: ShieldCheck, bg: "#EDE9FE", color: "#7C3AED" },
+  }[type];
+  const Icon = cfg.icon;
   return (
-    <ScreenContainer contentClassName="pt-4">
-      <View className="mb-5 flex-row items-start justify-between">
-        <View>
-          <Text className="text-4xl font-extrabold text-navy">Explore</Text>
-          <Text className="mt-1 text-base text-navy/60">Find your perfect home</Text>
-        </View>
-        <Pressable onPress={() => router.push("/search")} className="h-12 w-12 items-center justify-center rounded-full bg-white">
-          <SlidersHorizontal color={colors.navy} size={22} />
-          <View className="absolute right-3 top-2 h-2.5 w-2.5 rounded-full bg-primary" />
-        </Pressable>
-      </View>
+    <View style={{ flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: cfg.bg, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 4 }}>
+      <Icon size={11} color={cfg.color} strokeWidth={2.8} />
+      <Text style={{ fontSize: 11, fontWeight: "700", color: cfg.color }}>{type}</Text>
+    </View>
+  );
+}
 
-      <Pressable onPress={() => router.push("/search")} className="mb-5 h-16 flex-row items-center gap-3 rounded-full bg-white px-5">
-        <Search color={colors.primary} size={23} />
-        <Text className="flex-1 text-base font-medium text-navy/50">Search location, area or property...</Text>
-        <View className="h-8 w-px bg-navy/10" />
-        <Text className="font-bold text-navy">Filters</Text>
-      </Pressable>
+export default function ExploreScreen() {
+  const [activeFilter, setActiveFilter] = useState(0);
+  const [saved, setSaved] = useState<Record<string, boolean>>(
+    Object.fromEntries(listings.map((l) => [l.id, l.saved ?? false]))
+  );
+  const toggleSaved = (id: string) => setSaved((s) => ({ ...s, [id]: !s[id] }));
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-3 pb-5">
-        {filters.map((filter, index) => {
-          const Icon = filter.icon;
-          const active = index === 0;
-          return (
-            <Pressable key={filter.label} className={`h-12 flex-row items-center gap-2 rounded-full px-5 ${active ? "bg-navy" : "bg-white"}`}>
-              <Icon color={active ? colors.card : colors.navy} size={18} />
-              <Text className={`font-bold ${active ? "text-white" : "text-navy"}`}>{filter.label}</Text>
-            </Pressable>
-          );
-        })}
-      </ScrollView>
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#F8FAFC" }} edges={["top", "left", "right"]}>
+      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 110 }}>
 
-      <View className="mb-6 h-44 overflow-hidden rounded-[32px] bg-white">
-        <Image source={images.exploreDirection} className="h-full w-full" resizeMode="cover" />
-        <View className="absolute inset-0 bg-navy/35" />
-        <View className="flex-1 items-center justify-center">
-          <View className="flex-row items-center gap-2 rounded-full bg-white px-5 py-3">
-            <Map color={colors.navy} size={20} />
-            <Text className="font-extrabold text-navy">View on Map</Text>
+        {/* ── Header ── */}
+        <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", paddingHorizontal: 20, paddingTop: 14, paddingBottom: 16 }}>
+          <View>
+            <Text style={{ fontSize: 34, fontWeight: "800", color: colors.navy, letterSpacing: -0.5 }}>Explore</Text>
+            <Text style={{ fontSize: 14, color: "#64748B", fontWeight: "500", marginTop: 2 }}>Find your perfect home</Text>
           </View>
+          <Pressable
+            onPress={() => router.push("/search")}
+            style={[{ width: 48, height: 48, borderRadius: 24, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", marginTop: 4 }, shadow]}
+          >
+            <SlidersHorizontal color={colors.navy} size={20} />
+            <View style={{ position: "absolute", top: 10, right: 10, width: 9, height: 9, borderRadius: 5, backgroundColor: colors.primary, borderWidth: 1.5, borderColor: "#F8FAFC" }} />
+          </Pressable>
         </View>
-        <Pressable className="absolute bottom-4 right-4 h-11 w-11 items-center justify-center rounded-full bg-white">
-          <LocateFixed color={colors.navy} size={20} />
+
+        {/* ── Search bar ── */}
+        <Pressable
+          onPress={() => router.push("/search")}
+          style={[{ flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: "#fff", borderRadius: 18, paddingHorizontal: 16, paddingVertical: 15, marginHorizontal: 20, marginBottom: 16 }, shadow]}
+        >
+          <Search color={colors.primary} size={20} strokeWidth={2.4} />
+          <Text style={{ flex: 1, fontSize: 15, color: "#94A3B8", fontWeight: "500" }}>Search location, area or property...</Text>
+          <View style={{ width: 1, height: 22, backgroundColor: "#E2E8F0", marginHorizontal: 2 }} />
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
+            <SlidersHorizontal size={15} color={colors.navy} />
+            <Text style={{ fontSize: 14, fontWeight: "700", color: colors.navy }}>Filters</Text>
+          </View>
         </Pressable>
-      </View>
 
-      <View className="mb-4 flex-row items-center justify-between">
-        <Text className="text-base font-semibold text-navy/70">256 homes found</Text>
-        <View className="flex-row items-center gap-1">
-          <Text className="font-bold text-navy">Sort by: Newest</Text>
-          <ChevronDown color={colors.navy} size={16} />
+        {/* ── Filter chips ── */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 20, gap: 10, paddingBottom: 4, marginBottom: 18 }}
+        >
+          {filters.map((f, i) => {
+            const Icon = f.icon;
+            const active = i === activeFilter;
+            return (
+              <Pressable
+                key={f.label}
+                onPress={() => setActiveFilter(i)}
+                style={[{ flexDirection: "row", alignItems: "center", gap: 7, height: 44, borderRadius: 22, paddingHorizontal: 18, backgroundColor: active ? colors.navy : "#fff" }, active ? {} : shadow]}
+              >
+                <Icon color={active ? "#fff" : colors.navy} size={17} strokeWidth={active ? 2.6 : 2.2} />
+                <Text style={{ fontSize: 14, fontWeight: "700", color: active ? "#fff" : colors.navy }}>{f.label}</Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+
+        {/* ── Map preview ── */}
+        <View style={[{ marginHorizontal: 20, marginBottom: 22, borderRadius: 24, overflow: "hidden", height: 188 }, shadowMd]}>
+          <Image source={images.exploreDirection} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
+          <View style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, backgroundColor: "rgba(15,23,42,0.15)" }} />
+
+          {clusters.map((c) => (
+            <View
+              key={c.label}
+              style={{
+                position: "absolute", top: c.top as any, left: c.left as any,
+                width: 42, height: 42, borderRadius: 21,
+                backgroundColor: colors.primary,
+                alignItems: "center", justifyContent: "center",
+                borderWidth: 3, borderColor: "#fff",
+                shadowColor: "#000", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.25, shadowRadius: 6, elevation: 5,
+              }}
+            >
+              <Text style={{ fontSize: 14, fontWeight: "800", color: "#fff" }}>{c.label}</Text>
+            </View>
+          ))}
+
+          <View style={{ position: "absolute", bottom: 14, left: 0, right: 0, alignItems: "center" }}>
+            <View style={[{ flexDirection: "row", alignItems: "center", gap: 7, backgroundColor: "#fff", borderRadius: 24, paddingHorizontal: 18, paddingVertical: 10 }, shadowMd]}>
+              <Map color={colors.navy} size={18} strokeWidth={2.2} />
+              <Text style={{ fontSize: 14, fontWeight: "800", color: colors.navy }}>View on Map</Text>
+            </View>
+          </View>
+
+          <Pressable style={[{ position: "absolute", bottom: 14, right: 14, width: 40, height: 40, borderRadius: 20, backgroundColor: "#fff", alignItems: "center", justifyContent: "center" }, shadow]}>
+            <LocateFixed color={colors.navy} size={18} strokeWidth={2.2} />
+          </Pressable>
         </View>
-      </View>
 
-      <View className="gap-4">
-        {listings.map((listing) => (
-          <ListingCard key={listing.id} listing={listing} compact />
-        ))}
-      </View>
-    </ScreenContainer>
+        {/* ── Results bar ── */}
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, marginBottom: 16 }}>
+          <Text style={{ fontSize: 14, fontWeight: "600", color: "#64748B" }}>
+            <Text style={{ color: colors.navy, fontWeight: "800" }}>256</Text> homes found
+          </Text>
+          <Pressable style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+            <Text style={{ fontSize: 14, fontWeight: "700", color: colors.navy }}>Sort by: Newest</Text>
+            <ChevronDown color={colors.navy} size={16} strokeWidth={2.4} />
+          </Pressable>
+        </View>
+
+        {/* ── Listing cards ── */}
+        <View style={{ paddingHorizontal: 20, gap: 14 }}>
+          {listings.map((listing) => (
+            <Pressable
+              key={listing.id}
+              onPress={() => router.push(`/listing/${listing.id}`)}
+              style={[{ flexDirection: "row", backgroundColor: "#fff", borderRadius: 22, overflow: "hidden" }, shadow]}
+            >
+              <View style={{ width: 130, height: 138, position: "relative" }}>
+                <Image source={listing.image} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
+                <View style={{ position: "absolute", bottom: 8, left: 8, flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: "rgba(0,0,0,0.55)", borderRadius: 10, paddingHorizontal: 7, paddingVertical: 3 }}>
+                  <Text style={{ fontSize: 11, color: "#fff", fontWeight: "700" }}>📷 {listing.photos}</Text>
+                </View>
+                <Pressable
+                  onPress={() => toggleSaved(listing.id)}
+                  style={{ position: "absolute", top: 8, right: 8, width: 30, height: 30, borderRadius: 15, backgroundColor: "rgba(255,255,255,0.92)", alignItems: "center", justifyContent: "center" }}
+                >
+                  <Heart size={15} color={saved[listing.id] ? "#EF4444" : "#94A3B8"} fill={saved[listing.id] ? "#EF4444" : "transparent"} strokeWidth={2.2} />
+                </Pressable>
+              </View>
+
+              <View style={{ flex: 1, padding: 12, justifyContent: "space-between" }}>
+                <View>
+                  <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between" }}>
+                    <Text style={{ fontSize: 18, fontWeight: "800", color: colors.navy }}>
+                      {listing.price}{" "}
+                      <Text style={{ fontSize: 12, fontWeight: "600", color: "#94A3B8" }}>/month</Text>
+                    </Text>
+                    <Pressable style={{ padding: 2 }}>
+                      <MoreVertical size={18} color="#94A3B8" />
+                    </Pressable>
+                  </View>
+                  <Text style={{ fontSize: 14, fontWeight: "700", color: colors.navy, marginTop: 2 }} numberOfLines={1}>
+                    {listing.title}
+                  </Text>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 5 }}>
+                    <MapPin size={12} color="#94A3B8" />
+                    <Text style={{ fontSize: 12, color: "#64748B", fontWeight: "500" }} numberOfLines={1}>
+                      {listing.location}
+                    </Text>
+                    <Text style={{ fontSize: 12, color: "#CBD5E1" }}>·</Text>
+                    <Text style={{ fontSize: 12, color: colors.primary, fontWeight: "700" }}>{listing.distance}</Text>
+                  </View>
+                </View>
+                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 5, marginTop: 8 }}>
+                  <TrustPill type="Verified" />
+                  <TrustPill type="Secure Chat" />
+                  <TrustPill type="Escrow" />
+                </View>
+              </View>
+            </Pressable>
+          ))}
+        </View>
+
+      </ScrollView>
+    </SafeAreaView>
   );
 }
