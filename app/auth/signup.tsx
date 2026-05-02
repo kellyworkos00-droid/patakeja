@@ -156,42 +156,56 @@ export default function SignupScreen() {
 
         {/* Social buttons */}
         <View style={{ marginTop: 26, gap: 11 }}>
+          {/* Google — white elevated */}
           <Pressable
             onPress={handleGoogleSignup}
             disabled={loading}
             style={({ pressed }) => ({
               flexDirection: "row", alignItems: "center", justifyContent: "center",
               backgroundColor: "#fff",
-              borderRadius: 18, borderWidth: 1.5, borderColor: "#E2E8F0",
-              paddingVertical: 15, gap: 10,
-              opacity: pressed || loading ? 0.75 : 1,
-              shadowColor: "#0F172A", shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
+              borderRadius: 18,
+              borderWidth: 1.5, borderColor: "#E8EAED",
+              paddingVertical: 15, gap: 12,
+              opacity: pressed || loading ? 0.7 : 1,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 3 },
+              shadowOpacity: 0.1, shadowRadius: 10, elevation: 4,
             })}
           >
-            <View style={{ width: 26, height: 26, alignItems: "center", justifyContent: "center" }}>
-              <ExpoImage source={images.googleIcon} style={{ width: 22, height: 22 }} contentFit="contain" />
+            <View style={{
+              width: 32, height: 32, borderRadius: 10,
+              backgroundColor: "#F8F9FA",
+              borderWidth: 1, borderColor: "#E8EAED",
+              alignItems: "center", justifyContent: "center",
+            }}>
+              <ExpoImage source={images.googleIcon} style={{ width: 20, height: 20 }} contentFit="contain" />
             </View>
-            <Text style={{ fontSize: 15, fontWeight: "700", color: colors.navy }}>Sign up with Google</Text>
+            <Text style={{ fontSize: 15, fontWeight: "700", color: "#1F2937", letterSpacing: 0.1 }}>Sign up with Google</Text>
           </Pressable>
 
+          {/* TikTok — dark branded */}
           <Pressable
             onPress={handleTikTokSignup}
             disabled={loading}
             style={({ pressed }) => ({
               flexDirection: "row", alignItems: "center", justifyContent: "center",
-              backgroundColor: "#fff",
-              borderRadius: 18, borderWidth: 1.5, borderColor: "#E2E8F0",
-              paddingVertical: 15, gap: 10,
-              opacity: pressed || loading ? 0.75 : 1,
-              shadowColor: "#0F172A", shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.06, shadowRadius: 8, elevation: 2,
+              backgroundColor: "#0D0D0D",
+              borderRadius: 18,
+              paddingVertical: 15, gap: 12,
+              opacity: pressed || loading ? 0.7 : 1,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.22, shadowRadius: 12, elevation: 6,
             })}
           >
-            <View style={{ width: 26, height: 26, alignItems: "center", justifyContent: "center" }}>
-              <ExpoImage source={images.tikTokIcon} style={{ width: 22, height: 22 }} contentFit="contain" />
+            <View style={{
+              width: 32, height: 32, borderRadius: 10,
+              backgroundColor: "rgba(255,255,255,0.1)",
+              alignItems: "center", justifyContent: "center",
+            }}>
+              <ExpoImage source={images.tikTokIcon} style={{ width: 20, height: 20 }} contentFit="contain" />
             </View>
-            <Text style={{ fontSize: 15, fontWeight: "700", color: colors.navy }}>Sign up with TikTok</Text>
+            <Text style={{ fontSize: 15, fontWeight: "700", color: "#fff", letterSpacing: 0.1 }}>Sign up with TikTok</Text>
           </Pressable>
         </View>
 
