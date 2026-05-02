@@ -87,7 +87,7 @@ export default function LoginScreen() {
         </Pressable>
 
         <Pressable
-          onPress={() => router.push("/settings")}
+          onPress={() => router.push("/auth/help")}
           style={{
             flexDirection: "row", alignItems: "center", gap: 5,
             backgroundColor: "#fff",

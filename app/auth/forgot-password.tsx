@@ -168,7 +168,7 @@ export default function ForgotPasswordScreen() {
         </Pressable>
 
         <Pressable
-          onPress={() => router.push("/settings")}
+          onPress={() => router.push("/auth/help")}
           style={[{
             flexDirection: "row", alignItems: "center", gap: 5,
             backgroundColor: "#fff", borderWidth: 1, borderColor: "#E2E8F0",
