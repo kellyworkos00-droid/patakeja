@@ -127,59 +127,100 @@ export default function LoginScreen() {
           Log in to continue finding your perfect home.
         </Text>
 
-        {/* Social buttons */}
-        <View style={{ marginTop: 26, gap: 11 }}>
-          {/* Google — white elevated */}
+        {/* ── Social buttons ── */}
+        <View style={{ marginTop: 26, gap: 14 }}>
+
+          {/* Google */}
           <Pressable
             onPress={handleGoogleLogin}
             disabled={loading}
             style={({ pressed }) => ({
-              flexDirection: "row", alignItems: "center", justifyContent: "center",
+              flexDirection: "row", alignItems: "center",
               backgroundColor: "#fff",
-              borderRadius: 18,
+              borderRadius: 22,
               borderWidth: 1.5, borderColor: "#E8EAED",
-              paddingVertical: 15, gap: 12,
-              opacity: pressed || loading ? 0.7 : 1,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 3 },
-              shadowOpacity: 0.1, shadowRadius: 10, elevation: 4,
+              paddingVertical: 14, paddingHorizontal: 16,
+              opacity: pressed || loading ? 0.72 : 1,
+              shadowColor: "#4285F4",
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: 0.14, shadowRadius: 18, elevation: 6,
             })}
           >
+            {/* Icon */}
             <View style={{
-              width: 32, height: 32, borderRadius: 10,
+              width: 48, height: 48, borderRadius: 16,
               backgroundColor: "#F8F9FA",
-              borderWidth: 1, borderColor: "#E8EAED",
+              borderWidth: 1.5, borderColor: "#E8EAED",
               alignItems: "center", justifyContent: "center",
+              shadowColor: "#000", shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.07, shadowRadius: 5, elevation: 2,
             }}>
-              <ExpoImage source={images.googleIcon} style={{ width: 20, height: 20 }} contentFit="contain" />
+              <ExpoImage source={images.googleIcon} style={{ width: 26, height: 26 }} contentFit="contain" />
             </View>
-            <Text style={{ fontSize: 15, fontWeight: "700", color: "#1F2937", letterSpacing: 0.1 }}>Continue with Google</Text>
+
+            {/* Label */}
+            <View style={{ flex: 1, paddingHorizontal: 14 }}>
+              <Text style={{ fontSize: 15, fontWeight: "800", color: "#1F2937", letterSpacing: 0.1 }}>Continue with Google</Text>
+              <Text style={{ fontSize: 12, color: "#94A3B8", fontWeight: "500", marginTop: 2 }}>Fast & secure sign‑in</Text>
+            </View>
+
+            {/* Google 4-color dots */}
+            <View style={{ gap: 4 }}>
+              <View style={{ flexDirection: "row", gap: 4 }}>
+                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: "#4285F4" }} />
+                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: "#EA4335" }} />
+              </View>
+              <View style={{ flexDirection: "row", gap: 4 }}>
+                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: "#FBBC05" }} />
+                <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: "#34A853" }} />
+              </View>
+            </View>
           </Pressable>
 
-          {/* TikTok — dark branded */}
+          {/* TikTok */}
           <Pressable
             onPress={handleTikTokLogin}
             disabled={loading}
             style={({ pressed }) => ({
-              flexDirection: "row", alignItems: "center", justifyContent: "center",
-              backgroundColor: "#0D0D0D",
-              borderRadius: 18,
-              paddingVertical: 15, gap: 12,
-              opacity: pressed || loading ? 0.7 : 1,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.22, shadowRadius: 12, elevation: 6,
+              flexDirection: "row", alignItems: "center",
+              backgroundColor: "#010101",
+              borderRadius: 22,
+              borderWidth: 1.5, borderColor: "#222",
+              paddingVertical: 14, paddingHorizontal: 16,
+              opacity: pressed || loading ? 0.72 : 1,
+              shadowColor: "#69C9D0",
+              shadowOffset: { width: 0, height: 6 },
+              shadowOpacity: 0.25, shadowRadius: 18, elevation: 8,
             })}
           >
+            {/* Icon with dual-color top stripe */}
             <View style={{
-              width: 32, height: 32, borderRadius: 10,
-              backgroundColor: "rgba(255,255,255,0.1)",
+              width: 48, height: 48, borderRadius: 16,
+              backgroundColor: "#1a1a1a",
+              borderWidth: 1.5, borderColor: "#2a2a2a",
               alignItems: "center", justifyContent: "center",
+              overflow: "hidden",
             }}>
-              <ExpoImage source={images.tikTokIcon} style={{ width: 20, height: 20 }} contentFit="contain" />
+              <View style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, flexDirection: "row" }}>
+                <View style={{ flex: 1, backgroundColor: "#EE1D52" }} />
+                <View style={{ flex: 1, backgroundColor: "#69C9D0" }} />
+              </View>
+              <ExpoImage source={images.tikTokIcon} style={{ width: 26, height: 26 }} contentFit="contain" />
             </View>
-            <Text style={{ fontSize: 15, fontWeight: "700", color: "#fff", letterSpacing: 0.1 }}>Continue with TikTok</Text>
+
+            {/* Label */}
+            <View style={{ flex: 1, paddingHorizontal: 14 }}>
+              <Text style={{ fontSize: 15, fontWeight: "800", color: "#fff", letterSpacing: 0.1 }}>Continue with TikTok</Text>
+              <Text style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", fontWeight: "500", marginTop: 2 }}>Sign in with your TikTok account</Text>
+            </View>
+
+            {/* TikTok brand bars */}
+            <View style={{ gap: 5, alignItems: "flex-end" }}>
+              <View style={{ width: 20, height: 3.5, borderRadius: 2, backgroundColor: "#EE1D52" }} />
+              <View style={{ width: 14, height: 3.5, borderRadius: 2, backgroundColor: "#69C9D0" }} />
+            </View>
           </Pressable>
+
         </View>
 
         {/* Divider */}
