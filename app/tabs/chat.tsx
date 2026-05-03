@@ -111,13 +111,13 @@ export default function ChatListScreen() {
 
   const scrollY = useRef(new Animated.Value(0)).current;
 
-  // Header title + subtitle collapse upward on scroll
-  const titleOpacity = scrollY.interpolate({ inputRange: [0, 60], outputRange: [1, 0], extrapolate: "clamp" });
-  const titleHeight = scrollY.interpolate({ inputRange: [0, 60], outputRange: [62, 0], extrapolate: "clamp" });
+  // Only opacity + translateY — these run on the native thread (silky smooth)
+  const titleOpacity = scrollY.interpolate({ inputRange: [0, 80], outputRange: [1, 0], extrapolate: "clamp" });
+  const titleTranslateY = scrollY.interpolate({ inputRange: [0, 80], outputRange: [0, -28], extrapolate: "clamp" });
 
-  // Search bar lifts slightly as content scrolls under it
-  const searchBarElevation = scrollY.interpolate({ inputRange: [0, 60], outputRange: [0, 8], extrapolate: "clamp" });
-  const searchBarShadow = scrollY.interpolate({ inputRange: [0, 60], outputRange: [0.06, 0.2], extrapolate: "clamp" });
+  // Search bar floats up slightly and sharpens — also native thread only
+  const searchBarTranslateY = scrollY.interpolate({ inputRange: [0, 80], outputRange: [0, -4], extrapolate: "clamp" });
+  const searchBarScale = scrollY.interpolate({ inputRange: [0, 80], outputRange: [0.98, 1], extrapolate: "clamp" });
 
   const filteredChats =
     activeFilter === "unread" ? chats.filter((c) => c.unread > 0) :
@@ -129,50 +129,52 @@ export default function ChatListScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#F7F9FC" }} edges={["top"]}>
 
-      {/* ── Collapsing Title ── */}
-      <Animated.View style={{
-        overflow: "hidden",
-        height: titleHeight,
-        opacity: titleOpacity,
-        paddingHorizontal: 20,
-        paddingTop: 14,
-        justifyContent: "flex-start",
-      }}>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 3 }}>
-          <Text style={{ fontSize: 30, fontWeight: "900", color: "#0F172A", letterSpacing: -0.6 }}>Chats</Text>
-          {totalUnread > 0 && (
-            <View style={{ backgroundColor: "#16A34A", borderRadius: 12, paddingHorizontal: 8, paddingVertical: 3 }}>
-              <Text style={{ color: "#fff", fontSize: 12, fontWeight: "800" }}>{totalUnread}</Text>
-            </View>
-          )}
-        </View>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-          <Text style={{ fontSize: 13, color: "#667085" }}>Secure conversations, safe and private.</Text>
-          <Shield size={13} color="#16A34A" fill="#16A34A" />
-        </View>
-      </Animated.View>
+      {/* ── Collapsing Title (fixed height, title fades+slides inside) ── */}
+      <View style={{ height: 68, overflow: "hidden", paddingHorizontal: 20, paddingTop: 14 }}>
+        <Animated.View style={{
+          opacity: titleOpacity,
+          transform: [{ translateY: titleTranslateY }],
+        }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 3 }}>
+            <Text style={{ fontSize: 30, fontWeight: "900", color: "#0F172A", letterSpacing: -0.6 }}>Chats</Text>
+            {totalUnread > 0 && (
+              <View style={{ backgroundColor: "#16A34A", borderRadius: 12, paddingHorizontal: 8, paddingVertical: 3 }}>
+                <Text style={{ color: "#fff", fontSize: 12, fontWeight: "800" }}>{totalUnread}</Text>
+              </View>
+            )}
+          </View>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+            <Text style={{ fontSize: 13, color: "#667085" }}>Secure conversations, safe and private.</Text>
+            <Shield size={13} color="#16A34A" fill="#16A34A" />
+          </View>
+        </Animated.View>
+      </View>
 
-      {/* ── Premium Floating Search Bar (always visible, sticks as title collapses) ── */}
+      {/* ── Premium Search Bar (always visible, floats up slightly on scroll) ── */}
       <Animated.View style={{
         marginHorizontal: 14,
         marginBottom: 12,
-        borderRadius: 26,
-        backgroundColor: "#FFFFFF",
-        flexDirection: "row",
-        alignItems: "center",
-        height: 54,
-        paddingHorizontal: 6,
-        gap: 0,
-        shadowColor: "#0B1D45",
-        shadowOpacity: searchBarShadow,
-        shadowOffset: { width: 0, height: 10 },
-        shadowRadius: 28,
-        elevation: searchBarElevation,
-        borderWidth: 1,
-        borderColor: "#EEF2F6",
+        transform: [{ translateY: searchBarTranslateY }, { scale: searchBarScale }],
       }}>
-        {/* Green search bubble */}
-        <View style={{
+        <Pressable
+          style={({ pressed }) => ({
+            flexDirection: "row",
+            alignItems: "center",
+            height: 54,
+            borderRadius: 26,
+            backgroundColor: pressed ? "#F8FAFC" : "#FFFFFF",
+            paddingHorizontal: 6,
+            shadowColor: "#0B1D45",
+            shadowOpacity: 0.12,
+            shadowOffset: { width: 0, height: 8 },
+            shadowRadius: 24,
+            elevation: 8,
+            borderWidth: 1,
+            borderColor: "#EEF2F6",
+          })}
+        >
+          {/* Green search bubble */}
+          <View style={{
           width: 42, height: 42, borderRadius: 21,
           backgroundColor: "#16A34A",
           alignItems: "center", justifyContent: "center",
@@ -197,6 +199,7 @@ export default function ChatListScreen() {
           <SlidersHorizontal size={17} color="#0B1D45" strokeWidth={2} />
           <View style={{ position: "absolute", top: 8, right: 8, width: 8, height: 8, borderRadius: 4, backgroundColor: "#16A34A", borderWidth: 2, borderColor: "#F1F5F9" }} />
         </View>
+        </Pressable>
       </Animated.View>
 
       {/* ── Filter Tabs ── */}
