@@ -1,11 +1,24 @@
-import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import { Image, Pressable, ScrollView, StatusBar, Text, View } from "react-native";
 import { router } from "expo-router";
-import { ArrowLeft, BedDouble, CalendarDays, Map, MapPin, Mic, Search as SearchIcon, ShieldCheck, SlidersHorizontal, Tag } from "lucide-react-native";
+import {
+  ArrowLeft,
+  BedDouble,
+  CalendarDays,
+  ChevronRight,
+  LocateFixed,
+  Map,
+  MapPin,
+  Mic,
+  Search as SearchIcon,
+  ShieldCheck,
+  SlidersHorizontal,
+  Tag,
+} from "lucide-react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { listings } from "@/data/mockListings";
 import { images } from "@/constants/assets";
 import { colors } from "@/constants/colors";
-import { ListingCard } from "@/components/cards/ListingCard";
-import { ScreenContainer } from "@/components/layout/ScreenContainer";
 
 const areas = ["Kilimani", "Westlands", "Lavington", "Kileleshwa", "Rongai"];
 const filters = [
@@ -18,99 +31,183 @@ const filters = [
 const budgets = ["Under KES 15,000", "KES 15,000 - 25,000", "KES 25,000 - 40,000", "Above KES 40,000"];
 const types = ["Bedsitter", "1 Bedroom", "2 Bedroom", "3 Bedroom", "House", "All Types"];
 
+const shadow = {
+  shadowColor: "#0F172A",
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.08,
+  shadowRadius: 12,
+  elevation: 4,
+};
+
+const cardShadow = {
+  shadowColor: "#0F172A",
+  shadowOffset: { width: 0, height: 6 },
+  shadowOpacity: 0.1,
+  shadowRadius: 16,
+  elevation: 6,
+};
+
 export default function SearchScreen() {
   return (
-    <ScreenContainer contentClassName="pt-3">
-      <View className="mb-5 flex-row items-center gap-3">
-        <Pressable onPress={() => router.back()} className="h-12 w-12 items-center justify-center rounded-full bg-white">
-          <ArrowLeft color={colors.navy} size={22} />
-        </Pressable>
-        <View className="h-14 flex-1 flex-row items-center gap-3 rounded-full bg-white px-4">
-          <SearchIcon color={colors.navy} size={22} />
-          <Text className="flex-1 text-base text-navy/50">Search areas, properties or keywords...</Text>
-          <Mic color={colors.navy} size={22} />
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#F8FAFC" }} edges={["top", "left", "right"]}>
+      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 110 }}>
+
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 16, paddingTop: 8, paddingBottom: 14 }}>
+          <Pressable
+            onPress={() => router.back()}
+            style={({ pressed }) => [
+              {
+                width: 42,
+                height: 42,
+                borderRadius: 21,
+                backgroundColor: "#fff",
+                alignItems: "center",
+                justifyContent: "center",
+                opacity: pressed ? 0.9 : 1,
+              },
+              shadow,
+            ]}
+          >
+            <ArrowLeft color={colors.navy} size={20} />
+          </Pressable>
+          <View style={[{ flex: 1, flexDirection: "row", alignItems: "center", gap: 10, borderRadius: 28, backgroundColor: "#fff", paddingHorizontal: 14, paddingVertical: 12 }, shadow]}>
+            <SearchIcon color={colors.primary} size={18} />
+            <Text style={{ flex: 1, fontSize: 14, color: "#94A3B8", fontWeight: "500" }}>Search areas, properties or keywords...</Text>
+            <Mic color={colors.navy} size={18} />
+          </View>
         </View>
-      </View>
 
-      <View className="mb-6 flex-row items-center justify-between">
-        <Text className="text-base text-navy/60">Find homes in top locations or near you</Text>
-        <Pressable className="flex-row items-center gap-2 rounded-full bg-white px-4 py-3">
-          <Map color={colors.navy} size={18} />
-          <Text className="font-extrabold text-navy">Map View</Text>
-        </Pressable>
-      </View>
-
-      <View className="mb-6 overflow-hidden rounded-[28px] bg-white">
-        <Image source={images.searchDirection} className="h-36 w-full" resizeMode="cover" />
-        <View className="absolute inset-x-0 bottom-0 bg-navy/55 px-4 py-3">
-          <Text className="text-base font-extrabold text-white">Smarter filters for faster home discovery</Text>
+        <View style={{ paddingHorizontal: 16, marginBottom: 12, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+          <Text style={{ fontSize: 14, color: "#64748B", fontWeight: "500", maxWidth: "58%" }}>Find homes in top locations or near you</Text>
+          <Pressable
+            onPress={() => router.push("/explore-map")}
+            style={({ pressed }) => [
+              {
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 8,
+                borderRadius: 22,
+                backgroundColor: "#fff",
+                paddingHorizontal: 14,
+                paddingVertical: 10,
+                opacity: pressed ? 0.9 : 1,
+              },
+              shadow,
+            ]}
+          >
+            <Map color={colors.navy} size={17} />
+            <Text style={{ fontSize: 13, fontWeight: "800", color: colors.navy }}>Map View</Text>
+          </Pressable>
         </View>
-      </View>
 
-      <Text className="mb-3 text-xl font-extrabold text-navy">Popular Areas</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-4 pb-5">
-        {areas.map((area, index) => (
-          <Pressable key={area} className="w-36">
-            <Image source={listings[index % listings.length].image} className="h-24 w-full rounded-2xl" resizeMode="cover" />
-            <View className="mt-2 flex-row items-center gap-1">
-              <MapPin color={colors.primary} size={16} />
-              <Text className="font-extrabold text-navy">{area}</Text>
+        <Pressable onPress={() => router.push("/explore-map")} style={[{ marginHorizontal: 16, marginBottom: 16, borderRadius: 22, overflow: "hidden" }, cardShadow]}>
+          <Image source={images.searchDirection} style={{ width: "100%", height: 170 }} resizeMode="cover" />
+          <LinearGradient
+            colors={["rgba(15,23,42,0)", "rgba(15,23,42,0.72)"]}
+            style={{ position: "absolute", left: 0, right: 0, bottom: 0, paddingHorizontal: 14, paddingTop: 26, paddingBottom: 12 }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+              <Text style={{ fontSize: 15, fontWeight: "800", color: "#fff", maxWidth: "70%" }}>Smarter filters and live map pins</Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <Text style={{ fontSize: 12, fontWeight: "700", color: "#DCFCE7" }}>Open Map</Text>
+                <ChevronRight size={14} color="#DCFCE7" />
+              </View>
             </View>
-            <Text className="text-sm text-navy/55">Nairobi</Text>
-          </Pressable>
-        ))}
-      </ScrollView>
-
-      <View className="mb-6 flex-row items-center gap-4 rounded-[28px] bg-primary/10 p-4">
-        <View className="h-14 w-14 items-center justify-center rounded-full bg-white">
-          <MapPin color={colors.primary} size={28} />
-        </View>
-        <View className="flex-1">
-          <Text className="text-lg font-extrabold text-navy">Homes near me</Text>
-          <Text className="text-sm text-navy/60">See verified properties within your current area</Text>
-        </View>
-        <Pressable className="rounded-2xl bg-primary px-4 py-3">
-          <Text className="font-extrabold text-white">Use location</Text>
+          </LinearGradient>
         </Pressable>
-      </View>
 
-      <Text className="mb-3 text-xl font-extrabold text-navy">Quick Filters</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-3 pb-5">
-        {filters.map(([label, value, Icon]) => (
-          <Pressable key={label as string} className="w-36 rounded-2xl border border-navy/10 bg-white p-4">
-            <Icon color={colors.primary} size={19} />
-            <Text className="mt-2 font-extrabold text-navy">{label as string}</Text>
-            <Text className="mt-1 text-sm text-navy/55">{value as string}</Text>
+        <Text style={{ marginHorizontal: 16, marginBottom: 10, fontSize: 16, fontWeight: "800", color: colors.navy }}>Popular Areas</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 10, paddingBottom: 4, marginBottom: 16 }}>
+          {areas.map((area, index) => (
+            <Pressable key={area} style={{ width: 148 }}>
+              <Image source={listings[index % listings.length].image} style={{ width: 148, height: 90, borderRadius: 14 }} resizeMode="cover" />
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 7 }}>
+                <MapPin color={colors.primary} size={13} />
+                <Text style={{ fontSize: 12, fontWeight: "800", color: colors.navy }}>{area}</Text>
+              </View>
+              <Text style={{ fontSize: 11, color: "#64748B" }}>Nairobi</Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+
+        <View style={[{ marginHorizontal: 16, marginBottom: 16, flexDirection: "row", alignItems: "center", gap: 12, borderRadius: 20, backgroundColor: "#EAF7EF", padding: 14 }, shadow]}>
+          <View style={{ width: 56, height: 56, borderRadius: 28, alignItems: "center", justifyContent: "center", backgroundColor: "#fff" }}>
+            <LocateFixed color={colors.primary} size={24} />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 15, fontWeight: "800", color: colors.navy }}>Homes near me</Text>
+            <Text style={{ fontSize: 12, color: "#64748B", marginTop: 2 }}>See verified properties around your area</Text>
+          </View>
+          <Pressable
+            onPress={() => router.push("/explore-map")}
+            style={({ pressed }) => ({
+              borderRadius: 14,
+              backgroundColor: colors.primary,
+              paddingHorizontal: 13,
+              paddingVertical: 10,
+              opacity: pressed ? 0.88 : 1,
+            })}
+          >
+            <Text style={{ fontSize: 12, fontWeight: "800", color: "#fff" }}>Use location</Text>
           </Pressable>
-        ))}
+        </View>
+
+        <Text style={{ marginHorizontal: 16, marginBottom: 10, fontSize: 16, fontWeight: "800", color: colors.navy }}>Quick Filters</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 10, paddingBottom: 4, marginBottom: 16 }}>
+          {filters.map(([label, value, Icon]) => (
+            <Pressable key={label as string} style={[{ width: 132, borderRadius: 16, borderWidth: 1, borderColor: "#E2E8F0", backgroundColor: "#fff", padding: 12 }, shadow]}>
+              <Icon color={colors.primary} size={17} />
+              <Text style={{ marginTop: 6, fontSize: 13, fontWeight: "800", color: colors.navy }}>{label as string}</Text>
+              <Text style={{ marginTop: 1, fontSize: 11, color: "#64748B" }}>{value as string}</Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+
+        <Text style={{ marginHorizontal: 16, marginBottom: 10, fontSize: 16, fontWeight: "800", color: colors.navy }}>Budget Shortcuts</Text>
+        <View style={{ marginHorizontal: 16, marginBottom: 16, flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+          {budgets.map((budget) => (
+            <Pressable key={budget} style={[{ flexDirection: "row", alignItems: "center", gap: 6, borderRadius: 20, backgroundColor: "#fff", paddingHorizontal: 10, paddingVertical: 8 }, shadow]}>
+              <CalendarDays color={colors.primary} size={13} />
+              <Text style={{ fontSize: 11, fontWeight: "700", color: colors.navy }}>{budget}</Text>
+            </Pressable>
+          ))}
+        </View>
+
+        <Text style={{ marginHorizontal: 16, marginBottom: 10, fontSize: 16, fontWeight: "800", color: colors.navy }}>Property Type</Text>
+        <View style={{ marginHorizontal: 16, marginBottom: 16, flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+          {types.map((type) => (
+            <Pressable key={type} style={[{ width: "31%", alignItems: "center", borderRadius: 14, backgroundColor: "#fff", paddingVertical: 12 }, shadow]}>
+              <BedDouble color={colors.navy} size={16} />
+              <Text style={{ marginTop: 5, textAlign: "center", fontSize: 11, fontWeight: "700", color: colors.navy }}>{type}</Text>
+            </Pressable>
+          ))}
+        </View>
+
+        <Text style={{ marginHorizontal: 16, marginBottom: 10, fontSize: 16, fontWeight: "800", color: colors.navy }}>Recommended for You</Text>
+        <View style={{ paddingHorizontal: 16, gap: 10 }}>
+          {listings.slice(0, 3).map((listing) => (
+            <Pressable
+              key={listing.id}
+              onPress={() => router.push(`/listing/${listing.id}`)}
+              style={[{ flexDirection: "row", gap: 10, borderRadius: 16, backgroundColor: "#fff", padding: 8 }, shadow]}
+            >
+              <Image source={listing.image} style={{ width: 94, height: 76, borderRadius: 12 }} resizeMode="cover" />
+              <View style={{ flex: 1, justifyContent: "center" }}>
+                <Text style={{ fontSize: 13, fontWeight: "800", color: colors.navy }} numberOfLines={1}>{listing.price}</Text>
+                <Text style={{ marginTop: 2, fontSize: 12, fontWeight: "700", color: colors.navy }} numberOfLines={1}>{listing.title}</Text>
+                <View style={{ marginTop: 4, flexDirection: "row", alignItems: "center", gap: 4 }}>
+                  <MapPin size={11} color="#94A3B8" />
+                  <Text style={{ fontSize: 11, color: "#64748B" }} numberOfLines={1}>{listing.location}</Text>
+                </View>
+              </View>
+              <View style={{ alignSelf: "center", borderRadius: 20, backgroundColor: "#EEF9F3", paddingHorizontal: 7, paddingVertical: 4 }}>
+                <ShieldCheck size={11} color={colors.primary} />
+              </View>
+            </Pressable>
+          ))}
+        </View>
       </ScrollView>
-
-      <Text className="mb-3 text-xl font-extrabold text-navy">Budget Shortcuts</Text>
-      <View className="mb-6 flex-row flex-wrap gap-3">
-        {budgets.map((budget) => (
-          <Pressable key={budget} className="flex-row items-center gap-2 rounded-full bg-white px-4 py-3">
-            <CalendarDays color={colors.primary} size={16} />
-            <Text className="font-bold text-navy">{budget}</Text>
-          </Pressable>
-        ))}
-      </View>
-
-      <Text className="mb-3 text-xl font-extrabold text-navy">Property Type</Text>
-      <View className="mb-6 flex-row flex-wrap gap-3">
-        {types.map((type) => (
-          <Pressable key={type} className="w-[30%] items-center rounded-2xl bg-white p-4">
-            <BedDouble color={colors.navy} size={21} />
-            <Text className="mt-2 text-center text-sm font-bold text-navy">{type}</Text>
-          </Pressable>
-        ))}
-      </View>
-
-      <Text className="mb-3 text-xl font-extrabold text-navy">Recommended for You</Text>
-      <View className="gap-4">
-        {listings.slice(0, 3).map((listing) => (
-          <ListingCard key={listing.id} listing={listing} compact />
-        ))}
-      </View>
-    </ScreenContainer>
+    </SafeAreaView>
   );
 }
