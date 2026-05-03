@@ -24,15 +24,17 @@ export function TrustBadge({ label, compact }: TrustBadgeProps) {
       style={{
         flexDirection: "row",
         alignItems: "center",
-        gap: 5,
+        gap: compact ? 4 : 5,
         borderRadius: 20,
         backgroundColor: bg,
-        paddingHorizontal: compact ? 8 : 12,
-        paddingVertical: compact ? 4 : 8,
+        paddingHorizontal: compact ? 7 : 12,
+        paddingVertical: compact ? 3 : 8,
       }}
     >
-      <Icon color={color} size={compact ? 12 : 15} strokeWidth={2.6} />
-      <Text style={{ fontSize: compact ? 11 : 13, fontWeight: "700", color: "#0F172A", opacity: 0.75 }}>{label}</Text>
+      <Icon color={color} size={compact ? 11 : 15} strokeWidth={2.6} />
+      <Text style={{ fontSize: compact ? 10 : 13, fontWeight: compact ? "600" : "700", color: "#0F172A", opacity: 0.74 }}>
+        {label}
+      </Text>
     </View>
   );
 }

@@ -61,17 +61,17 @@ function filterByCategory(listing: ExploreListing, cat: Category) {
 
 const shadow = {
   shadowColor: "#0F172A",
-  shadowOffset: { width: 0, height: 3 },
-  shadowOpacity: 0.07,
-  shadowRadius: 10,
-  elevation: 4,
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.08,
+  shadowRadius: 12,
+  elevation: 5,
 };
 
 const cardShadow = {
   shadowColor: "#0B1220",
   shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.06,
-  shadowRadius: 8,
+  shadowOpacity: 0.05,
+  shadowRadius: 9,
   elevation: 3,
 };
 
@@ -224,8 +224,8 @@ export default function ExploreScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#F8FAFC" }} edges={["top", "left", "right"]}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#F4F8FB" }} edges={["top", "left", "right"]}>
+      <StatusBar barStyle="dark-content" backgroundColor="#F4F8FB" />
 
       {/* ── Floating search bar (appears on scroll) ─────────────────────── */}
       <Animated.View
@@ -246,8 +246,8 @@ export default function ExploreScreen() {
             flexDirection: "row",
             alignItems: "center",
             backgroundColor: "#FFFFFF",
-            borderRadius: 22,
-            height: 44,
+            borderRadius: 20,
+            height: 42,
             paddingLeft: 14,
             paddingRight: 8,
             gap: 8,
@@ -267,9 +267,9 @@ export default function ExploreScreen() {
               alignItems: "center",
               gap: 5,
               backgroundColor: colors.navy,
-              borderRadius: 16,
+              borderRadius: 15,
               paddingHorizontal: 10,
-              paddingVertical: 7,
+              paddingVertical: 6,
             }}
           >
             <SlidersHorizontal size={13} color="#fff" strokeWidth={2.2} />
@@ -294,38 +294,43 @@ export default function ExploreScreen() {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "space-between",
-              paddingHorizontal: 20,
-              paddingTop: 10,
-              paddingBottom: 14,
+              marginHorizontal: 16,
+              marginTop: 8,
+              marginBottom: 14,
+              paddingHorizontal: 16,
+              paddingVertical: 14,
+              borderRadius: 22,
+              backgroundColor: "#FFFFFF",
               opacity: headerOpacity,
               transform: [{ translateY: headerTranslateY }],
             },
+            shadow,
           ]}
         >
           <View>
-            <Text style={{ fontSize: 28, fontWeight: "800", color: colors.navy, letterSpacing: -0.5 }}>Explore</Text>
-            <Text style={{ fontSize: 13, color: "#64748B", fontWeight: "500", marginTop: 2 }}>Find your perfect home</Text>
+            <Text style={{ fontSize: 12, fontWeight: "700", color: "#64748B", letterSpacing: 0.3 }}>DISCOVER</Text>
+            <Text style={{ fontSize: 27, fontWeight: "800", color: colors.navy, letterSpacing: -0.6, marginTop: 1 }}>Explore</Text>
+            <Text style={{ fontSize: 12, color: "#64748B", fontWeight: "500", marginTop: 2 }}>Find your perfect home</Text>
           </View>
           <Pressable
             onPress={() => setShowFilters(true)}
             style={[
               {
-                width: 48,
-                height: 48,
-                borderRadius: 24,
-                backgroundColor: "#FFFFFF",
+                width: 44,
+                height: 44,
+                borderRadius: 22,
+                backgroundColor: "#F8FAFC",
                 alignItems: "center",
                 justifyContent: "center",
               },
-              shadow,
             ]}
           >
-            <SlidersHorizontal color={colors.navy} size={19} strokeWidth={2.2} />
+            <SlidersHorizontal color={colors.navy} size={18} strokeWidth={2.2} />
             <View
               style={{
                 position: "absolute",
-                top: 11,
-                right: 11,
+                top: 10,
+                right: 10,
                 width: 8,
                 height: 8,
                 borderRadius: 4,
@@ -338,7 +343,7 @@ export default function ExploreScreen() {
         </Animated.View>
 
         {/* ── Search bar (inline, fades out on scroll) ──────────────────── */}
-        <Animated.View style={[{ paddingHorizontal: 20, marginBottom: 14 }, s(0)]}>
+        <Animated.View style={[{ paddingHorizontal: 16, marginBottom: 10 }, s(0)]}>
           <Pressable
             onPress={() => router.push("/search")}
             style={[
@@ -347,11 +352,11 @@ export default function ExploreScreen() {
                 alignItems: "center",
                 gap: 10,
                 backgroundColor: "#FFFFFF",
-                borderRadius: 16,
+                borderRadius: 18,
                 borderWidth: 1,
                 borderColor: "#EEF2F7",
                 paddingHorizontal: 14,
-                paddingVertical: 13,
+                paddingVertical: 12,
               },
               shadow,
             ]}
@@ -370,11 +375,12 @@ export default function ExploreScreen() {
         </Animated.View>
 
         {/* ── Category chips ────────────────────────────────────────────── */}
-        <Animated.View style={[{ marginBottom: 16 }, s(1)]}>
+        <Animated.View style={[{ marginBottom: 8, paddingHorizontal: 16 }, s(1)]}>
+          <Text style={{ fontSize: 12, fontWeight: "700", color: "#64748B", marginBottom: 8, paddingHorizontal: 4 }}>Categories</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 20, gap: 8 }}
+            contentContainerStyle={{ paddingHorizontal: 2, gap: 8 }}
           >
             {categories.map((cat) => (
               <Chip
@@ -389,7 +395,8 @@ export default function ExploreScreen() {
         </Animated.View>
 
         {/* ── Map card ──────────────────────────────────────────────────── */}
-        <Animated.View style={[{ marginBottom: 20 }, s(2)]}>
+        <Animated.View style={[{ marginBottom: 16, paddingHorizontal: 16 }, s(2)]}>
+          <Text style={{ fontSize: 12, fontWeight: "700", color: "#64748B", marginBottom: 8, paddingHorizontal: 4 }}>Map Snapshot</Text>
           <MapPreviewCard onOpenMap={() => router.push("/explore-map")} />
         </Animated.View>
 
@@ -401,7 +408,7 @@ export default function ExploreScreen() {
               alignItems: "center",
               justifyContent: "space-between",
               paddingHorizontal: 20,
-              marginBottom: 12,
+              marginBottom: 10,
             },
             s(3),
           ]}
@@ -414,7 +421,7 @@ export default function ExploreScreen() {
         </Animated.View>
 
         {/* ── Listing cards ─────────────────────────────────────────────── */}
-        <View style={{ paddingHorizontal: 16, gap: 10 }}>
+        <View style={{ paddingHorizontal: 16, gap: 9 }}>
           {visibleListings.map((listing, i) => (
             <Animated.View key={listing.id} style={[cardShadow, s(4 + i * 0.25)]}>
               <ListingCard listing={listing} variant="explore" />

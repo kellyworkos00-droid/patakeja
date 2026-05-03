@@ -29,61 +29,101 @@ export function ListingCard({ listing, compact, variant = "default" }: ListingCa
     const showEscrow = isExploreListing(listing) ? listing.escrowAvailable : true;
     const showSecureChat = isExploreListing(listing) ? listing.secureChat : true;
 
+    const beds = isExploreListing(listing) ? listing.bedrooms : listing.beds;
+    const baths = isExploreListing(listing) ? listing.bathrooms : listing.baths;
+
     return (
-      <Pressable onPress={openListing} className="flex-row gap-2.5 rounded-3xl bg-white p-2">
-        <View className="relative">
-          <PropertyImage source={listing.image} className="h-[110px] w-[102px] rounded-2xl" />
+      <Pressable
+        onPress={openListing}
+        style={{
+          flexDirection: "row",
+          gap: 10,
+          borderRadius: 24,
+          backgroundColor: "#FFFFFF",
+          borderWidth: 1,
+          borderColor: "#EDF2F7",
+          padding: 8,
+        }}
+      >
+        <View style={{ position: "relative" }}>
+          <PropertyImage source={listing.image} className="h-[104px] w-[96px] rounded-[18px]" />
           {cardPhotos > 0 ? (
-            <View className="absolute bottom-1.5 left-1.5 flex-row items-center gap-1 rounded-full bg-navy/80 px-2 py-1">
-              <Camera color={colors.card} size={12} />
-              <Text className="text-[10px] font-bold text-white">{cardPhotos}</Text>
+            <View
+              style={{
+                position: "absolute",
+                left: 6,
+                bottom: 6,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 4,
+                borderRadius: 999,
+                backgroundColor: "rgba(15,23,42,0.82)",
+                paddingHorizontal: 7,
+                paddingVertical: 4,
+              }}
+            >
+              <Camera color={colors.card} size={11} />
+              <Text style={{ color: "#FFFFFF", fontSize: 10, fontWeight: "800" }}>{cardPhotos}</Text>
             </View>
           ) : null}
+
           <Pressable
             style={{
               position: "absolute",
-              top: 7,
-              right: 7,
-              width: 26,
-              height: 26,
-              borderRadius: 13,
-              backgroundColor: "rgba(255,255,255,0.88)",
+              top: 6,
+              right: 6,
+              width: 24,
+              height: 24,
+              borderRadius: 12,
+              backgroundColor: "rgba(255,255,255,0.9)",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <Heart color={colors.navy} size={13} strokeWidth={2} />
+            <Heart color={colors.navy} size={12} strokeWidth={2.1} />
           </Pressable>
         </View>
 
-        <View className="flex-1 justify-between py-0.5">
+        <View style={{ flex: 1, justifyContent: "space-between", paddingTop: 2, paddingBottom: 2 }}>
           <View>
-            <View className="flex-row items-start justify-between">
-              <Text className="text-lg font-extrabold text-navy">
-                {listing.price} <Text className="text-[10px] font-semibold text-navy/50">/ month</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+              <Text style={{ fontSize: 19, fontWeight: "800", color: colors.navy }}>
+                {listing.price} <Text style={{ fontSize: 10, color: "#94A3B8", fontWeight: "700" }}>/ month</Text>
               </Text>
-              <Pressable className="rounded-full p-1">
-                <MoreVertical color="#94A3B8" size={14} />
+              <Pressable style={{ width: 22, height: 22, borderRadius: 11, alignItems: "center", justifyContent: "center" }}>
+                <MoreVertical color="#94A3B8" size={13} />
               </Pressable>
             </View>
 
-            <Text className="mt-0.5 text-sm font-bold text-navy" numberOfLines={1}>
+            <Text style={{ marginTop: 2, fontSize: 13, fontWeight: "700", color: colors.navy }} numberOfLines={1}>
               {listing.title}
             </Text>
-            <View className="mt-1.5 flex-row items-center gap-1">
-              <MapPin color="rgba(15, 23, 42, 0.45)" size={13} />
-              <Text className="text-[11px] text-navy/60" numberOfLines={1}>
+
+            <View style={{ marginTop: 4, flexDirection: "row", alignItems: "center", gap: 4 }}>
+              <MapPin color="#94A3B8" size={12} />
+              <Text style={{ flexShrink: 1, fontSize: 11, color: "#64748B", fontWeight: "600" }} numberOfLines={1}>
                 {listing.location}
               </Text>
-              <Text className="text-[11px] text-navy/25">·</Text>
-              <Text className="text-[11px] font-bold text-primary">{listing.distance}</Text>
+              <Text style={{ color: "#CBD5E1", fontSize: 11 }}>•</Text>
+              <Text style={{ fontSize: 11, color: colors.primary, fontWeight: "800" }}>{listing.distance}</Text>
             </View>
           </View>
 
-          <View className="mt-1.5 flex-row flex-wrap gap-1.5">
-            {showVerified ? <TrustBadge label="Verified" compact /> : null}
-            {showSecureChat ? <TrustBadge label="Secure Chat" compact /> : null}
-            {showEscrow ? <TrustBadge label="Escrow" compact /> : null}
+          <View>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 6 }}>
+              <View style={{ borderRadius: 999, backgroundColor: "#EEF2FF", paddingHorizontal: 8, paddingVertical: 4 }}>
+                <Text style={{ fontSize: 10, color: "#334155", fontWeight: "700" }}>{beds} Bed</Text>
+              </View>
+              <View style={{ borderRadius: 999, backgroundColor: "#F1F5F9", paddingHorizontal: 8, paddingVertical: 4 }}>
+                <Text style={{ fontSize: 10, color: "#334155", fontWeight: "700" }}>{baths} Bath</Text>
+              </View>
+            </View>
+
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 5 }}>
+              {showVerified ? <TrustBadge label="Verified" compact /> : null}
+              {showSecureChat ? <TrustBadge label="Secure Chat" compact /> : null}
+              {showEscrow ? <TrustBadge label="Escrow" compact /> : null}
+            </View>
           </View>
         </View>
       </Pressable>
