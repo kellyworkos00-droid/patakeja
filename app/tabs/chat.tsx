@@ -175,30 +175,30 @@ export default function ChatListScreen() {
         >
           {/* Green search bubble */}
           <View style={{
-          width: 42, height: 42, borderRadius: 21,
-          backgroundColor: "#16A34A",
-          alignItems: "center", justifyContent: "center",
-          shadowColor: "#16A34A", shadowOpacity: 0.35,
-          shadowOffset: { width: 0, height: 4 }, shadowRadius: 8, elevation: 4,
-        }}>
-          <Search size={19} color="#FFFFFF" strokeWidth={2.5} />
-        </View>
+            width: 42, height: 42, borderRadius: 21,
+            backgroundColor: "#16A34A",
+            alignItems: "center", justifyContent: "center",
+            shadowColor: "#16A34A", shadowOpacity: 0.35,
+            shadowOffset: { width: 0, height: 4 }, shadowRadius: 8, elevation: 4,
+          }}>
+            <Search size={19} color="#FFFFFF" strokeWidth={2.5} />
+          </View>
 
-        {/* Text area */}
-        <View style={{ flex: 1, paddingHorizontal: 12 }}>
-          <Text style={{ fontSize: 14.5, fontWeight: "600", color: "#0F172A", letterSpacing: -0.2 }}>Search conversations</Text>
-          <Text style={{ fontSize: 11, color: "#94A3B8", marginTop: 1 }}>Names, messages, listings...</Text>
-        </View>
+          {/* Text area */}
+          <View style={{ flex: 1, paddingHorizontal: 12 }}>
+            <Text style={{ fontSize: 14.5, fontWeight: "600", color: "#0F172A", letterSpacing: -0.2 }}>Search conversations</Text>
+            <Text style={{ fontSize: 11, color: "#94A3B8", marginTop: 1 }}>Names, messages, listings...</Text>
+          </View>
 
-        {/* Right filter button */}
-        <View style={{
-          width: 42, height: 42, borderRadius: 21,
-          backgroundColor: "#F1F5F9",
-          alignItems: "center", justifyContent: "center",
-        }}>
-          <SlidersHorizontal size={17} color="#0B1D45" strokeWidth={2} />
-          <View style={{ position: "absolute", top: 8, right: 8, width: 8, height: 8, borderRadius: 4, backgroundColor: "#16A34A", borderWidth: 2, borderColor: "#F1F5F9" }} />
-        </View>
+          {/* Right filter button */}
+          <View style={{
+            width: 42, height: 42, borderRadius: 21,
+            backgroundColor: "#F1F5F9",
+            alignItems: "center", justifyContent: "center",
+          }}>
+            <SlidersHorizontal size={17} color="#0B1D45" strokeWidth={2} />
+            <View style={{ position: "absolute", top: 8, right: 8, width: 8, height: 8, borderRadius: 4, backgroundColor: "#16A34A", borderWidth: 2, borderColor: "#F1F5F9" }} />
+          </View>
         </Pressable>
       </Animated.View>
 
