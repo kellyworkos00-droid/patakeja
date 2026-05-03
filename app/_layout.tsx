@@ -69,6 +69,7 @@ export default function RootLayout() {
         <Stack.Screen name="listing/[id]" />
         <Stack.Screen name="listing/post" />
         <Stack.Screen name="chat/[id]" />
+          <Stack.Screen name="chat/profile/[id]" />
         <Stack.Screen name="bookings/create" />
         <Stack.Screen name="bookings/confirmation" />
         <Stack.Screen name="payments/payment" />

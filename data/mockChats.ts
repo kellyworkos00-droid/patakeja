@@ -14,6 +14,7 @@ export type ChatMessage = {
 
 export type ChatThread = {
   id: string;
+  userId: string;
   name: string;
   initials: string;
   avatarColor: string;
@@ -37,6 +38,7 @@ export type ChatThread = {
 export const chats: ChatThread[] = [
   {
     id: "1",
+    userId: "u1",
     name: "John Mwangi",
     initials: "JM",
     avatarColor: "#0F4C3A",
@@ -76,6 +78,7 @@ export const chats: ChatThread[] = [
   },
   {
     id: "2",
+    userId: "u2",
     name: "Grace Wambui",
     initials: "GW",
     avatarColor: "#4C1D95",
@@ -101,6 +104,7 @@ export const chats: ChatThread[] = [
   },
   {
     id: "3",
+    userId: "u3",
     name: "Peter Otieno",
     initials: "PO",
     avatarColor: "#1E3A5F",
@@ -126,6 +130,7 @@ export const chats: ChatThread[] = [
   },
   {
     id: "4",
+    userId: "u4",
     name: "Mary Njeri",
     initials: "MN",
     avatarColor: "#7C2D12",
@@ -151,6 +156,7 @@ export const chats: ChatThread[] = [
   },
   {
     id: "5",
+    userId: "u5",
     name: "David Kimani",
     initials: "DK",
     avatarColor: "#14532D",
@@ -175,6 +181,7 @@ export const chats: ChatThread[] = [
   },
   {
     id: "6",
+    userId: "u6",
     name: "Faith Akinyi",
     initials: "FA",
     avatarColor: "#831843",
@@ -199,6 +206,7 @@ export const chats: ChatThread[] = [
   },
   {
     id: "7",
+    userId: "u7",
     name: "Brian Kariuki",
     initials: "BK",
     avatarColor: "#1E40AF",
