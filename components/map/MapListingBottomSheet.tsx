@@ -1,14 +1,5 @@
-import React, { useEffect, useRef } from "react";
-import {
-  Animated,
-  Dimensions,
-  Image,
-  PanResponder,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from "react-native";
+import React, { useEffect, useMemo, useRef } from "react";
+import { Animated, Image, PanResponder, Pressable, ScrollView, Text, View } from "react-native";
 import {
   LockKeyhole,
   MapPin,
@@ -19,11 +10,11 @@ import { router } from "expo-router";
 import { colors } from "@/constants/colors";
 import type { MapListing } from "@/data/mockMapListings";
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
-
-export const SHEET_FULL_HEIGHT = 430;
-export const SHEET_COLLAPSED_HEIGHT = 195;
+export const SHEET_FULL_HEIGHT = 460;
+export const SHEET_MID_HEIGHT = 330;
+export const SHEET_COLLAPSED_HEIGHT = 225;
 const COLLAPSED_OFFSET = SHEET_FULL_HEIGHT - SHEET_COLLAPSED_HEIGHT;
+const MID_OFFSET = SHEET_FULL_HEIGHT - SHEET_MID_HEIGHT;
 
 const cardShadow = {
   shadowColor: "#0F172A",
@@ -77,18 +68,23 @@ export function MapListingBottomSheet({
 }: MapListingBottomSheetProps) {
   const translateY = useRef(new Animated.Value(COLLAPSED_OFFSET)).current;
   const lastY = useRef(COLLAPSED_OFFSET);
+  const snapOffsets = useMemo(() => [0, MID_OFFSET, COLLAPSED_OFFSET], []);
 
-  // Sync external expand state
-  useEffect(() => {
-    const target = isExpanded ? 0 : COLLAPSED_OFFSET;
+  const animateToOffset = (target: number) => {
     Animated.spring(translateY, {
       toValue: target,
-      friction: 8,
-      tension: 60,
+      friction: 9,
+      tension: 75,
       useNativeDriver: true,
     }).start(() => {
       lastY.current = target;
     });
+  };
+
+  // Sync external expand state
+  useEffect(() => {
+    const target = isExpanded ? MID_OFFSET : COLLAPSED_OFFSET;
+    animateToOffset(target);
   }, [isExpanded]);
 
   const panResponder = useRef(
@@ -100,17 +96,25 @@ export function MapListingBottomSheet({
         translateY.setValue(next);
       },
       onPanResponderRelease: (_, gs) => {
-        const shouldExpand = gs.dy < -30 || lastY.current + gs.dy < COLLAPSED_OFFSET / 2;
-        const target = shouldExpand ? 0 : COLLAPSED_OFFSET;
-        onExpandChange(shouldExpand);
-        Animated.spring(translateY, {
-          toValue: target,
-          friction: 8,
-          tension: 60,
-          useNativeDriver: true,
-        }).start(() => {
-          lastY.current = target;
-        });
+        const released = Math.max(0, Math.min(COLLAPSED_OFFSET, lastY.current + gs.dy));
+        let target = snapOffsets[0];
+
+        for (const snap of snapOffsets) {
+          if (Math.abs(released - snap) < Math.abs(released - target)) {
+            target = snap;
+          }
+        }
+
+        if (gs.vy < -0.65) {
+          target = 0;
+        }
+
+        if (gs.vy > 0.75) {
+          target = COLLAPSED_OFFSET;
+        }
+
+        onExpandChange(target !== COLLAPSED_OFFSET);
+        animateToOffset(target);
       },
     })
   ).current;
@@ -127,18 +131,18 @@ export function MapListingBottomSheet({
         height: SHEET_FULL_HEIGHT,
         transform: [{ translateY }],
         backgroundColor: "#fff",
-        borderTopLeftRadius: 28,
-        borderTopRightRadius: 28,
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
         shadowColor: "#0F172A",
-        shadowOffset: { width: 0, height: -6 },
-        shadowOpacity: 0.12,
-        shadowRadius: 20,
+        shadowOffset: { width: 0, height: -8 },
+        shadowOpacity: 0.13,
+        shadowRadius: 24,
         elevation: 20,
       }}
     >
       {/* Drag handle */}
-      <View {...panResponder.panHandlers} style={{ paddingTop: 12, paddingBottom: 6, alignItems: "center" }}>
-        <View style={{ width: 40, height: 4, borderRadius: 2, backgroundColor: "#CBD5E1" }} />
+      <View {...panResponder.panHandlers} style={{ paddingTop: 10, paddingBottom: 8, alignItems: "center" }}>
+        <View style={{ width: 46, height: 5, borderRadius: 3, backgroundColor: "#D6DEE7" }} />
       </View>
 
       {/* Header row */}
@@ -149,7 +153,7 @@ export function MapListingBottomSheet({
           alignItems: "center",
           justifyContent: "space-between",
           paddingHorizontal: 20,
-          paddingBottom: 14,
+          paddingBottom: 12,
         }}
       >
         <View>
@@ -173,11 +177,7 @@ export function MapListingBottomSheet({
       </View>
 
       {/* Mini card strip (always visible) */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 16, gap: 10, paddingBottom: 4 }}
-      >
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 10, paddingBottom: 8 }}>
         {listings.map((listing) => {
           const active = listing.id === (selectedId ?? listings[0].id);
           return (
@@ -189,7 +189,7 @@ export function MapListingBottomSheet({
               }}
               style={[
                 {
-                  width: 140,
+                  width: 148,
                   backgroundColor: "#fff",
                   borderRadius: 16,
                   overflow: "hidden",
@@ -201,7 +201,7 @@ export function MapListingBottomSheet({
             >
               <Image
                 source={listing.image}
-                style={{ width: "100%", height: 80 }}
+                style={{ width: "100%", height: 86 }}
                 resizeMode="cover"
               />
               <View style={{ padding: 8 }}>
@@ -219,11 +219,11 @@ export function MapListingBottomSheet({
       </ScrollView>
 
       {/* Expanded detail card */}
-      <View style={{ flex: 1, paddingHorizontal: 16, paddingTop: 16 }}>
+      <View style={{ flex: 1, paddingHorizontal: 16, paddingTop: 12 }}>
         <View style={[{ flexDirection: "row", backgroundColor: "#F8FAFC", borderRadius: 20, overflow: "hidden" }, cardShadow]}>
           <Image
             source={selected.image}
-            style={{ width: 110, height: 110 }}
+            style={{ width: 118, height: 118 }}
             resizeMode="cover"
           />
           <View style={{ flex: 1, padding: 12, justifyContent: "space-between" }}>
@@ -255,7 +255,7 @@ export function MapListingBottomSheet({
         </View>
 
         {/* Action buttons */}
-        <View style={{ flexDirection: "row", gap: 10, marginTop: 12 }}>
+        <View style={{ flexDirection: "row", gap: 10, marginTop: 13 }}>
           <Pressable
             onPress={() => router.push(`/listing/${selected.id}`)}
             style={({ pressed }) => ({

@@ -10,13 +10,12 @@ interface MapPriceMarkerProps {
 
 export function MapPriceMarker({ price, selected, onPress }: MapPriceMarkerProps) {
   const scale = useRef(new Animated.Value(1)).current;
-  const elevation = useRef(new Animated.Value(selected ? 10 : 4)).current;
 
   useEffect(() => {
     Animated.spring(scale, {
-      toValue: selected ? 1.18 : 1,
-      friction: 5,
-      tension: 90,
+      toValue: selected ? 1.12 : 1,
+      friction: 7,
+      tension: 95,
       useNativeDriver: true,
     }).start();
   }, [selected]);
@@ -27,24 +26,27 @@ export function MapPriceMarker({ price, selected, onPress }: MapPriceMarkerProps
         style={{
           transform: [{ scale }],
           backgroundColor: selected ? colors.primary : "#FFFFFF",
-          borderWidth: 2,
+          borderWidth: selected ? 0 : 2,
           borderColor: colors.primary,
-          borderRadius: 24,
-          paddingHorizontal: 12,
-          paddingVertical: 6,
+          borderRadius: 999,
+          minWidth: selected ? 96 : 88,
+          alignItems: "center",
+          justifyContent: "center",
+          paddingHorizontal: selected ? 16 : 14,
+          paddingVertical: selected ? 10 : 8,
           shadowColor: "#0F172A",
-          shadowOffset: { width: 0, height: selected ? 6 : 3 },
-          shadowOpacity: selected ? 0.28 : 0.14,
-          shadowRadius: selected ? 10 : 6,
-          elevation: selected ? 10 : 4,
+          shadowOffset: { width: 0, height: selected ? 7 : 4 },
+          shadowOpacity: selected ? 0.26 : 0.16,
+          shadowRadius: selected ? 13 : 8,
+          elevation: selected ? 11 : 6,
         }}
       >
         <Text
           style={{
-            fontSize: 12,
+            fontSize: selected ? 15 : 13,
             fontWeight: "800",
             color: selected ? "#FFFFFF" : "#0F172A",
-            letterSpacing: -0.2,
+            letterSpacing: -0.25,
           }}
         >
           {price}
@@ -53,12 +55,12 @@ export function MapPriceMarker({ price, selected, onPress }: MapPriceMarkerProps
       {/* Caret pointer */}
       <View
         style={{
-          marginTop: -1,
+          marginTop: -2,
           width: 0,
           height: 0,
-          borderLeftWidth: 5,
-          borderRightWidth: 5,
-          borderTopWidth: 6,
+          borderLeftWidth: selected ? 7 : 6,
+          borderRightWidth: selected ? 7 : 6,
+          borderTopWidth: selected ? 9 : 8,
           borderStyle: "solid",
           borderLeftColor: "transparent",
           borderRightColor: "transparent",

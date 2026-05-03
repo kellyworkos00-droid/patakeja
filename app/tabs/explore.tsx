@@ -125,7 +125,7 @@ export default function ExploreScreen() {
         </ScrollView>
 
         {/* ── Map preview ── */}
-        <View style={[{ marginHorizontal: 20, marginBottom: 22, borderRadius: 28, overflow: "hidden", height: 292 }, shadowMd]}>
+        <View style={[{ marginHorizontal: 20, marginBottom: 20, borderRadius: 28, overflow: "hidden", height: 246 }, shadowMd]}>
           <MapView
             style={{ width: "100%", height: "100%" }}
             initialRegion={previewRegion}
@@ -158,14 +158,14 @@ export default function ExploreScreen() {
           </MapView>
           <View style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, backgroundColor: "rgba(15,23,42,0.03)" }} pointerEvents="none" />
 
-          <Pressable onPress={() => router.push("/explore-map")} style={{ position: "absolute", bottom: 16, left: 0, right: 0, alignItems: "center" }}>
+          <Pressable onPress={() => router.push("/explore-map")} style={{ position: "absolute", bottom: 12, left: 0, right: 0, alignItems: "center" }}>
             <View style={[{ flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "#fff", borderRadius: 26, paddingHorizontal: 22, paddingVertical: 12 }, shadowMd]}>
               <Map color={colors.navy} size={20} strokeWidth={2.2} />
               <Text style={{ fontSize: 16, fontWeight: "800", color: colors.navy }}>View on Map</Text>
             </View>
           </Pressable>
 
-          <Pressable onPress={() => router.push("/explore-map")} style={[{ position: "absolute", bottom: 16, right: 16, width: 50, height: 50, borderRadius: 25, backgroundColor: "#fff", alignItems: "center", justifyContent: "center" }, shadowMd]}>
+          <Pressable onPress={() => router.push("/explore-map")} style={[{ position: "absolute", bottom: 12, right: 12, width: 46, height: 46, borderRadius: 23, backgroundColor: "#fff", alignItems: "center", justifyContent: "center" }, shadowMd]}>
             <LocateFixed color={colors.navy} size={21} strokeWidth={2.2} />
           </Pressable>
         </View>
@@ -182,30 +182,30 @@ export default function ExploreScreen() {
         </View>
 
         {/* ── Listing cards ── */}
-        <View style={{ paddingHorizontal: 20, gap: 14 }}>
+        <View style={{ paddingHorizontal: 20, gap: 12 }}>
           {listings.map((listing) => (
             <Pressable
               key={listing.id}
               onPress={() => router.push(`/listing/${listing.id}`)}
-              style={[{ flexDirection: "row", backgroundColor: "#fff", borderRadius: 22, overflow: "hidden" }, shadow]}
+              style={[{ flexDirection: "row", backgroundColor: "#fff", borderRadius: 20, overflow: "hidden" }, shadow]}
             >
-              <View style={{ width: 130, height: 138, position: "relative" }}>
+              <View style={{ width: 122, height: 124, position: "relative" }}>
                 <Image source={listing.image} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
                 <View style={{ position: "absolute", bottom: 8, left: 8, flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: "rgba(0,0,0,0.55)", borderRadius: 10, paddingHorizontal: 7, paddingVertical: 3 }}>
                   <Text style={{ fontSize: 11, color: "#fff", fontWeight: "700" }}>📷 {listing.photos}</Text>
                 </View>
                 <Pressable
                   onPress={() => toggleSaved(listing.id)}
-                  style={{ position: "absolute", top: 8, right: 8, width: 30, height: 30, borderRadius: 15, backgroundColor: "rgba(255,255,255,0.92)", alignItems: "center", justifyContent: "center" }}
+                  style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: 14, backgroundColor: "rgba(255,255,255,0.92)", alignItems: "center", justifyContent: "center" }}
                 >
                   <Heart size={15} color={saved[listing.id] ? "#EF4444" : "#94A3B8"} fill={saved[listing.id] ? "#EF4444" : "transparent"} strokeWidth={2.2} />
                 </Pressable>
               </View>
 
-              <View style={{ flex: 1, padding: 12, justifyContent: "space-between" }}>
+              <View style={{ flex: 1, paddingHorizontal: 12, paddingVertical: 10, justifyContent: "space-between" }}>
                 <View>
                   <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between" }}>
-                    <Text style={{ fontSize: 18, fontWeight: "800", color: colors.navy }}>
+                    <Text style={{ fontSize: 17, fontWeight: "800", color: colors.navy }}>
                       {listing.price}{" "}
                       <Text style={{ fontSize: 12, fontWeight: "600", color: "#94A3B8" }}>/month</Text>
                     </Text>
@@ -213,7 +213,7 @@ export default function ExploreScreen() {
                       <MoreVertical size={18} color="#94A3B8" />
                     </Pressable>
                   </View>
-                  <Text style={{ fontSize: 14, fontWeight: "700", color: colors.navy, marginTop: 2 }} numberOfLines={1}>
+                  <Text style={{ fontSize: 13, fontWeight: "700", color: colors.navy, marginTop: 2 }} numberOfLines={1}>
                     {listing.title}
                   </Text>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 5 }}>
