@@ -1,16 +1,14 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
   Alert,
-  Animated,
-  Dimensions,
-  Image,
   Pressable,
   StatusBar,
   Text,
   View,
 } from "react-native";
+import MapView, { Marker, Region } from "react-native-maps";
+import * as Location from "expo-location";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import {
   ArrowLeft,
@@ -18,7 +16,6 @@ import {
   LocateFixed,
   MapPin,
 } from "lucide-react-native";
-import { images } from "@/constants/assets";
 import { colors } from "@/constants/colors";
 import { mapListings } from "@/data/mockMapListings";
 import { FloatingMapSearchBar } from "@/components/map/FloatingMapSearchBar";
@@ -26,7 +23,23 @@ import { MapControlButton } from "@/components/map/MapControlButton";
 import { MapListingBottomSheet, SHEET_COLLAPSED_HEIGHT } from "@/components/map/MapListingBottomSheet";
 import { MapPriceMarker } from "@/components/map/MapPriceMarker";
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+const INITIAL_REGION: Region = {
+  latitude: -1.286389,
+  longitude: 36.817223,
+  latitudeDelta: 0.19,
+  longitudeDelta: 0.12,
+};
+
+const lightMapStyle = [
+  { elementType: "geometry", stylers: [{ color: "#f2f5f7" }] },
+  { elementType: "labels.text.fill", stylers: [{ color: "#5b6472" }] },
+  { elementType: "labels.text.stroke", stylers: [{ color: "#ffffff" }] },
+  { featureType: "poi", stylers: [{ visibility: "off" }] },
+  { featureType: "transit", stylers: [{ visibility: "off" }] },
+  { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] },
+  { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#dde5eb" }] },
+  { featureType: "water", elementType: "geometry", stylers: [{ color: "#dceef9" }] },
+];
 
 /** Floating controls sit above the collapsed sheet */
 const CONTROLS_BOTTOM = SHEET_COLLAPSED_HEIGHT + 16;
@@ -35,97 +48,89 @@ export default function ExploreMapScreen() {
   const insets = useSafeAreaInsets();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [sheetExpanded, setSheetExpanded] = useState(false);
+  const mapRef = useRef<MapView | null>(null);
 
-  // Animate map vertical offset slightly when sheet expands (simulate pan-up)
-  const mapShift = useRef(new Animated.Value(0)).current;
+  const selectedListing = useMemo(
+    () => mapListings.find((listing) => listing.id === selectedId) ?? null,
+    [selectedId]
+  );
+
+  const centerMap = useCallback((latitude: number, longitude: number, zoomed = true) => {
+    mapRef.current?.animateToRegion(
+      {
+        latitude,
+        longitude,
+        latitudeDelta: zoomed ? 0.06 : 0.12,
+        longitudeDelta: zoomed ? 0.04 : 0.08,
+      },
+      380
+    );
+  }, []);
 
   const handleSelectMarker = useCallback(
     (id: string) => {
       setSelectedId(id);
       setSheetExpanded(true);
-      Animated.spring(mapShift, {
-        toValue: id ? -40 : 0,
-        friction: 8,
-        tension: 50,
-        useNativeDriver: true,
-      }).start();
+      const target = mapListings.find((item) => item.id === id);
+      if (target) {
+        centerMap(target.latitude, target.longitude, true);
+      }
     },
-    [mapShift]
+    [centerMap]
   );
 
   const handleExpandChange = useCallback(
     (expanded: boolean) => {
       setSheetExpanded(expanded);
-      if (!expanded) {
-        Animated.spring(mapShift, {
-          toValue: 0,
-          friction: 8,
-          tension: 50,
-          useNativeDriver: true,
-        }).start();
-      }
     },
-    [mapShift]
+    []
   );
 
-  const handleNearMe = () => {
-    // expo-location would be used here in production:
-    // const { status } = await Location.requestForegroundPermissionsAsync();
-    // if (status === "granted") { const loc = await Location.getCurrentPositionAsync({}); ... }
-    Alert.alert(
-      "Near Me",
-      "Showing rentals within 5 km of your location.",
-      [{ text: "OK", style: "default" }]
-    );
-  };
+  const handleNearMe = useCallback(async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert("Location needed", "Enable location permission to center the map around you.");
+        return;
+      }
+
+      const location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
+      centerMap(location.coords.latitude, location.coords.longitude, true);
+    } catch {
+      Alert.alert("Could not get location", "Please try again after checking GPS and app permissions.");
+    }
+  }, [centerMap]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#0F172A" }}>
-      <StatusBar barStyle="dark-content" translucent backgroundColor="transparent" />
+    <View style={{ flex: 1, backgroundColor: "#F8FAFC" }}>
+      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
 
-      {/* ─── Full-screen map background ─── */}
-      <Animated.View
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          transform: [{ translateY: mapShift }],
-        }}
+      <MapView
+        ref={mapRef}
+        style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+        initialRegion={INITIAL_REGION}
+        customMapStyle={lightMapStyle}
+        mapType="standard"
+        showsCompass={false}
+        showsScale={false}
+        showsMyLocationButton={false}
       >
-        <Image
-          source={images.exploreDirection}
-          style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT + 80 }}
-          resizeMode="cover"
-        />
-        {/* Subtle vignette overlay */}
-        <LinearGradient
-          colors={["rgba(15,23,42,0.18)", "rgba(15,23,42,0)", "rgba(15,23,42,0)", "rgba(15,23,42,0.35)"]}
-          locations={[0, 0.15, 0.7, 1]}
-          style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
-        />
-      </Animated.View>
-
-      {/* ─── Price markers ─── */}
-      {mapListings.map((listing) => (
-        <View
-          key={listing.id}
-          style={{
-            position: "absolute",
-            left: listing.markerX as any,
-            top: listing.markerY as any,
-            transform: [{ translateX: -30 }, { translateY: -20 }],
-          }}
-          pointerEvents="box-none"
-        >
-          <MapPriceMarker
-            price={listing.price}
-            selected={selectedId === listing.id}
+        {mapListings.map((listing) => (
+          <Marker
+            key={listing.id}
+            coordinate={{ latitude: listing.latitude, longitude: listing.longitude }}
+            anchor={{ x: 0.5, y: 1 }}
+            tracksViewChanges={false}
             onPress={() => handleSelectMarker(listing.id)}
-          />
-        </View>
-      ))}
+          >
+            <MapPriceMarker
+              price={listing.price}
+              selected={selectedId === listing.id}
+              onPress={() => handleSelectMarker(listing.id)}
+            />
+          </Marker>
+        ))}
+      </MapView>
 
       {/* ─── Top bar ─── */}
       <View
@@ -167,7 +172,7 @@ export default function ExploreMapScreen() {
       </View>
 
       {/* ─── Area badge ─── */}
-      {selectedId && (
+      {selectedListing && (
         <View
           style={{
             position: "absolute",
@@ -196,7 +201,7 @@ export default function ExploreMapScreen() {
           >
             <MapPin size={13} color={colors.primary} />
             <Text style={{ fontSize: 13, fontWeight: "700", color: "#0F172A" }}>
-              {mapListings.find((l) => l.id === selectedId)?.area}, Nairobi
+              {selectedListing.area}, {selectedListing.city}
             </Text>
           </View>
         </View>

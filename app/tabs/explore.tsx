@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   Image, Pressable, ScrollView, StatusBar, Text, View,
 } from "react-native";
+import MapView, { Marker } from "react-native-maps";
 import { router } from "expo-router";
 import {
   BedDouble, ChevronDown, Grid2X2, Heart, Home,
@@ -10,8 +11,9 @@ import {
 } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { listings } from "@/data/mockListings";
-import { images } from "@/constants/assets";
 import { colors } from "@/constants/colors";
+import { mapListings } from "@/data/mockMapListings";
+import { MapPriceMarker } from "@/components/map/MapPriceMarker";
 
 const filters = [
   { label: "All",        icon: Grid2X2 },
@@ -21,11 +23,12 @@ const filters = [
   { label: "3+ Bedroom", icon: BedDouble },
 ];
 
-const clusters = [
-  { label: "12", top: "42%", left: "14%" },
-  { label: "28", top: "54%", left: "42%" },
-  { label: "15", top: "46%", left: "70%" },
-];
+const previewRegion = {
+  latitude: -1.286389,
+  longitude: 36.817223,
+  latitudeDelta: 0.22,
+  longitudeDelta: 0.14,
+};
 
 const shadow = {
   shadowColor: "#0F172A",
@@ -73,7 +76,7 @@ export default function ExploreScreen() {
         {/* ── Header ── */}
         <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", paddingHorizontal: 20, paddingTop: 10, paddingBottom: 14 }}>
           <View>
-            <Text style={{ fontSize: 46, fontWeight: "800", color: colors.navy, letterSpacing: -0.8 }}>Explore</Text>
+            <Text style={{ fontSize: 32, fontWeight: "800", color: colors.navy, letterSpacing: -0.6 }}>Explore</Text>
             <Text style={{ fontSize: 14, color: "#64748B", fontWeight: "500", marginTop: 2 }}>Find your perfect home</Text>
           </View>
           <Pressable
@@ -123,24 +126,37 @@ export default function ExploreScreen() {
 
         {/* ── Map preview ── */}
         <View style={[{ marginHorizontal: 20, marginBottom: 22, borderRadius: 28, overflow: "hidden", height: 292 }, shadowMd]}>
-          <Image source={images.exploreDirection} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
-          <View style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, backgroundColor: "rgba(255,255,255,0.08)" }} />
-
-          {clusters.map((c) => (
-            <View
-              key={c.label}
-              style={{
-                position: "absolute", top: c.top as any, left: c.left as any,
-                width: 58, height: 58, borderRadius: 29,
-                backgroundColor: colors.primary,
-                alignItems: "center", justifyContent: "center",
-                borderWidth: 3, borderColor: "#fff",
-                shadowColor: "#000", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.25, shadowRadius: 6, elevation: 5,
-              }}
-            >
-              <Text style={{ fontSize: 29, fontWeight: "800", color: "#fff", lineHeight: 31 }}>{c.label}</Text>
-            </View>
-          ))}
+          <MapView
+            style={{ width: "100%", height: "100%" }}
+            initialRegion={previewRegion}
+            mapType="standard"
+            customMapStyle={[
+              { elementType: "geometry", stylers: [{ color: "#f2f5f7" }] },
+              { elementType: "labels.text.fill", stylers: [{ color: "#5b6472" }] },
+              { elementType: "labels.text.stroke", stylers: [{ color: "#ffffff" }] },
+              { featureType: "poi", stylers: [{ visibility: "off" }] },
+              { featureType: "transit", stylers: [{ visibility: "off" }] },
+              { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] },
+              { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#dde5eb" }] },
+            ]}
+            scrollEnabled={false}
+            zoomEnabled={false}
+            rotateEnabled={false}
+            pitchEnabled={false}
+            toolbarEnabled={false}
+          >
+            {mapListings.map((listing) => (
+              <Marker
+                key={listing.id}
+                coordinate={{ latitude: listing.latitude, longitude: listing.longitude }}
+                tracksViewChanges={false}
+                anchor={{ x: 0.5, y: 1 }}
+              >
+                <MapPriceMarker price={listing.price} selected={listing.id === "1"} onPress={() => router.push("/explore-map")} />
+              </Marker>
+            ))}
+          </MapView>
+          <View style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, backgroundColor: "rgba(15,23,42,0.03)" }} pointerEvents="none" />
 
           <Pressable onPress={() => router.push("/explore-map")} style={{ position: "absolute", bottom: 16, left: 0, right: 0, alignItems: "center" }}>
             <View style={[{ flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "#fff", borderRadius: 26, paddingHorizontal: 22, paddingVertical: 12 }, shadowMd]}>
@@ -149,7 +165,7 @@ export default function ExploreScreen() {
             </View>
           </Pressable>
 
-          <Pressable style={[{ position: "absolute", bottom: 16, right: 16, width: 50, height: 50, borderRadius: 25, backgroundColor: "#fff", alignItems: "center", justifyContent: "center" }, shadowMd]}>
+          <Pressable onPress={() => router.push("/explore-map")} style={[{ position: "absolute", bottom: 16, right: 16, width: 50, height: 50, borderRadius: 25, backgroundColor: "#fff", alignItems: "center", justifyContent: "center" }, shadowMd]}>
             <LocateFixed color={colors.navy} size={21} strokeWidth={2.2} />
           </Pressable>
         </View>
