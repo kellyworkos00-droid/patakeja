@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Dimensions, Image, Pressable, ScrollView, StatusBar, Text, View } from "react-native";
+import { useRef, useState } from "react";
+import { Animated, Dimensions, Image, Pressable, ScrollView, StatusBar, Text, View } from "react-native";
 import { router } from "expo-router";
 import {
   Bell,
@@ -22,6 +22,7 @@ const { width: SW } = Dimensions.get("window");
 const filters = ["All", "Bedsitter", "1 Bedroom", "2 Bedroom", "3 Bedroom"];
 const featuredHomes = listings.slice(0, 4);
 const recommendedHomes = listings.slice(0, 3);
+const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
 const shadow = {
   shadowColor: "#0F172A",
@@ -124,13 +125,114 @@ function RecommendedRow({ listing }: { listing: Listing }) {
 
 export default function HomeScreen() {
   const [activeFilter, setActiveFilter] = useState(0);
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  const headerTranslateY = scrollY.interpolate({
+    inputRange: [0, 90],
+    outputRange: [0, -56],
+    extrapolate: "clamp",
+  });
+  const headerOpacity = scrollY.interpolate({
+    inputRange: [0, 70],
+    outputRange: [1, 0],
+    extrapolate: "clamp",
+  });
+  const floatingSearchOpacity = scrollY.interpolate({
+    inputRange: [20, 90],
+    outputRange: [0, 1],
+    extrapolate: "clamp",
+  });
+  const floatingSearchTranslateY = scrollY.interpolate({
+    inputRange: [20, 90],
+    outputRange: [-18, 0],
+    extrapolate: "clamp",
+  });
+  const floatingSearchScale = scrollY.interpolate({
+    inputRange: [20, 90],
+    outputRange: [0.94, 1],
+    extrapolate: "clamp",
+  });
+  const introOpacity = scrollY.interpolate({
+    inputRange: [0, 80],
+    outputRange: [1, 0],
+    extrapolate: "clamp",
+  });
+  const introTranslateY = scrollY.interpolate({
+    inputRange: [0, 80],
+    outputRange: [0, -20],
+    extrapolate: "clamp",
+  });
+  const featureOpacity = scrollY.interpolate({
+    inputRange: [40, 160],
+    outputRange: [1, 0.25],
+    extrapolate: "clamp",
+  });
+  const featureTranslateY = scrollY.interpolate({
+    inputRange: [40, 160],
+    outputRange: [0, -18],
+    extrapolate: "clamp",
+  });
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#F8FAFC" }} edges={["top", "left", "right"]}>
       <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 14, paddingTop: 6, paddingBottom: 8 }}>
+      <Animated.View
+        pointerEvents="box-none"
+        style={{
+          position: "absolute",
+          top: 10,
+          left: 14,
+          right: 14,
+          zIndex: 10,
+          opacity: floatingSearchOpacity,
+          transform: [{ translateY: floatingSearchTranslateY }, { scale: floatingSearchScale }],
+        }}
+      >
+        <Pressable
+          onPress={() => router.push("/search")}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: "#FFFFFF",
+            borderRadius: 22,
+            height: 42,
+            paddingLeft: 12,
+            paddingRight: 8,
+            gap: 8,
+            shadowColor: "#0F172A",
+            shadowOffset: { width: 0, height: 10 },
+            shadowOpacity: 0.12,
+            shadowRadius: 18,
+            elevation: 8,
+          }}
+        >
+          <Search size={15} color="#94A3B8" />
+          <Text style={{ flex: 1, fontSize: 12, color: "#64748B", fontWeight: "700" }}>Search your dream home</Text>
+          <View style={{ width: 26, height: 26, borderRadius: 13, backgroundColor: colors.navy, alignItems: "center", justifyContent: "center" }}>
+            <SlidersHorizontal size={12} color="#fff" />
+          </View>
+        </Pressable>
+      </Animated.View>
+
+      <AnimatedScrollView
+        showsVerticalScrollIndicator={false}
+        scrollEventThrottle={16}
+        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
+        contentContainerStyle={{ paddingBottom: 100 }}
+      >
+        <Animated.View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8,
+            paddingHorizontal: 14,
+            paddingTop: 6,
+            paddingBottom: 8,
+            opacity: headerOpacity,
+            transform: [{ translateY: headerTranslateY }],
+          }}
+        >
           <Pressable
             style={[{ width: 34, height: 34, borderRadius: 17, backgroundColor: "#fff", alignItems: "center", justifyContent: "center" }, shadow]}
           >
@@ -168,8 +270,9 @@ export default function HomeScreen() {
             <Bell size={15} color={colors.navy} />
             <View style={{ position: "absolute", top: 6, right: 6, width: 7, height: 7, borderRadius: 3.5, backgroundColor: colors.primary }} />
           </Pressable>
-        </View>
+        </Animated.View>
 
+        <Animated.View style={{ opacity: introOpacity, transform: [{ translateY: introTranslateY }] }}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6, paddingHorizontal: 14, marginBottom: 10 }}>
           {filters.map((label, index) => (
             <Pressable
@@ -227,8 +330,9 @@ export default function HomeScreen() {
             </View>
           </View>
         </View>
+        </Animated.View>
 
-        <View style={{ marginBottom: 16 }}>
+        <Animated.View style={{ marginBottom: 16, opacity: featureOpacity, transform: [{ translateY: featureTranslateY }] }}>
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 14, marginBottom: 8 }}>
             <Text style={{ fontSize: 14, fontWeight: "800", color: colors.navy }}>Featured Homes</Text>
             <Pressable onPress={() => router.push("/search")} style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
@@ -242,9 +346,9 @@ export default function HomeScreen() {
               <FeaturedCard key={item.id} listing={item} />
             ))}
           </ScrollView>
-        </View>
+        </Animated.View>
 
-        <View style={{ paddingHorizontal: 14 }}>
+        <Animated.View style={{ paddingHorizontal: 14, opacity: featureOpacity }}>
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
             <Text style={{ fontSize: 14, fontWeight: "800", color: colors.navy }}>Recommended</Text>
             <Pressable onPress={() => router.push("/search")} style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
@@ -256,8 +360,8 @@ export default function HomeScreen() {
           {recommendedHomes.map((item) => (
             <RecommendedRow key={item.id} listing={item} />
           ))}
-        </View>
-      </ScrollView>
+        </Animated.View>
+      </AnimatedScrollView>
 
       <Pressable
         onPress={() => router.push("/search")}
