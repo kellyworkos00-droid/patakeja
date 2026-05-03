@@ -142,12 +142,12 @@ export default function ExploreScreen() {
             </View>
           ))}
 
-          <View style={{ position: "absolute", bottom: 14, left: 0, right: 0, alignItems: "center" }}>
+          <Pressable onPress={() => router.push("/explore-map")} style={{ position: "absolute", bottom: 14, left: 0, right: 0, alignItems: "center" }}>
             <View style={[{ flexDirection: "row", alignItems: "center", gap: 7, backgroundColor: "#fff", borderRadius: 24, paddingHorizontal: 18, paddingVertical: 10 }, shadowMd]}>
               <Map color={colors.navy} size={18} strokeWidth={2.2} />
               <Text style={{ fontSize: 14, fontWeight: "800", color: colors.navy }}>View on Map</Text>
             </View>
-          </View>
+          </Pressable>
 
           <Pressable style={[{ position: "absolute", bottom: 14, right: 14, width: 40, height: 40, borderRadius: 20, backgroundColor: "#fff", alignItems: "center", justifyContent: "center" }, shadow]}>
             <LocateFixed color={colors.navy} size={18} strokeWidth={2.2} />
