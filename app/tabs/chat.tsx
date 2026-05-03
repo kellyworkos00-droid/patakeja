@@ -1,30 +1,30 @@
-﻿import React, { useState } from "react";
+﻿import React, { useState, useRef } from "react";
 import {
   View,
   Text,
   ScrollView,
   Pressable,
   Image,
+  Animated,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import {
   Search,
   Shield,
-  ChevronRight,
+  X,
   Check,
   CalendarDays,
   Archive,
   CheckCheck,
   Edit3,
   MessageCircle,
-  Lock,
 } from "lucide-react-native";
 import { chats, ChatThread } from "@/data/mockChats";
 
 const FILTER_TABS = [
-  { key: "all",      label: "All",      count: 12, icon: "" },
-  { key: "unread",   label: "Unread",   count: 5,  icon: "" },
+  { key: "all",      label: "All Chats", count: 12, icon: "" },
+  { key: "unread",   label: "Unread",    count: 5,  icon: "" },
   { key: "bookings", label: "Bookings", count: 0,  icon: "calendar" },
   { key: "archive",  label: "Archive",  count: 0,  icon: "archive" },
 ];
@@ -95,6 +95,39 @@ function ChatRow({ thread, onPress }: { thread: ChatThread; onPress: () => void 
   );
 }
 
+function SecurityBanner() {
+  const [visible, setVisible] = useState(true);
+  const opacity = useRef(new Animated.Value(1)).current;
+  const maxHeight = useRef(new Animated.Value(60)).current;
+
+  const dismiss = () => {
+    Animated.parallel([
+      Animated.timing(opacity, { toValue: 0, duration: 220, useNativeDriver: false }),
+      Animated.timing(maxHeight, { toValue: 0, duration: 300, useNativeDriver: false }),
+    ]).start(() => setVisible(false));
+  };
+
+  if (!visible) return null;
+  return (
+    <Animated.View style={{ opacity, maxHeight, overflow: "hidden", marginHorizontal: 20, marginBottom: 10 }}>
+      <View style={{
+        flexDirection: "row", alignItems: "center", gap: 10,
+        backgroundColor: "#F8FAFC", borderRadius: 12,
+        paddingHorizontal: 14, paddingVertical: 11,
+        borderLeftWidth: 3, borderLeftColor: "#16A34A",
+      }}>
+        <Shield size={15} color="#16A34A" strokeWidth={2} />
+        <Text style={{ flex: 1, fontSize: 12.5, color: "#475569", fontWeight: "500" }}>
+          Conversations & payments are fully protected
+        </Text>
+        <Pressable onPress={dismiss} hitSlop={10}>
+          <X size={15} color="#94A3B8" strokeWidth={2.5} />
+        </Pressable>
+      </View>
+    </Animated.View>
+  );
+}
+
 export default function ChatListScreen() {
   const [activeFilter, setActiveFilter] = useState("all");
 
@@ -109,45 +142,37 @@ export default function ChatListScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }} edges={["top"]}>
 
       {/* ── Header ── */}
-      <View style={{ paddingHorizontal: 20, paddingTop: 12, paddingBottom: 14 }}>
-        <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between" }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 14, paddingBottom: 12, backgroundColor: "#FFFFFF" }}>
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
           <View style={{ flex: 1 }}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 6 }}>
-              <Text style={{ fontSize: 30, fontWeight: "900", color: "#0F172A", letterSpacing: -0.8 }}>Messages</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+              <Text style={{ fontSize: 28, fontWeight: "900", color: "#0F172A", letterSpacing: -0.5 }}>Messages</Text>
               {totalUnread > 0 && (
-                <View style={{
-                  backgroundColor: "#16A34A", borderRadius: 14,
-                  paddingHorizontal: 9, paddingVertical: 3,
-                  shadowColor: "#16A34A", shadowOpacity: 0.35,
-                  shadowOffset: { width: 0, height: 3 }, shadowRadius: 6, elevation: 4,
-                }}>
-                  <Text style={{ color: "#FFF", fontSize: 12.5, fontWeight: "900" }}>{totalUnread}</Text>
+                <View style={{ backgroundColor: "#16A34A", borderRadius: 12, paddingHorizontal: 8, paddingVertical: 3 }}>
+                  <Text style={{ color: "#fff", fontSize: 12, fontWeight: "800" }}>{totalUnread}</Text>
                 </View>
               )}
             </View>
-            {/* Encrypted pill */}
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 5, backgroundColor: "#F0FDF4", paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20, alignSelf: "flex-start", borderWidth: 1, borderColor: "#DCFCE7" }}>
-              <Lock size={10} color="#16A34A" fill="#16A34A" />
-              <Text style={{ fontSize: 11.5, color: "#16A34A", fontWeight: "700", letterSpacing: 0.2 }}>End-to-end encrypted</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 5, marginTop: 2 }}>
+              <View style={{ width: 7, height: 7, borderRadius: 4, backgroundColor: "#16A34A" }} />
+              <Text style={{ fontSize: 12.5, color: "#64748B" }}>End-to-end encrypted</Text>
             </View>
           </View>
 
-          <View style={{ flexDirection: "row", gap: 8, marginTop: 4 }}>
+          <View style={{ flexDirection: "row", gap: 8 }}>
             <Pressable style={({ pressed }) => ({
-              width: 42, height: 42, borderRadius: 21,
-              backgroundColor: pressed ? "#F1F5F9" : "#F8FAFC",
-              borderWidth: 1, borderColor: "#E2E8F0",
+              width: 40, height: 40, borderRadius: 20,
+              backgroundColor: pressed ? "#F1F5F9" : "#F4F8FB",
               alignItems: "center", justifyContent: "center",
             })}>
-              <Search size={18} color="#334155" strokeWidth={2} />
+              <Search size={18} color="#0F172A" strokeWidth={2} />
             </Pressable>
             <Pressable style={({ pressed }) => ({
-              width: 42, height: 42, borderRadius: 21,
-              backgroundColor: pressed ? "#F1F5F9" : "#F8FAFC",
-              borderWidth: 1, borderColor: "#E2E8F0",
+              width: 40, height: 40, borderRadius: 20,
+              backgroundColor: pressed ? "#F1F5F9" : "#F4F8FB",
               alignItems: "center", justifyContent: "center",
             })}>
-              <Edit3 size={18} color="#334155" strokeWidth={2} />
+              <Edit3 size={18} color="#0F172A" strokeWidth={2} />
             </Pressable>
           </View>
         </View>
@@ -196,20 +221,8 @@ export default function ChatListScreen() {
         })}
       </ScrollView>
 
-      {/* ── Security Card ── */}
-      <View style={{ marginHorizontal: 20, marginBottom: 10, marginTop: 4, padding: 14, backgroundColor: "#F0FDF4", borderRadius: 16, borderWidth: 1, borderColor: "#BBF7D0", flexDirection: "row", alignItems: "center", gap: 12 }}>
-        <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: "#DCFCE7", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-          <Shield size={19} color="#16A34A" />
-        </View>
-        <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 13, fontWeight: "700", color: "#0F172A" }}>Your conversations are secure</Text>
-          <Text style={{ fontSize: 12, color: "#64748B", marginTop: 2, lineHeight: 17 }}>Phone numbers are hidden. Payments protected.</Text>
-        </View>
-        <Pressable style={{ flexDirection: "row", alignItems: "center", gap: 1, flexShrink: 0 }}>
-          <Text style={{ fontSize: 12.5, color: "#16A34A", fontWeight: "600" }}>Learn more</Text>
-          <ChevronRight size={13} color="#16A34A" strokeWidth={2.5} />
-        </Pressable>
-      </View>
+      {/* ── Security Banner ── */}
+      <SecurityBanner />
 
       {/* ── Divider ── */}
       <View style={{ height: 1, backgroundColor: "#F1F5F9" }} />
