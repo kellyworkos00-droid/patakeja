@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  Pressable, ScrollView, StatusBar, Text, View,
+  Image, Pressable, ScrollView, StatusBar, Text, View,
 } from "react-native";
 import { router } from "expo-router";
 import {
