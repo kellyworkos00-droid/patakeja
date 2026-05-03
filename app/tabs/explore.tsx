@@ -97,44 +97,87 @@ function Chip({
 }) {
   const color = active ? "#FFFFFF" : colors.navy;
   const iconBg = active ? "rgba(255,255,255,0.18)" : "#F8FAFC";
+  const activeProgress = useRef(new Animated.Value(active ? 1 : 0)).current;
+
+  useEffect(() => {
+    Animated.timing(activeProgress, {
+      toValue: active ? 1 : 0,
+      duration: 240,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [active, activeProgress]);
+
+  const chipScale = activeProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 1.025],
+  });
+
+  const haloOpacity = activeProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 1],
+  });
+
+  const haloScale = activeProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.9, 1.04],
+  });
 
   return (
-    <Pressable
-      onPress={onPress}
-      style={({ pressed }) => [
-        {
-          height: 42,
-          borderRadius: 21,
-          flexDirection: "row",
-          alignItems: "center",
-          paddingHorizontal: 12,
-          gap: 8,
-          backgroundColor: active ? "#0B1220" : "#FFFFFF",
-          borderWidth: 1,
-          borderColor: active ? "#1E293B" : "#E2E8F0",
-          transform: [{ scale: pressed ? 0.96 : 1 }],
-        },
-        chipShadow,
-      ]}
-    >
-      {Icon ? (
-        <View
-          style={{
-            width: 24,
-            height: 24,
-            borderRadius: 12,
+    <Animated.View style={{ transform: [{ scale: chipScale }] }}>
+      <Pressable
+        onPress={onPress}
+        style={({ pressed }) => [
+          {
+            height: 42,
+            borderRadius: 21,
+            flexDirection: "row",
             alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: iconBg,
-            borderWidth: active ? 0 : 1,
-            borderColor: "#E2E8F0",
+            paddingHorizontal: 12,
+            gap: 8,
+            backgroundColor: active ? "#0B1220" : "#FFFFFF",
+            borderWidth: 1,
+            borderColor: active ? "#1E293B" : "#E2E8F0",
+            transform: [{ scale: pressed ? 0.96 : 1 }],
+          },
+          chipShadow,
+        ]}
+      >
+        <Animated.View
+          pointerEvents="none"
+          style={{
+            position: "absolute",
+            top: -1,
+            right: -1,
+            bottom: -1,
+            left: -1,
+            borderRadius: 22,
+            borderWidth: 1,
+            borderColor: "rgba(22,163,74,0.48)",
+            opacity: haloOpacity,
+            transform: [{ scale: haloScale }],
           }}
-        >
-          <Icon color={color} size={13} strokeWidth={2.1} />
-        </View>
-      ) : null}
-      <Text style={{ fontSize: 13, fontWeight: "700", color, letterSpacing: 0.1 }}>{label}</Text>
-    </Pressable>
+        />
+
+        {Icon ? (
+          <View
+            style={{
+              width: 24,
+              height: 24,
+              borderRadius: 12,
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: iconBg,
+              borderWidth: active ? 0 : 1,
+              borderColor: "#E2E8F0",
+            }}
+          >
+            <Icon color={color} size={13} strokeWidth={2.1} />
+          </View>
+        ) : null}
+        <Text style={{ fontSize: 13, fontWeight: "700", color, letterSpacing: 0.1 }}>{label}</Text>
+      </Pressable>
+    </Animated.View>
   );
 }
 
