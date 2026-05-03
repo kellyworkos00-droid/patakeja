@@ -30,57 +30,57 @@ export function ListingCard({ listing, compact, variant = "default" }: ListingCa
     const showSecureChat = isExploreListing(listing) ? listing.secureChat : true;
 
     return (
-      <Pressable onPress={openListing} className="flex-row gap-3 rounded-3xl bg-white p-2.5">
+      <Pressable onPress={openListing} className="flex-row gap-2.5 rounded-3xl bg-white p-2">
         <View className="relative">
-          <PropertyImage source={listing.image} className="h-[132px] w-[124px] rounded-2xl" />
+          <PropertyImage source={listing.image} className="h-[110px] w-[102px] rounded-2xl" />
           {cardPhotos > 0 ? (
-            <View className="absolute bottom-2 left-2 flex-row items-center gap-1 rounded-full bg-navy/80 px-2 py-1">
-              <Camera color={colors.card} size={13} />
-              <Text className="text-xs font-bold text-white">{cardPhotos}</Text>
+            <View className="absolute bottom-1.5 left-1.5 flex-row items-center gap-1 rounded-full bg-navy/80 px-2 py-1">
+              <Camera color={colors.card} size={12} />
+              <Text className="text-[10px] font-bold text-white">{cardPhotos}</Text>
             </View>
           ) : null}
           <Pressable
             style={{
               position: "absolute",
-              top: 8,
-              right: 8,
-              width: 30,
-              height: 30,
-              borderRadius: 15,
+              top: 7,
+              right: 7,
+              width: 26,
+              height: 26,
+              borderRadius: 13,
               backgroundColor: "rgba(255,255,255,0.88)",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <Heart color={colors.navy} size={14} strokeWidth={2} />
+            <Heart color={colors.navy} size={13} strokeWidth={2} />
           </Pressable>
         </View>
 
-        <View className="flex-1 justify-between py-1">
+        <View className="flex-1 justify-between py-0.5">
           <View>
             <View className="flex-row items-start justify-between">
-              <Text className="text-xl font-extrabold text-navy">
-                {listing.price} <Text className="text-xs font-semibold text-navy/50">/ month</Text>
+              <Text className="text-lg font-extrabold text-navy">
+                {listing.price} <Text className="text-[10px] font-semibold text-navy/50">/ month</Text>
               </Text>
-              <Pressable className="rounded-full p-1.5">
-                <MoreVertical color="#94A3B8" size={16} />
+              <Pressable className="rounded-full p-1">
+                <MoreVertical color="#94A3B8" size={14} />
               </Pressable>
             </View>
 
-            <Text className="mt-1 text-base font-bold text-navy" numberOfLines={1}>
+            <Text className="mt-0.5 text-sm font-bold text-navy" numberOfLines={1}>
               {listing.title}
             </Text>
-            <View className="mt-2 flex-row items-center gap-1">
-              <MapPin color="rgba(15, 23, 42, 0.45)" size={14} />
-              <Text className="text-xs text-navy/60" numberOfLines={1}>
+            <View className="mt-1.5 flex-row items-center gap-1">
+              <MapPin color="rgba(15, 23, 42, 0.45)" size={13} />
+              <Text className="text-[11px] text-navy/60" numberOfLines={1}>
                 {listing.location}
               </Text>
-              <Text className="text-xs text-navy/25">·</Text>
-              <Text className="text-xs font-bold text-primary">{listing.distance}</Text>
+              <Text className="text-[11px] text-navy/25">·</Text>
+              <Text className="text-[11px] font-bold text-primary">{listing.distance}</Text>
             </View>
           </View>
 
-          <View className="mt-2 flex-row flex-wrap gap-2">
+          <View className="mt-1.5 flex-row flex-wrap gap-1.5">
             {showVerified ? <TrustBadge label="Verified" compact /> : null}
             {showSecureChat ? <TrustBadge label="Secure Chat" compact /> : null}
             {showEscrow ? <TrustBadge label="Escrow" compact /> : null}
