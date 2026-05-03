@@ -65,12 +65,6 @@ const featuredHomes = [
 
 const recommendedHomes = listings;
 
-const stats = [
-  { value: "500+", label: "Verified Homes" },
-  { value: "4.9★", label: "App Rating" },
-  { value: "2k+", label: "Happy Renters" },
-];
-
 // ─── shadow preset ──────────────────────────────────────────────────────────
 const shadow = {
   shadowColor: "#0F172A",
@@ -132,55 +126,53 @@ function FeaturedCard({ listing }: { listing: Listing & { rating?: string; tag?:
   return (
     <Pressable
       onPress={() => router.push(`/listing/${listing.id}`)}
-      style={[{ width: 260, borderRadius: 24, backgroundColor: "#fff", overflow: "hidden", marginRight: 4 }, shadowStrong]}
+      style={[{ width: 220, borderRadius: 22, backgroundColor: "#fff", overflow: "hidden", marginRight: 2 }, shadow]}
     >
-      <View style={{ height: 170, position: "relative" }}>
+      <View style={{ height: 128, position: "relative" }}>
         <Image source={listing.image} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
         <LinearGradient
           colors={["transparent", "rgba(15,23,42,0.55)"]}
           style={{ position: "absolute", inset: 0 } as any}
         />
         {/* Tag badge */}
-        <View style={{ position: "absolute", top: 12, left: 12, backgroundColor: tagColor, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4 }}>
-          <Text style={{ fontSize: 10, fontWeight: "800", color: "#fff", letterSpacing: 0.8 }}>{listing.tag}</Text>
+        <View style={{ position: "absolute", top: 8, left: 8, backgroundColor: tagColor, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4 }}>
+          <Text style={{ fontSize: 10, fontWeight: "800", color: "#fff", letterSpacing: 0.5 }}>{listing.tag}</Text>
         </View>
         {/* Heart */}
         <Pressable
           onPress={() => setSaved((s) => !s)}
-          style={{ position: "absolute", top: 10, right: 10, width: 36, height: 36, borderRadius: 18, backgroundColor: "rgba(255,255,255,0.92)", alignItems: "center", justifyContent: "center" }}
+          style={{ position: "absolute", top: 8, right: 8, width: 30, height: 30, borderRadius: 15, backgroundColor: "rgba(255,255,255,0.92)", alignItems: "center", justifyContent: "center" }}
         >
-          <Heart size={18} color={saved ? "#EF4444" : "#94A3B8"} fill={saved ? "#EF4444" : "transparent"} strokeWidth={2.2} />
+          <Heart size={15} color={saved ? "#EF4444" : "#94A3B8"} fill={saved ? "#EF4444" : "transparent"} strokeWidth={2.2} />
         </Pressable>
         {/* Rating */}
         {listing.rating && (
-          <View style={{ position: "absolute", bottom: 10, left: 12, flexDirection: "row", alignItems: "center", gap: 3, backgroundColor: "rgba(255,255,255,0.15)", borderRadius: 10, paddingHorizontal: 7, paddingVertical: 3 }}>
-            <Star size={12} color="#FCD34D" fill="#FCD34D" />
-            <Text style={{ fontSize: 12, fontWeight: "800", color: "#fff" }}>{listing.rating}</Text>
+          <View style={{ position: "absolute", bottom: 8, left: 8, flexDirection: "row", alignItems: "center", gap: 3, backgroundColor: "rgba(255,255,255,0.15)", borderRadius: 8, paddingHorizontal: 6, paddingVertical: 2 }}>
+            <Star size={10} color="#FCD34D" fill="#FCD34D" />
+            <Text style={{ fontSize: 10, fontWeight: "800", color: "#fff" }}>{listing.rating}</Text>
           </View>
         )}
-        {/* Photos count */}
-        <View style={{ position: "absolute", bottom: 10, right: 12, flexDirection: "row", alignItems: "center", gap: 3, backgroundColor: "rgba(0,0,0,0.4)", borderRadius: 10, paddingHorizontal: 7, paddingVertical: 3 }}>
+        <View style={{ position: "absolute", bottom: 8, right: 8, flexDirection: "row", alignItems: "center", gap: 3, backgroundColor: "rgba(0,0,0,0.4)", borderRadius: 8, paddingHorizontal: 6, paddingVertical: 2 }}>
           <Text style={{ fontSize: 11, color: "#fff", fontWeight: "600" }}>📷 {listing.photos}</Text>
         </View>
       </View>
-      <View style={{ padding: 14 }}>
+      <View style={{ paddingHorizontal: 12, paddingVertical: 10 }}>
         <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between" }}>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 20, fontWeight: "800", color: colors.navy }}>{listing.price}</Text>
-            <Text style={{ fontSize: 11, color: "#94A3B8", fontWeight: "600", marginTop: -2 }}>/month</Text>
+            <Text style={{ fontSize: 17, fontWeight: "800", color: colors.navy }}>{listing.price}</Text>
+            <Text style={{ fontSize: 10, color: "#94A3B8", fontWeight: "600", marginTop: -1 }}>/month</Text>
           </View>
         </View>
-        <Text style={{ fontSize: 15, fontWeight: "700", color: colors.navy, marginTop: 4 }} numberOfLines={1}>{listing.title}</Text>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 6 }}>
-          <MapPin size={13} color="#94A3B8" />
-          <Text style={{ fontSize: 13, color: "#64748B", fontWeight: "500", flex: 1 }} numberOfLines={1}>{listing.location}</Text>
+        <Text style={{ fontSize: 14, fontWeight: "700", color: colors.navy, marginTop: 3 }} numberOfLines={1}>{listing.title}</Text>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 3, marginTop: 4 }}>
+          <MapPin size={12} color="#94A3B8" />
+          <Text style={{ fontSize: 12, color: "#64748B", fontWeight: "500", flex: 1 }} numberOfLines={1}>{listing.location}</Text>
           <View style={{ width: 3, height: 3, borderRadius: 2, backgroundColor: "#CBD5E1" }} />
-          <Text style={{ fontSize: 12, color: colors.primary, fontWeight: "700" }}>{listing.distance}</Text>
+          <Text style={{ fontSize: 11, color: colors.primary, fontWeight: "700" }}>{listing.distance}</Text>
         </View>
-        <View style={{ flexDirection: "row", gap: 6, marginTop: 10, flexWrap: "wrap" }}>
+        <View style={{ flexDirection: "row", gap: 5, marginTop: 8, flexWrap: "wrap" }}>
           <TrustPill type="Verified" />
           <TrustPill type="Secure Chat" />
-          <TrustPill type="Escrow" />
         </View>
       </View>
     </Pressable>
@@ -192,15 +184,15 @@ function RecommendedCard({ listing }: { listing: Listing }) {
   return (
     <Pressable
       onPress={() => router.push(`/listing/${listing.id}`)}
-      style={[{ flexDirection: "row", gap: 12, borderRadius: 22, backgroundColor: "#fff", padding: 12, marginBottom: 14 }, shadow]}
+      style={[{ flexDirection: "row", gap: 10, borderRadius: 20, backgroundColor: "#fff", padding: 10, marginBottom: 12 }, shadow]}
     >
-      <View style={{ width: 110, height: 110, borderRadius: 16, overflow: "hidden", position: "relative" }}>
+      <View style={{ width: 104, height: 96, borderRadius: 14, overflow: "hidden", position: "relative" }}>
         <Image source={listing.image} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
         <Pressable
           onPress={() => setSaved((s) => !s)}
-          style={{ position: "absolute", top: 6, right: 6, width: 28, height: 28, borderRadius: 14, backgroundColor: "rgba(255,255,255,0.9)", alignItems: "center", justifyContent: "center" }}
+          style={{ position: "absolute", top: 5, right: 5, width: 24, height: 24, borderRadius: 12, backgroundColor: "rgba(255,255,255,0.9)", alignItems: "center", justifyContent: "center" }}
         >
-          <Heart size={14} color={saved ? "#EF4444" : "#94A3B8"} fill={saved ? "#EF4444" : "transparent"} strokeWidth={2.2} />
+          <Heart size={13} color={saved ? "#EF4444" : "#94A3B8"} fill={saved ? "#EF4444" : "transparent"} strokeWidth={2.2} />
         </Pressable>
         <View style={{ position: "absolute", bottom: 6, left: 6, flexDirection: "row", alignItems: "center", gap: 3, backgroundColor: "rgba(0,0,0,0.45)", borderRadius: 8, paddingHorizontal: 5, paddingVertical: 2 }}>
           <Text style={{ fontSize: 10, color: "#fff", fontWeight: "600" }}>📷 {listing.photos}</Text>
@@ -209,36 +201,19 @@ function RecommendedCard({ listing }: { listing: Listing }) {
 
       <View style={{ flex: 1, justifyContent: "space-between" }}>
         <View>
-          <Text style={{ fontSize: 18, fontWeight: "800", color: colors.navy }}>{listing.price}</Text>
+          <Text style={{ fontSize: 16, fontWeight: "800", color: colors.navy }}>{listing.price}</Text>
           <Text style={{ fontSize: 11, color: "#94A3B8", fontWeight: "600", marginTop: -2 }}>/month</Text>
-          <Text style={{ fontSize: 14, fontWeight: "700", color: colors.navy, marginTop: 2 }} numberOfLines={1}>{listing.title}</Text>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 }}>
+          <Text style={{ fontSize: 13, fontWeight: "700", color: colors.navy, marginTop: 1 }} numberOfLines={1}>{listing.title}</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 2 }}>
             <MapPin size={12} color="#94A3B8" />
             <Text style={{ fontSize: 12, color: "#64748B", fontWeight: "500" }} numberOfLines={1}>{listing.location}</Text>
             <Text style={{ fontSize: 12, color: colors.primary, fontWeight: "700" }}>· {listing.distance}</Text>
           </View>
-          <View style={{ flexDirection: "row", gap: 5, marginTop: 6 }}>
+          <View style={{ flexDirection: "row", gap: 5, marginTop: 5 }}>
             <TrustPill type="Verified" />
             <TrustPill type="Secure Chat" />
+            <TrustPill type="Escrow" />
           </View>
-        </View>
-        <View style={{ flexDirection: "row", gap: 8, marginTop: 10 }}>
-          <Pressable
-            onPress={() => router.push(`/bookings/create`)}
-            style={{
-              flex: 1, borderRadius: 12, paddingVertical: 9, alignItems: "center",
-              backgroundColor: colors.primary,
-              shadowColor: colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
-            }}
-          >
-            <Text style={{ fontSize: 13, fontWeight: "800", color: "#fff" }}>Book Viewing</Text>
-          </Pressable>
-          <Pressable
-            onPress={() => router.push(`/chat/${listing.id}`)}
-            style={{ width: 38, borderRadius: 12, alignItems: "center", justifyContent: "center", backgroundColor: "#F1F5F9" }}
-          >
-            <MessageCircle size={18} color={colors.navy} />
-          </Pressable>
         </View>
       </View>
     </Pressable>
@@ -303,7 +278,7 @@ export default function HomeScreen() {
             flexDirection: "row", alignItems: "center", gap: 10,
             backgroundColor: "#fff", borderRadius: 20,
             paddingHorizontal: 16, paddingVertical: 14,
-            marginHorizontal: 20, marginBottom: 16,
+            marginHorizontal: 20, marginBottom: 12,
           }, shadow]}
         >
           <MapPin size={18} color={colors.primary} />
@@ -313,25 +288,15 @@ export default function HomeScreen() {
           </View>
         </Pressable>
 
-        {/* ── Stats row ── */}
-        <View style={{ flexDirection: "row", marginHorizontal: 20, marginBottom: 18, borderRadius: 20, backgroundColor: "#fff", padding: 16, ...shadow }}>
-          {stats.map((s, i) => (
-            <View key={s.label} style={{ flex: 1, alignItems: "center", borderRightWidth: i < stats.length - 1 ? 1 : 0, borderRightColor: "#E2E8F0" }}>
-              <Text style={{ fontSize: 18, fontWeight: "800", color: colors.navy }}>{s.value}</Text>
-              <Text style={{ fontSize: 11, color: "#94A3B8", fontWeight: "600", marginTop: 2 }}>{s.label}</Text>
-            </View>
-          ))}
-        </View>
-
         {/* ── Filter chips ── */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10, paddingHorizontal: 20, paddingBottom: 2, marginBottom: 20 }}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10, paddingHorizontal: 20, paddingBottom: 2, marginBottom: 14 }}>
           {filters.map((f, i) => (
             <FilterChip key={f.label} label={f.label} icon={f.icon} active={i === activeFilter} onPress={() => setActiveFilter(i)} />
           ))}
         </ScrollView>
 
         {/* ── Hero carousel ── */}
-        <View style={{ marginHorizontal: 20, marginBottom: 24, borderRadius: 30, overflow: "hidden" }}>
+        <View style={{ marginHorizontal: 20, marginBottom: 20, borderRadius: 24, overflow: "hidden" }}>
           <ScrollView
             ref={heroRef}
             horizontal
@@ -342,55 +307,52 @@ export default function HomeScreen() {
               const idx = Math.round(e.nativeEvent.contentOffset.x / (SW - 40));
               setHeroIndex(idx);
             }}
-            style={{ borderRadius: 30 }}
+            style={{ borderRadius: 24 }}
           >
             {heroSlides.map((slide, i) => (
-              <View key={i} style={{ width: SW - 40, height: 254, borderRadius: 30, overflow: "hidden" }}>
+              <View key={i} style={{ width: SW - 40, height: 192, borderRadius: 24, overflow: "hidden" }}>
                 <Image source={slide.image} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
                 <LinearGradient
                   colors={["rgba(0,0,0,0.18)", "rgba(2,6,23,0.76)"]}
                   style={{ position: "absolute", inset: 0 } as any}
                 />
 
-                <View style={{ position: "absolute", top: 14, left: 14, flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "rgba(255,255,255,0.18)", borderRadius: 18, paddingHorizontal: 10, paddingVertical: 7 }}>
+                <View style={{ position: "absolute", top: 10, left: 10, flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "rgba(255,255,255,0.18)", borderRadius: 14, paddingHorizontal: 8, paddingVertical: 5 }}>
                   <Image source={images.logo} style={{ width: 18, height: 18, borderRadius: 5 }} resizeMode="contain" />
-                  <Text style={{ fontSize: 12, fontWeight: "800", color: "#fff" }}>PataKeja</Text>
+                  <Text style={{ fontSize: 11, fontWeight: "800", color: "#fff" }}>PataKeja</Text>
                 </View>
 
-                <View style={{ position: "absolute", top: 14, right: 14, backgroundColor: "rgba(22,163,74,0.2)", borderRadius: 18, paddingHorizontal: 10, paddingVertical: 7 }}>
-                  <Text style={{ fontSize: 11, fontWeight: "800", color: "#DCFCE7", letterSpacing: 0.5 }}>{slide.chip}</Text>
+                <View style={{ position: "absolute", top: 10, right: 10, backgroundColor: "rgba(22,163,74,0.2)", borderRadius: 14, paddingHorizontal: 8, paddingVertical: 5 }}>
+                  <Text style={{ fontSize: 10, fontWeight: "800", color: "#DCFCE7", letterSpacing: 0.3 }}>{slide.chip}</Text>
                 </View>
 
-                <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, paddingHorizontal: 20, paddingTop: 20, paddingBottom: 18 }}>
-                  <Text style={{ fontSize: 11, fontWeight: "800", color: "#A7F3D0", letterSpacing: 1.1 }}>{slide.tag.toUpperCase()}</Text>
-                  <Text style={{ fontSize: 25, fontWeight: "800", color: "#fff", lineHeight: 31, marginTop: 3 }}>{slide.title}</Text>
-                  <Text style={{ fontSize: 13, color: "rgba(255,255,255,0.86)", marginTop: 6 }}>{slide.sub}</Text>
+                <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, paddingHorizontal: 16, paddingTop: 14, paddingBottom: 12 }}>
+                  <Text style={{ fontSize: 10, fontWeight: "800", color: "#A7F3D0", letterSpacing: 1.1 }}>{slide.tag.toUpperCase()}</Text>
+                  <Text style={{ fontSize: 18, fontWeight: "800", color: "#fff", lineHeight: 23, marginTop: 2 }}>{slide.title}</Text>
+                  <Text style={{ fontSize: 12, color: "rgba(255,255,255,0.86)", marginTop: 4 }} numberOfLines={1}>{slide.sub}</Text>
 
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: 10 }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 8 }}>
                     <View style={{ backgroundColor: "rgba(255,255,255,0.16)", borderRadius: 99, paddingHorizontal: 9, paddingVertical: 5 }}>
-                      <Text style={{ fontSize: 11, fontWeight: "700", color: "#fff" }}>Verified</Text>
+                      <Text style={{ fontSize: 10, fontWeight: "700", color: "#fff" }}>Verified</Text>
                     </View>
                     <View style={{ backgroundColor: "rgba(255,255,255,0.16)", borderRadius: 99, paddingHorizontal: 9, paddingVertical: 5 }}>
-                      <Text style={{ fontSize: 11, fontWeight: "700", color: "#fff" }}>Secure Chat</Text>
-                    </View>
-                    <View style={{ backgroundColor: "rgba(255,255,255,0.16)", borderRadius: 99, paddingHorizontal: 9, paddingVertical: 5 }}>
-                      <Text style={{ fontSize: 11, fontWeight: "700", color: "#fff" }}>Escrow</Text>
+                      <Text style={{ fontSize: 10, fontWeight: "700", color: "#fff" }}>Secure Chat</Text>
                     </View>
                   </View>
 
                   <Pressable
                     onPress={() => router.push("/search")}
-                    style={{ marginTop: 12, backgroundColor: colors.primary, borderRadius: 14, paddingVertical: 10, paddingHorizontal: 20, alignSelf: "flex-start",
+                    style={{ marginTop: 8, backgroundColor: colors.primary, borderRadius: 12, paddingVertical: 8, paddingHorizontal: 14, alignSelf: "flex-start",
                       shadowColor: colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.4, shadowRadius: 8, elevation: 6 }}
                   >
-                    <Text style={{ fontSize: 14, fontWeight: "800", color: "#fff" }}>Explore Homes →</Text>
+                    <Text style={{ fontSize: 12, fontWeight: "800", color: "#fff" }}>Explore Homes</Text>
                   </Pressable>
                 </View>
               </View>
             ))}
           </ScrollView>
           {/* Dot indicators */}
-          <View style={{ flexDirection: "row", gap: 6, position: "absolute", bottom: 14, right: 14 }}>
+          <View style={{ flexDirection: "row", gap: 6, position: "absolute", bottom: 10, right: 12 }}>
             {heroSlides.map((_, i) => (
               <View key={i} style={{ width: heroIndex === i ? 20 : 7, height: 7, borderRadius: 4, backgroundColor: heroIndex === i ? "#fff" : "rgba(255,255,255,0.4)" }} />
             ))}
@@ -398,7 +360,7 @@ export default function HomeScreen() {
         </View>
 
         {/* ── Featured Homes ── */}
-        <View style={{ marginBottom: 24 }}>
+        <View style={{ marginBottom: 20 }}>
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, marginBottom: 14 }}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
               <Zap size={18} color="#F59E0B" fill="#F59E0B" />
@@ -409,7 +371,7 @@ export default function HomeScreen() {
               <ChevronRight size={15} color={colors.primary} />
             </Pressable>
           </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 14 }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 10 }}>
             {featuredHomes.map((l) => <FeaturedCard key={l.id} listing={l} />)}
           </ScrollView>
         </View>
