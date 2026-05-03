@@ -1,422 +1,284 @@
-import type { ElementType } from "react";
-import { useEffect, useRef, useState } from "react";
-import {
-  Animated, Image, Pressable, ScrollView, StatusBar,
-  Text, View, Dimensions,
-} from "react-native";
+import { useState } from "react";
+import { Dimensions, Image, Pressable, ScrollView, StatusBar, Text, View } from "react-native";
 import { router } from "expo-router";
 import {
-  Bell, ChevronRight, Heart, LockKeyhole, MapPin,
-  MessageCircle, ShieldCheck, SlidersHorizontal, Star, Zap,
+  Bell,
+  ChevronRight,
+  Heart,
+  MapPin,
+  Menu,
+  Search,
+  SlidersHorizontal,
+  Star,
 } from "lucide-react-native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "@/constants/assets";
 import { colors } from "@/constants/colors";
 import { listings, Listing } from "@/data/mockListings";
 
 const { width: SW } = Dimensions.get("window");
 
-// ─── data ──────────────────────────────────────────────────────────────────
-const filters: { label: string; icon: ElementType }[] = [
-  { label: "All",        icon: () => <Text style={{ fontSize: 15 }}>🏠</Text> },
-  { label: "Bedsitters", icon: () => <Text style={{ fontSize: 15 }}>🛏️</Text> },
-  { label: "1 Bedroom",  icon: () => <Text style={{ fontSize: 15 }}>🛏️</Text> },
-  { label: "2 Bedroom",  icon: () => <Text style={{ fontSize: 15 }}>🛏️</Text> },
-  { label: "3+ Bedroom", icon: () => <Text style={{ fontSize: 15 }}>🏡</Text> },
-];
+const filters = ["All", "Bedsitter", "1 Bedroom", "2 Bedroom", "3 Bedroom"];
+const featuredHomes = listings.slice(0, 4);
+const recommendedHomes = listings.slice(0, 3);
 
-const heroSlides = [
-  {
-    image: images.onboardingIntro,
-    tag: "Welcome Home",
-    title: "Find your next\nhome, the smart way.",
-    sub: "Discover verified homes across Kenya with confidence.",
-    chip: "Kenya's #1 Rental App",
-  },
-  {
-    image: images.onboardingTrust,
-    tag: "Trust First",
-    title: "Built on trust.\nAlways.",
-    sub: "Every listing is checked, every chat is private.",
-    chip: "Verified and Secure",
-  },
-  {
-    image: images.onboardingHome,
-    tag: "Nearby Homes",
-    title: "Premium homes\nnear your vibe.",
-    sub: "Fresh listings added daily near where you want to be.",
-    chip: "Updated Daily",
-  },
-  {
-    image: images.onboardingPerson,
-    tag: "Safe Payments",
-    title: "Pay securely\nwith escrow.",
-    sub: "Your money stays protected until move-in is confirmed.",
-    chip: "Escrow Protected",
-  },
-];
-
-const featuredHomes = [
-  { ...listings[0], rating: "4.8", tag: "FEATURED" },
-  { ...listings[1], rating: "4.6", tag: "FEATURED" },
-  { ...listings[2], rating: "4.9", tag: "HOT DEAL" },
-];
-
-const recommendedHomes = listings;
-
-// ─── shadow preset ──────────────────────────────────────────────────────────
 const shadow = {
   shadowColor: "#0F172A",
-  shadowOffset: { width: 0, height: 4 },
+  shadowOffset: { width: 0, height: 3 },
   shadowOpacity: 0.08,
-  shadowRadius: 12,
-  elevation: 5,
-};
-const shadowStrong = {
-  shadowColor: "#0F172A",
-  shadowOffset: { width: 0, height: 8 },
-  shadowOpacity: 0.14,
-  shadowRadius: 20,
-  elevation: 10,
+  shadowRadius: 10,
+  elevation: 4,
 };
 
-// ─── sub-components ─────────────────────────────────────────────────────────
-function FilterChip({
-  label, icon: Icon, active, onPress,
-}: { label: string; icon: ElementType; active?: boolean; onPress?: () => void }) {
-  return (
-    <Pressable
-      onPress={onPress}
-      style={[
-        {
-          flexDirection: "row", alignItems: "center", gap: 6,
-          height: 42, borderRadius: 21, paddingHorizontal: 16,
-          backgroundColor: active ? colors.navy : "#fff",
-        },
-        active ? {} : shadow,
-      ]}
-    >
-      <Icon />
-      <Text style={{ fontSize: 14, fontWeight: "700", color: active ? "#fff" : colors.navy }}>
-        {label}
-      </Text>
-    </Pressable>
-  );
-}
-
-function TrustPill({ type }: { type: "Verified" | "Secure Chat" | "Escrow" }) {
-  const cfg = {
-    Verified:     { icon: ShieldCheck, bg: "#DCFCE7", color: colors.primary },
-    "Secure Chat":{ icon: LockKeyhole, bg: "#FEF3C7", color: "#D97706" },
-    Escrow:       { icon: ShieldCheck, bg: "#EDE9FE", color: "#7C3AED" },
-  }[type];
-  const Icon = cfg.icon;
-  return (
-    <View style={{ flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: cfg.bg, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 4 }}>
-      <Icon size={11} color={cfg.color} strokeWidth={2.8} />
-      <Text style={{ fontSize: 11, fontWeight: "700", color: cfg.color }}>{type}</Text>
-    </View>
-  );
-}
-
-function FeaturedCard({ listing }: { listing: Listing & { rating?: string; tag?: string } }) {
+function FeaturedCard({ listing }: { listing: Listing }) {
   const [saved, setSaved] = useState(listing.saved ?? false);
-  const tagColor = listing.tag === "HOT DEAL" ? "#EF4444" : colors.primary;
+
   return (
     <Pressable
       onPress={() => router.push(`/listing/${listing.id}`)}
-      style={[{ width: 220, borderRadius: 22, backgroundColor: "#fff", overflow: "hidden", marginRight: 2 }, shadow]}
+      style={[{ width: 180, borderRadius: 20, backgroundColor: "#fff", overflow: "hidden" }, shadow]}
     >
-      <View style={{ height: 128, position: "relative" }}>
+      <View style={{ height: 108, position: "relative" }}>
         <Image source={listing.image} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
         <LinearGradient
           colors={["transparent", "rgba(15,23,42,0.55)"]}
-          style={{ position: "absolute", inset: 0 } as any}
+          style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0 }}
         />
-        {/* Tag badge */}
-        <View style={{ position: "absolute", top: 8, left: 8, backgroundColor: tagColor, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4 }}>
-          <Text style={{ fontSize: 10, fontWeight: "800", color: "#fff", letterSpacing: 0.5 }}>{listing.tag}</Text>
-        </View>
-        {/* Heart */}
         <Pressable
           onPress={() => setSaved((s) => !s)}
-          style={{ position: "absolute", top: 8, right: 8, width: 30, height: 30, borderRadius: 15, backgroundColor: "rgba(255,255,255,0.92)", alignItems: "center", justifyContent: "center" }}
+          style={{
+            position: "absolute",
+            top: 8,
+            right: 8,
+            width: 28,
+            height: 28,
+            borderRadius: 14,
+            backgroundColor: "rgba(255,255,255,0.95)",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
-          <Heart size={15} color={saved ? "#EF4444" : "#94A3B8"} fill={saved ? "#EF4444" : "transparent"} strokeWidth={2.2} />
+          <Heart size={14} color={saved ? "#EF4444" : "#94A3B8"} fill={saved ? "#EF4444" : "transparent"} strokeWidth={2.2} />
         </Pressable>
-        {/* Rating */}
-        {listing.rating && (
-          <View style={{ position: "absolute", bottom: 8, left: 8, flexDirection: "row", alignItems: "center", gap: 3, backgroundColor: "rgba(255,255,255,0.15)", borderRadius: 8, paddingHorizontal: 6, paddingVertical: 2 }}>
-            <Star size={10} color="#FCD34D" fill="#FCD34D" />
-            <Text style={{ fontSize: 10, fontWeight: "800", color: "#fff" }}>{listing.rating}</Text>
-          </View>
-        )}
-        <View style={{ position: "absolute", bottom: 8, right: 8, flexDirection: "row", alignItems: "center", gap: 3, backgroundColor: "rgba(0,0,0,0.4)", borderRadius: 8, paddingHorizontal: 6, paddingVertical: 2 }}>
-          <Text style={{ fontSize: 11, color: "#fff", fontWeight: "600" }}>📷 {listing.photos}</Text>
-        </View>
       </View>
-      <View style={{ paddingHorizontal: 12, paddingVertical: 10 }}>
-        <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between" }}>
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 17, fontWeight: "800", color: colors.navy }}>{listing.price}</Text>
-            <Text style={{ fontSize: 10, color: "#94A3B8", fontWeight: "600", marginTop: -1 }}>/month</Text>
+
+      <View style={{ paddingHorizontal: 10, paddingVertical: 9 }}>
+        <Text style={{ fontSize: 14, fontWeight: "800", color: colors.navy }} numberOfLines={1}>{listing.price}</Text>
+        <Text style={{ fontSize: 12, fontWeight: "700", color: colors.navy, marginTop: 2 }} numberOfLines={1}>{listing.title}</Text>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 3, marginTop: 5 }}>
+          <MapPin size={11} color="#94A3B8" />
+          <Text style={{ fontSize: 11, color: "#64748B", fontWeight: "600", flex: 1 }} numberOfLines={1}>{listing.location}</Text>
+        </View>
+        <View style={{ flexDirection: "row", alignItems: "center", marginTop: 7, justifyContent: "space-between" }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 3 }}>
+            <Star size={11} color="#F59E0B" fill="#F59E0B" />
+            <Text style={{ fontSize: 11, fontWeight: "700", color: "#334155" }}>4.8</Text>
           </View>
-        </View>
-        <Text style={{ fontSize: 14, fontWeight: "700", color: colors.navy, marginTop: 3 }} numberOfLines={1}>{listing.title}</Text>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 3, marginTop: 4 }}>
-          <MapPin size={12} color="#94A3B8" />
-          <Text style={{ fontSize: 12, color: "#64748B", fontWeight: "500", flex: 1 }} numberOfLines={1}>{listing.location}</Text>
-          <View style={{ width: 3, height: 3, borderRadius: 2, backgroundColor: "#CBD5E1" }} />
-          <Text style={{ fontSize: 11, color: colors.primary, fontWeight: "700" }}>{listing.distance}</Text>
-        </View>
-        <View style={{ flexDirection: "row", gap: 5, marginTop: 8, flexWrap: "wrap" }}>
-          <TrustPill type="Verified" />
-          <TrustPill type="Secure Chat" />
+          <Text style={{ fontSize: 11, fontWeight: "700", color: colors.primary }}>{listing.distance}</Text>
         </View>
       </View>
     </Pressable>
   );
 }
 
-function RecommendedCard({ listing }: { listing: Listing }) {
+function RecommendedRow({ listing }: { listing: Listing }) {
   const [saved, setSaved] = useState(listing.saved ?? false);
+
   return (
     <Pressable
       onPress={() => router.push(`/listing/${listing.id}`)}
-      style={[{ flexDirection: "row", gap: 10, borderRadius: 20, backgroundColor: "#fff", padding: 10, marginBottom: 12 }, shadow]}
+      style={[{ flexDirection: "row", gap: 10, backgroundColor: "#fff", borderRadius: 18, padding: 9, marginBottom: 10 }, shadow]}
     >
-      <View style={{ width: 104, height: 96, borderRadius: 14, overflow: "hidden", position: "relative" }}>
+      <View style={{ width: 92, height: 82, borderRadius: 12, overflow: "hidden", position: "relative" }}>
         <Image source={listing.image} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
         <Pressable
           onPress={() => setSaved((s) => !s)}
-          style={{ position: "absolute", top: 5, right: 5, width: 24, height: 24, borderRadius: 12, backgroundColor: "rgba(255,255,255,0.9)", alignItems: "center", justifyContent: "center" }}
+          style={{
+            position: "absolute",
+            top: 5,
+            right: 5,
+            width: 22,
+            height: 22,
+            borderRadius: 11,
+            backgroundColor: "rgba(255,255,255,0.94)",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
         >
-          <Heart size={13} color={saved ? "#EF4444" : "#94A3B8"} fill={saved ? "#EF4444" : "transparent"} strokeWidth={2.2} />
+          <Heart size={12} color={saved ? "#EF4444" : "#94A3B8"} fill={saved ? "#EF4444" : "transparent"} strokeWidth={2.2} />
         </Pressable>
-        <View style={{ position: "absolute", bottom: 6, left: 6, flexDirection: "row", alignItems: "center", gap: 3, backgroundColor: "rgba(0,0,0,0.45)", borderRadius: 8, paddingHorizontal: 5, paddingVertical: 2 }}>
-          <Text style={{ fontSize: 10, color: "#fff", fontWeight: "600" }}>📷 {listing.photos}</Text>
-        </View>
       </View>
 
-      <View style={{ flex: 1, justifyContent: "space-between" }}>
-        <View>
-          <Text style={{ fontSize: 16, fontWeight: "800", color: colors.navy }}>{listing.price}</Text>
-          <Text style={{ fontSize: 11, color: "#94A3B8", fontWeight: "600", marginTop: -2 }}>/month</Text>
-          <Text style={{ fontSize: 13, fontWeight: "700", color: colors.navy, marginTop: 1 }} numberOfLines={1}>{listing.title}</Text>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 2 }}>
-            <MapPin size={12} color="#94A3B8" />
-            <Text style={{ fontSize: 12, color: "#64748B", fontWeight: "500" }} numberOfLines={1}>{listing.location}</Text>
-            <Text style={{ fontSize: 12, color: colors.primary, fontWeight: "700" }}>· {listing.distance}</Text>
-          </View>
-          <View style={{ flexDirection: "row", gap: 5, marginTop: 5 }}>
-            <TrustPill type="Verified" />
-            <TrustPill type="Secure Chat" />
-            <TrustPill type="Escrow" />
-          </View>
+      <View style={{ flex: 1, justifyContent: "center" }}>
+        <Text style={{ fontSize: 15, fontWeight: "800", color: colors.navy }}>{listing.price}</Text>
+        <Text style={{ fontSize: 12, fontWeight: "700", color: colors.navy, marginTop: 1 }} numberOfLines={1}>{listing.title}</Text>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 3, marginTop: 4 }}>
+          <MapPin size={11} color="#94A3B8" />
+          <Text style={{ fontSize: 11, color: "#64748B", fontWeight: "600" }} numberOfLines={1}>{listing.location}</Text>
         </View>
       </View>
     </Pressable>
   );
 }
 
-// ─── main screen ────────────────────────────────────────────────────────────
 export default function HomeScreen() {
-  const insets = useSafeAreaInsets();
   const [activeFilter, setActiveFilter] = useState(0);
-  const [heroIndex, setHeroIndex] = useState(0);
-  const heroRef = useRef<ScrollView>(null);
-
-  // auto-scroll hero every 4.5 s
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setHeroIndex((prev) => {
-        const next = (prev + 1) % heroSlides.length;
-        heroRef.current?.scrollTo({ x: next * (SW - 40), animated: true });
-        return next;
-      });
-    }, 4500);
-    return () => clearInterval(timer);
-  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#F8FAFC" }} edges={["top", "left", "right"]}>
       <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 100 }}
-      >
-        {/* ── Header ── */}
-        <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 20, paddingTop: 8, paddingBottom: 14, gap: 12 }}>
+
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12 }}>
           <Pressable
-            style={[{ width: 46, height: 46, borderRadius: 23, backgroundColor: colors.navy, alignItems: "center", justifyContent: "center" }, shadow]}
+            style={[{ width: 42, height: 42, borderRadius: 21, backgroundColor: "#fff", alignItems: "center", justifyContent: "center" }, shadow]}
           >
-            <Text style={{ fontSize: 18 }}>👤</Text>
+            <Menu size={20} color={colors.navy} strokeWidth={2.5} />
           </Pressable>
 
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 12, color: "#94A3B8", fontWeight: "600" }}>Good morning 👋</Text>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 1 }}>
-              <MapPin size={13} color={colors.primary} />
-              <Text style={{ fontSize: 14, fontWeight: "700", color: colors.navy }}>Nairobi, Kenya</Text>
+          <Pressable
+            onPress={() => router.push("/search")}
+            style={[
+              {
+                flex: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                backgroundColor: "#fff",
+                borderRadius: 22,
+                paddingLeft: 12,
+                paddingRight: 8,
+                height: 44,
+                gap: 8,
+              },
+              shadow,
+            ]}
+          >
+            <Search size={17} color="#94A3B8" />
+            <Text style={{ flex: 1, fontSize: 13, color: "#94A3B8", fontWeight: "600" }}>Search your dream home</Text>
+            <View style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: colors.navy, alignItems: "center", justifyContent: "center" }}>
+              <SlidersHorizontal size={14} color="#fff" />
             </View>
-          </View>
+          </Pressable>
 
           <Pressable
             onPress={() => router.push("/notifications")}
-            style={[{ width: 46, height: 46, borderRadius: 23, backgroundColor: "#fff", alignItems: "center", justifyContent: "center" }, shadow]}
+            style={[{ width: 42, height: 42, borderRadius: 21, backgroundColor: "#fff", alignItems: "center", justifyContent: "center" }, shadow]}
           >
-            <Bell size={20} color={colors.navy} />
-            <View style={{ position: "absolute", top: 10, right: 10, width: 9, height: 9, borderRadius: 5, backgroundColor: colors.primary, borderWidth: 1.5, borderColor: "#F8FAFC" }} />
+            <Bell size={18} color={colors.navy} />
+            <View style={{ position: "absolute", top: 8, right: 8, width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary }} />
           </Pressable>
         </View>
 
-        {/* ── Search bar ── */}
-        <Pressable
-          onPress={() => router.push("/search")}
-          style={[{
-            flexDirection: "row", alignItems: "center", gap: 10,
-            backgroundColor: "#fff", borderRadius: 20,
-            paddingHorizontal: 16, paddingVertical: 14,
-            marginHorizontal: 20, marginBottom: 12,
-          }, shadow]}
-        >
-          <MapPin size={18} color={colors.primary} />
-          <Text style={{ flex: 1, fontSize: 15, color: "#94A3B8", fontWeight: "500" }}>Where do you want to live?</Text>
-          <View style={{ width: 36, height: 36, borderRadius: 12, backgroundColor: colors.navy, alignItems: "center", justifyContent: "center" }}>
-            <SlidersHorizontal size={16} color="#fff" />
-          </View>
-        </Pressable>
-
-        {/* ── Filter chips ── */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 10, paddingHorizontal: 20, paddingBottom: 2, marginBottom: 14 }}>
-          {filters.map((f, i) => (
-            <FilterChip key={f.label} label={f.label} icon={f.icon} active={i === activeFilter} onPress={() => setActiveFilter(i)} />
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingHorizontal: 16, marginBottom: 12 }}>
+          {filters.map((label, index) => (
+            <Pressable
+              key={label}
+              onPress={() => setActiveFilter(index)}
+              style={[
+                {
+                  height: 34,
+                  borderRadius: 17,
+                  paddingHorizontal: 14,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: activeFilter === index ? colors.navy : "#fff",
+                },
+                shadow,
+              ]}
+            >
+              <Text style={{ fontSize: 12, fontWeight: "700", color: activeFilter === index ? "#fff" : colors.navy }}>{label}</Text>
+            </Pressable>
           ))}
         </ScrollView>
 
-        {/* ── Hero carousel ── */}
-        <View style={{ marginHorizontal: 20, marginBottom: 20, borderRadius: 24, overflow: "hidden" }}>
-          <ScrollView
-            ref={heroRef}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            scrollEventThrottle={16}
-            onMomentumScrollEnd={(e) => {
-              const idx = Math.round(e.nativeEvent.contentOffset.x / (SW - 40));
-              setHeroIndex(idx);
-            }}
-            style={{ borderRadius: 24 }}
-          >
-            {heroSlides.map((slide, i) => (
-              <View key={i} style={{ width: SW - 40, height: 192, borderRadius: 24, overflow: "hidden" }}>
-                <Image source={slide.image} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
-                <LinearGradient
-                  colors={["rgba(0,0,0,0.18)", "rgba(2,6,23,0.76)"]}
-                  style={{ position: "absolute", inset: 0 } as any}
-                />
+        <View style={{ marginHorizontal: 16, marginBottom: 16, borderRadius: 24, overflow: "hidden", backgroundColor: colors.navy }}>
+          <View style={{ width: SW - 32, height: 168, position: "relative" }}>
+            <Image source={images.homeDirection} style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: "52%", height: "100%" }} resizeMode="cover" />
+            <LinearGradient
+              colors={["#0F172A", "rgba(15,23,42,0.6)", "rgba(15,23,42,0.2)"]}
+              start={{ x: 0, y: 0.5 }}
+              end={{ x: 1, y: 0.5 }}
+              style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0 }}
+            />
 
-                <View style={{ position: "absolute", top: 10, left: 10, flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "rgba(255,255,255,0.18)", borderRadius: 14, paddingHorizontal: 8, paddingVertical: 5 }}>
-                  <Image source={images.logo} style={{ width: 18, height: 18, borderRadius: 5 }} resizeMode="contain" />
-                  <Text style={{ fontSize: 11, fontWeight: "800", color: "#fff" }}>PataKeja</Text>
-                </View>
+            <View style={{ position: "absolute", left: 14, top: 14 }}>
+              <Text style={{ fontSize: 11, fontWeight: "700", letterSpacing: 1, color: "#A7F3D0" }}>WELCOME HOME</Text>
+              <Text style={{ fontSize: 22, fontWeight: "800", lineHeight: 28, color: "#fff", marginTop: 4 }}>
+                Find your{"\n"}perfect place
+              </Text>
+              <Text style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", marginTop: 6 }}>
+                Verified, secure, and affordable.
+              </Text>
 
-                <View style={{ position: "absolute", top: 10, right: 10, backgroundColor: "rgba(22,163,74,0.2)", borderRadius: 14, paddingHorizontal: 8, paddingVertical: 5 }}>
-                  <Text style={{ fontSize: 10, fontWeight: "800", color: "#DCFCE7", letterSpacing: 0.3 }}>{slide.chip}</Text>
-                </View>
-
-                <View style={{ position: "absolute", bottom: 0, left: 0, right: 0, paddingHorizontal: 16, paddingTop: 14, paddingBottom: 12 }}>
-                  <Text style={{ fontSize: 10, fontWeight: "800", color: "#A7F3D0", letterSpacing: 1.1 }}>{slide.tag.toUpperCase()}</Text>
-                  <Text style={{ fontSize: 18, fontWeight: "800", color: "#fff", lineHeight: 23, marginTop: 2 }}>{slide.title}</Text>
-                  <Text style={{ fontSize: 12, color: "rgba(255,255,255,0.86)", marginTop: 4 }} numberOfLines={1}>{slide.sub}</Text>
-
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 8 }}>
-                    <View style={{ backgroundColor: "rgba(255,255,255,0.16)", borderRadius: 99, paddingHorizontal: 9, paddingVertical: 5 }}>
-                      <Text style={{ fontSize: 10, fontWeight: "700", color: "#fff" }}>Verified</Text>
-                    </View>
-                    <View style={{ backgroundColor: "rgba(255,255,255,0.16)", borderRadius: 99, paddingHorizontal: 9, paddingVertical: 5 }}>
-                      <Text style={{ fontSize: 10, fontWeight: "700", color: "#fff" }}>Secure Chat</Text>
-                    </View>
-                  </View>
-
-                  <Pressable
-                    onPress={() => router.push("/search")}
-                    style={{ marginTop: 8, backgroundColor: colors.primary, borderRadius: 12, paddingVertical: 8, paddingHorizontal: 14, alignSelf: "flex-start",
-                      shadowColor: colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.4, shadowRadius: 8, elevation: 6 }}
-                  >
-                    <Text style={{ fontSize: 12, fontWeight: "800", color: "#fff" }}>Explore Homes</Text>
-                  </Pressable>
-                </View>
-              </View>
-            ))}
-          </ScrollView>
-          {/* Dot indicators */}
-          <View style={{ flexDirection: "row", gap: 6, position: "absolute", bottom: 10, right: 12 }}>
-            {heroSlides.map((_, i) => (
-              <View key={i} style={{ width: heroIndex === i ? 20 : 7, height: 7, borderRadius: 4, backgroundColor: heroIndex === i ? "#fff" : "rgba(255,255,255,0.4)" }} />
-            ))}
+              <Pressable
+                onPress={() => router.push("/search")}
+                style={{
+                  marginTop: 10,
+                  backgroundColor: colors.primary,
+                  borderRadius: 10,
+                  paddingHorizontal: 12,
+                  paddingVertical: 7,
+                  alignSelf: "flex-start",
+                }}
+              >
+                <Text style={{ fontSize: 12, color: "#fff", fontWeight: "800" }}>Explore now</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
 
-        {/* ── Featured Homes ── */}
-        <View style={{ marginBottom: 20 }}>
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, marginBottom: 14 }}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-              <Zap size={18} color="#F59E0B" fill="#F59E0B" />
-              <Text style={{ fontSize: 18, fontWeight: "800", color: colors.navy }}>Featured Homes</Text>
-            </View>
+        <View style={{ marginBottom: 16 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, marginBottom: 10 }}>
+            <Text style={{ fontSize: 17, fontWeight: "800", color: colors.navy }}>Featured Homes</Text>
             <Pressable onPress={() => router.push("/search")} style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
-              <Text style={{ fontSize: 13, fontWeight: "700", color: colors.primary }}>See all</Text>
-              <ChevronRight size={15} color={colors.primary} />
+              <Text style={{ fontSize: 12, fontWeight: "700", color: colors.primary }}>See all</Text>
+              <ChevronRight size={14} color={colors.primary} />
             </Pressable>
           </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 20, gap: 10 }}>
-            {featuredHomes.map((l) => <FeaturedCard key={l.id} listing={l} />)}
+
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 10 }}>
+            {featuredHomes.map((item) => (
+              <FeaturedCard key={item.id} listing={item} />
+            ))}
           </ScrollView>
         </View>
 
-        {/* ── Recommended ── */}
-        <View style={{ paddingHorizontal: 20 }}>
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-            <Text style={{ fontSize: 18, fontWeight: "800", color: colors.navy }}>Recommended For You</Text>
+        <View style={{ paddingHorizontal: 16 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+            <Text style={{ fontSize: 17, fontWeight: "800", color: colors.navy }}>Recommended</Text>
             <Pressable onPress={() => router.push("/search")} style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
-              <Text style={{ fontSize: 13, fontWeight: "700", color: colors.primary }}>See all</Text>
-              <ChevronRight size={15} color={colors.primary} />
+              <Text style={{ fontSize: 12, fontWeight: "700", color: colors.primary }}>See all</Text>
+              <ChevronRight size={14} color={colors.primary} />
             </Pressable>
           </View>
-          {recommendedHomes.map((l) => <RecommendedCard key={l.id} listing={l} />)}
-        </View>
 
-        {/* ── Trust footer ── */}
-        <View style={{ marginHorizontal: 20, marginTop: 8, borderRadius: 20, backgroundColor: colors.navy, padding: 20, flexDirection: "row", justifyContent: "space-around" }}>
-          {[
-            { icon: ShieldCheck, label: "Verified\nHomes" },
-            { icon: LockKeyhole, label: "Secure\nChat" },
-            { icon: ShieldCheck, label: "Safe\nPayments" },
-          ].map(({ icon: Icon, label }) => (
-            <View key={label} style={{ alignItems: "center", gap: 6 }}>
-              <View style={{ width: 42, height: 42, borderRadius: 14, backgroundColor: "rgba(22,163,74,0.2)", alignItems: "center", justifyContent: "center" }}>
-                <Icon size={20} color={colors.primary} strokeWidth={2.2} />
-              </View>
-              <Text style={{ fontSize: 12, fontWeight: "700", color: "rgba(255,255,255,0.8)", textAlign: "center", lineHeight: 17 }}>{label}</Text>
-            </View>
+          {recommendedHomes.map((item) => (
+            <RecommendedRow key={item.id} listing={item} />
           ))}
         </View>
       </ScrollView>
 
-      {/* ── View Map FAB ── */}
       <Pressable
         onPress={() => router.push("/search")}
-        style={[{
-          position: "absolute", bottom: 96, right: 20,
-          flexDirection: "row", alignItems: "center", gap: 8,
-          backgroundColor: colors.navy, borderRadius: 20,
-          paddingHorizontal: 18, paddingVertical: 13,
-        }, shadowStrong]}
+        style={[
+          {
+            position: "absolute",
+            bottom: 94,
+            right: 16,
+            borderRadius: 18,
+            backgroundColor: colors.navy,
+            paddingHorizontal: 14,
+            paddingVertical: 10,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 6,
+          },
+          shadow,
+        ]}
       >
-        <Text style={{ fontSize: 16 }}>🗺️</Text>
-        <Text style={{ fontSize: 14, fontWeight: "800", color: "#fff" }}>View Map</Text>
+        <MapPin size={14} color="#fff" />
+        <Text style={{ fontSize: 12, fontWeight: "800", color: "#fff" }}>View map</Text>
       </Pressable>
     </SafeAreaView>
   );
