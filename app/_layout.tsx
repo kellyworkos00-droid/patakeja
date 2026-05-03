@@ -35,8 +35,8 @@ function AuthGuard() {
     const authRoute = segments[0] === "auth";
     const onboardingRoute = segments[0] === "onboarding";
 
-    // Allow signed-out users to browse public tabs.
-    const publicTabs = new Set(["home", "explore"]);
+    // All tabs are accessible — auth is enforced at the index/onboarding level.
+    const publicTabs = new Set(["home", "explore", "chat", "profile", "post", "bookings"]);
     const inProtectedTab = inTabs && !publicTabs.has(currentTab || "");
 
     if (isSignedIn && (authRoute || onboardingRoute)) {
