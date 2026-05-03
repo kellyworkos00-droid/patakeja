@@ -12,7 +12,6 @@ import {
   Search,
   Shield,
   SlidersHorizontal,
-  ChevronRight,
   Check,
   CalendarDays,
   Archive,
@@ -23,10 +22,10 @@ import {
 import { chats, ChatThread } from "@/data/mockChats";
 
 const FILTER_TABS = [
-  { key: "all",      label: "All Chats", count: 12, icon: "" },
-  { key: "unread",   label: "Unread",    count: 5,  icon: "" },
-  { key: "bookings", label: "Bookings", count: 0,  icon: "calendar" },
-  { key: "archive",  label: "Archive",  count: 0,  icon: "archive" },
+  { key: "all",      label: "All Chats", count: 12, icon: "", width: 92 },
+  { key: "unread",   label: "Unread",    count: 5,  icon: "", width: 78 },
+  { key: "bookings", label: "Bookings",  count: 0,  icon: "calendar", width: 96 },
+  { key: "archive",  label: "Archive",   count: 0,  icon: "archive", width: 88 },
 ];
 
 function FilterTabIcon({ icon, active }: { icon: string; active: boolean }) {
@@ -152,22 +151,20 @@ export default function ChatListScreen() {
 
       {/* ── Filter Tabs ── */}
       <View style={{ paddingHorizontal: 20, paddingBottom: 12 }}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            gap: 10,
-            paddingHorizontal: 10,
-            paddingVertical: 10,
-            backgroundColor: "#FFFFFF",
-            borderRadius: 20,
-            shadowColor: "#0F172A",
-            shadowOpacity: 0.07,
-            shadowOffset: { width: 0, height: 8 },
-            shadowRadius: 18,
-            elevation: 4,
-          }}
-        >
+        <View style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "space-between",
+          paddingHorizontal: 10,
+          paddingVertical: 10,
+          backgroundColor: "#FFFFFF",
+          borderRadius: 20,
+          shadowColor: "#0F172A",
+          shadowOpacity: 0.07,
+          shadowOffset: { width: 0, height: 8 },
+          shadowRadius: 18,
+          elevation: 4,
+        }}>
           {FILTER_TABS.map((tab) => {
             const active = activeFilter === tab.key;
             return (
@@ -175,52 +172,36 @@ export default function ChatListScreen() {
                 key={tab.key}
                 onPress={() => setActiveFilter(tab.key)}
                 style={{
-                  flexDirection: "row", alignItems: "center", gap: 9,
-                  paddingHorizontal: 20, height: 46, borderRadius: 23,
+                  width: tab.width,
+                  height: 46,
+                  borderRadius: 23,
                   backgroundColor: active ? "#0B1D45" : "#FFFFFF",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 7,
                 }}
               >
                 <FilterTabIcon icon={tab.icon} active={active} />
-                <Text style={{ fontSize: 17, fontWeight: "700", color: active ? "#FFFFFF" : "#0F172A" }}>
+                <Text style={{ fontSize: 13, fontWeight: "700", color: active ? "#FFFFFF" : "#0F172A" }} numberOfLines={1}>
                   {tab.label}
                 </Text>
                 {tab.count > 0 && (
                   <View style={{
-                    minWidth: 30, height: 30, borderRadius: 15, paddingHorizontal: 7,
+                    minWidth: 24,
+                    height: 24,
+                    borderRadius: 12,
+                    paddingHorizontal: 6,
                     backgroundColor: active ? "#71C949" : "#16A34A",
-                    alignItems: "center", justifyContent: "center",
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}>
-                    <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "800" }}>{tab.count}</Text>
+                    <Text style={{ color: "#FFFFFF", fontSize: 11, fontWeight: "800" }}>{tab.count}</Text>
                   </View>
                 )}
               </Pressable>
             );
           })}
-        </ScrollView>
-      </View>
-
-      {/* ── Security Card ── */}
-      <View style={{ paddingHorizontal: 20, paddingBottom: 10 }}>
-        <View style={{
-          backgroundColor: "#FFFFFF", borderRadius: 20,
-          paddingHorizontal: 16, paddingVertical: 16,
-          flexDirection: "row", alignItems: "center", gap: 12,
-          shadowColor: "#0F172A", shadowOpacity: 0.06,
-          shadowOffset: { width: 0, height: 6 }, shadowRadius: 16, elevation: 3,
-        }}>
-          <View style={{ width: 66, height: 66, borderRadius: 33, backgroundColor: "#ECF8EF", alignItems: "center", justifyContent: "center" }}>
-            <Shield size={27} color="#16A34A" />
-          </View>
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 22, lineHeight: 28, fontWeight: "800", color: "#0F172A" }}>Your conversations are secure</Text>
-            <Text style={{ marginTop: 4, fontSize: 18, lineHeight: 26, color: "#667085", fontWeight: "500" }}>
-              Phone numbers are hidden. Payments and bookings are protected.
-            </Text>
-          </View>
-          <Pressable style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-            <Text style={{ fontSize: 18, color: "#16A34A", fontWeight: "700" }}>Learn more</Text>
-            <ChevronRight size={20} color="#16A34A" strokeWidth={2.5} />
-          </Pressable>
         </View>
       </View>
 
