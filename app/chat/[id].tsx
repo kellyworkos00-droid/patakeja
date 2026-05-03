@@ -130,8 +130,16 @@ function MessageBubble({
     <View style={{ marginHorizontal: 14, marginBottom: 8, flexDirection: "row", alignItems: "flex-end", justifyContent: isMe ? "flex-end" : "flex-start", gap: 8 }}>
       {!isMe && <PersonAvatar initials={initials} color={avatarColor} size={32} />}
       <View style={{ maxWidth: "74%" }}>
-        <View style={{ backgroundColor: isMe ? "#0F172A" : "#FFFFFF", borderRadius: 18, borderTopLeftRadius: isMe ? 18 : 4, borderTopRightRadius: isMe ? 4 : 18, paddingHorizontal: 14, paddingVertical: 10, borderWidth: isMe ? 0 : 1, borderColor: "#F1F5F9" }}>
-          <Text style={{ fontSize: 14.5, color: isMe ? "#FFFFFF" : "#0F172A", lineHeight: 22 }}>{message.text}</Text>
+        <View style={{
+          backgroundColor: isMe ? "#0B1D45" : "#FFFFFF",
+          borderRadius: 20,
+          borderTopLeftRadius: isMe ? 20 : 4,
+          borderTopRightRadius: isMe ? 4 : 20,
+          paddingHorizontal: 15, paddingVertical: 11,
+          borderWidth: isMe ? 0 : 1, borderColor: "#EEF2F6",
+          shadowColor: "#0B1D45", shadowOpacity: isMe ? 0 : 0.05, shadowRadius: 8, elevation: isMe ? 0 : 2,
+        }}>
+          <Text style={{ fontSize: 14.5, color: isMe ? "#FFFFFF" : "#0B1D45", lineHeight: 22 }}>{message.text}</Text>
         </View>
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: isMe ? "flex-end" : "flex-start", marginTop: 4, gap: 4 }}>
           <Text style={{ fontSize: 11, color: "#94A3B8" }}>{message.time}</Text>
@@ -309,9 +317,10 @@ export default function ChatDetailScreen() {
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === "ios" ? "padding" : "height"}>
 
         {/* ── Header ── */}
-        <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 14, paddingVertical: 10, backgroundColor: "#FFFFFF", borderBottomWidth: 1, borderBottomColor: "#F1F5F9", gap: 10 }}>
-          <Pressable onPress={() => router.back()} style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: "#F4F8FB", alignItems: "center", justifyContent: "center" }}>
-            <ArrowLeft size={18} color="#0F172A" strokeWidth={2.5} />
+        <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 12, paddingVertical: 10, backgroundColor: "#FFFFFF", borderBottomWidth: 1, borderBottomColor: "#F1F5F9", gap: 8,
+          shadowColor: "#0B1D45", shadowOpacity: 0.06, shadowOffset: { width: 0, height: 3 }, shadowRadius: 12, elevation: 4 }}>
+          <Pressable onPress={() => router.back()} style={({ pressed }) => ({ width: 40, height: 40, borderRadius: 20, backgroundColor: pressed ? "#EEF2F6" : "#F4F8FB", alignItems: "center", justifyContent: "center" })}>
+            <ArrowLeft size={18} color="#0B1D45" strokeWidth={2.5} />
           </Pressable>
 
           <Pressable
@@ -321,20 +330,20 @@ export default function ChatDetailScreen() {
             <PersonAvatar initials={chat.initials} color={chat.avatarColor} size={42} showDot={chat.online} />
             <View style={{ flex: 1 }}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
-                <Text style={{ fontSize: 16, fontWeight: "700", color: "#0F172A" }}>{chat.name}</Text>
+                <Text style={{ fontSize: 16, fontWeight: "800", color: "#0B1D45", letterSpacing: -0.3 }}>{chat.name}</Text>
                 {chat.verified && <VerifiedBadge />}
               </View>
-              <Text style={{ fontSize: 12, color: chat.online ? "#16A34A" : "#64748B", marginTop: 1, fontWeight: chat.online ? "600" : "400" }}>
-                {chat.online ? "Online now" : chat.responseTime}
+              <Text style={{ fontSize: 12, color: chat.online ? "#16A34A" : "#94A3B8", marginTop: 1, fontWeight: chat.online ? "600" : "400" }}>
+                {chat.online ? "● Online now" : chat.responseTime}
               </Text>
             </View>
           </Pressable>
 
-          <Pressable onPress={() => setShowCall(true)} style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: "#F4F8FB", alignItems: "center", justifyContent: "center" }}>
-            <PhoneCall size={18} color="#0F172A" strokeWidth={2} />
+          <Pressable onPress={() => setShowCall(true)} style={({ pressed }) => ({ width: 40, height: 40, borderRadius: 20, backgroundColor: pressed ? "#EEF2F6" : "#F4F8FB", alignItems: "center", justifyContent: "center" })}>
+            <PhoneCall size={18} color="#0B1D45" strokeWidth={2} />
           </Pressable>
-          <Pressable onPress={() => setShowMenu(true)} style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: "#F4F8FB", alignItems: "center", justifyContent: "center" }}>
-            <MoreHorizontal size={18} color="#0F172A" strokeWidth={2} />
+          <Pressable onPress={() => setShowMenu(true)} style={({ pressed }) => ({ width: 40, height: 40, borderRadius: 20, backgroundColor: pressed ? "#EEF2F6" : "#F4F8FB", alignItems: "center", justifyContent: "center" })}>
+            <MoreHorizontal size={18} color="#0B1D45" strokeWidth={2} />
           </Pressable>
         </View>
 
@@ -342,37 +351,39 @@ export default function ChatDetailScreen() {
         <ScrollView ref={scrollRef} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 10 }}>
 
           {/* Listing Card */}
-          <View style={{ marginHorizontal: 12, marginTop: 12, backgroundColor: "#FFFFFF", borderRadius: 20, borderWidth: 1, borderColor: "#EDF2F7", padding: 14, shadowColor: "#0F172A", shadowOpacity: 0.04, shadowRadius: 8, elevation: 1 }}>
-            <View style={{ flexDirection: "row", gap: 12 }}>
-              <Image source={chat.avatar} style={{ width: 80, height: 80, borderRadius: 12 }} />
+          <View style={{ marginHorizontal: 12, marginTop: 14, backgroundColor: "#FFFFFF", borderRadius: 24, overflow: "hidden", shadowColor: "#0B1D45", shadowOpacity: 0.08, shadowRadius: 16, elevation: 4 }}>
+            <View style={{ flexDirection: "row", gap: 14, padding: 14 }}>
+              <View style={{ borderRadius: 16, overflow: "hidden" }}>
+                <Image source={chat.avatar} style={{ width: 84, height: 84 }} resizeMode="cover" />
+              </View>
               <View style={{ flex: 1 }}>
                 <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between" }}>
-                  <View style={{ backgroundColor: "#DCFCE7", paddingHorizontal: 8, paddingVertical: 4, borderRadius: 20 }}>
-                    <Text style={{ fontSize: 9.5, fontWeight: "700", color: "#16A34A", letterSpacing: 0.6 }}>VERIFIED LISTING</Text>
+                  <View style={{ backgroundColor: "#DCFCE7", paddingHorizontal: 9, paddingVertical: 4, borderRadius: 20 }}>
+                    <Text style={{ fontSize: 9.5, fontWeight: "800", color: "#16A34A", letterSpacing: 0.6 }}>VERIFIED LISTING</Text>
                   </View>
-                  <Pressable onPress={() => setSaved(!saved)}>
+                  <Pressable onPress={() => setSaved(!saved)} style={{ padding: 4 }}>
                     <Heart size={18} color={saved ? "#EF4444" : "#CBD5E1"} fill={saved ? "#EF4444" : "transparent"} strokeWidth={2} />
                   </Pressable>
                 </View>
-                <Text style={{ fontSize: 15, fontWeight: "700", color: "#0F172A", marginTop: 5, lineHeight: 20 }} numberOfLines={2}>{chat.listingTitle}</Text>
+                <Text style={{ fontSize: 15, fontWeight: "800", color: "#0B1D45", marginTop: 6, lineHeight: 20 }} numberOfLines={2}>{chat.listingTitle}</Text>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 }}>
-                  <MapPin size={11} color="#64748B" />
-                  <Text style={{ fontSize: 12, color: "#64748B" }} numberOfLines={1}>{chat.listingLocation} • {chat.listingDistance}</Text>
+                  <MapPin size={11} color="#94A3B8" strokeWidth={2} />
+                  <Text style={{ fontSize: 12, color: "#94A3B8" }} numberOfLines={1}>{chat.listingLocation} • {chat.listingDistance}</Text>
                 </View>
-                <Text style={{ fontSize: 18, fontWeight: "800", color: "#16A34A", marginTop: 5 }}>
+                <Text style={{ fontSize: 19, fontWeight: "900", color: "#16A34A", marginTop: 6 }}>
                   {chat.listingPrice}{" "}
-                  <Text style={{ fontSize: 13, fontWeight: "500", color: "#94A3B8" }}>/ month</Text>
+                  <Text style={{ fontSize: 12, fontWeight: "500", color: "#94A3B8" }}>/ month</Text>
                 </Text>
               </View>
             </View>
-            <View style={{ flexDirection: "row", gap: 8, marginTop: 12 }}>
+            <View style={{ flexDirection: "row", gap: 10, paddingHorizontal: 14, paddingBottom: 14 }}>
               <Pressable
-                style={({ pressed }) => ({ flex: 1, height: 42, borderRadius: 14, borderWidth: 1.5, borderColor: "#E2E8F0", alignItems: "center", justifyContent: "center", backgroundColor: pressed ? "#F8FAFC" : "#FFFFFF" })}
+                style={({ pressed }) => ({ flex: 1, height: 44, borderRadius: 16, borderWidth: 1.5, borderColor: "#E2E8F0", alignItems: "center", justifyContent: "center", backgroundColor: pressed ? "#F1F5F9" : "#FFFFFF" })}
                 onPress={() => router.push(`/listing/${chat.listingId}` as any)}
               >
-                <Text style={{ fontSize: 13.5, fontWeight: "600", color: "#0F172A" }}>View Listing</Text>
+                <Text style={{ fontSize: 13.5, fontWeight: "700", color: "#0B1D45" }}>View Listing</Text>
               </Pressable>
-              <Pressable style={({ pressed }) => ({ flex: 1, height: 42, borderRadius: 14, backgroundColor: pressed ? "#15803D" : "#16A34A", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6 })}>
+              <Pressable style={({ pressed }) => ({ flex: 1, height: 44, borderRadius: 16, backgroundColor: pressed ? "#15803D" : "#16A34A", flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 6, shadowColor: "#16A34A", shadowOpacity: 0.3, shadowRadius: 10, elevation: 3 })}>
                 <CalendarDays size={15} color="#FFFFFF" strokeWidth={2} />
                 <Text style={{ fontSize: 13.5, fontWeight: "700", color: "#FFFFFF" }}>Book Viewing</Text>
               </Pressable>
@@ -427,11 +438,11 @@ export default function ChatDetailScreen() {
 
           {/* Input Bar */}
           <View style={{ flexDirection: "row", alignItems: "center", paddingHorizontal: 14, paddingTop: 8, paddingBottom: Platform.OS === "ios" ? 20 : 14, borderTopWidth: 1, borderTopColor: "#F1F5F9", gap: 8 }}>
-            <Pressable style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: "#0F172A", alignItems: "center", justifyContent: "center" }}>
+            <Pressable style={({ pressed }) => ({ width: 40, height: 40, borderRadius: 20, backgroundColor: pressed ? "#1A3560" : "#0B1D45", alignItems: "center", justifyContent: "center" })}>
               <Plus size={20} color="#FFFFFF" strokeWidth={2.5} />
             </Pressable>
 
-            <View style={{ flex: 1, flexDirection: "row", alignItems: "center", backgroundColor: "#F8FAFC", borderRadius: 24, paddingLeft: 14, paddingRight: 6, borderWidth: 1, borderColor: "#E2E8F0", minHeight: 44 }}>
+            <View style={{ flex: 1, flexDirection: "row", alignItems: "center", backgroundColor: "#F4F8FB", borderRadius: 26, paddingLeft: 14, paddingRight: 6, borderWidth: 1, borderColor: "#E8EDF3", minHeight: 46 }}>
               {recording ? (
                 <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 10 }}>
                   <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: "#EF4444" }} />
@@ -443,7 +454,7 @@ export default function ChatDetailScreen() {
                   value={inputText}
                   onChangeText={setInputText}
                   onFocus={() => setShowEmoji(false)}
-                  style={{ flex: 1, fontSize: 15, color: "#0F172A", paddingVertical: 10 }}
+                  style={{ flex: 1, fontSize: 15, color: "#0B1D45", paddingVertical: 10 }}
                   placeholder="Type a message..."
                   placeholderTextColor="#94A3B8"
                   multiline
@@ -476,7 +487,7 @@ export default function ChatDetailScreen() {
                   onPressOut={sendVoice}
                   style={({ pressed }) => ({
                     width: 38, height: 38, borderRadius: 19,
-                    backgroundColor: recording ? "#EF4444" : pressed ? "#334155" : "#0F172A",
+                    backgroundColor: recording ? "#EF4444" : pressed ? "#1A3560" : "#0B1D45",
                     alignItems: "center", justifyContent: "center",
                     marginRight: 2,
                   })}
