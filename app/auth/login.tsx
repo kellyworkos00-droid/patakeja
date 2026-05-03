@@ -15,7 +15,6 @@ WebBrowser.maybeCompleteAuthSession();
 export default function LoginScreen() {
   const { signIn, setActive, isLoaded } = useSignIn();
   const { startOAuthFlow: startGoogleFlow } = useOAuth({ strategy: "oauth_google" });
-  const { startOAuthFlow: startTikTokFlow } = useOAuth({ strategy: "oauth_tiktok" });
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -50,13 +49,6 @@ export default function LoginScreen() {
       const { createdSessionId, setActive } = await startGoogleFlow();
       if (createdSessionId) { setActive?.({ session: createdSessionId }); router.replace("/tabs/home"); }
     } catch { Alert.alert("Error", "Google login failed"); }
-  };
-
-  const handleTikTokLogin = async () => {
-    try {
-      const { createdSessionId, setActive } = await startTikTokFlow();
-      if (createdSessionId) { setActive?.({ session: createdSessionId }); router.replace("/tabs/home"); }
-    } catch { Alert.alert("Error", "TikTok login failed"); }
   };
 
   return (
@@ -156,42 +148,6 @@ export default function LoginScreen() {
                 <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: "#EA4335" }} />
                 <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: "#FBBC05" }} />
                 <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: "#34A853" }} />
-              </View>
-            </View>
-          </Pressable>
-
-          {/* TikTok */}
-          <Pressable onPress={handleTikTokLogin} disabled={loading}
-            style={({ pressed }) => ({ opacity: pressed || loading ? 0.7 : 1 })}
-          >
-            <View style={{
-              flexDirection: "row", alignItems: "center",
-              backgroundColor: "#010101",
-              borderRadius: 20,
-              paddingVertical: 16, paddingHorizontal: 18,
-              shadowColor: "#010101",
-              shadowOffset: { width: 0, height: 6 },
-              shadowOpacity: 0.3, shadowRadius: 14, elevation: 8,
-            }}>
-              <View style={{
-                width: 44, height: 44, borderRadius: 14,
-                backgroundColor: "#1C1C1C",
-                alignItems: "center", justifyContent: "center",
-                overflow: "hidden",
-              }}>
-                <View style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, flexDirection: "row" }}>
-                  <View style={{ flex: 1, backgroundColor: "#EE1D52" }} />
-                  <View style={{ flex: 1, backgroundColor: "#69C9D0" }} />
-                </View>
-                <ExpoImage source={images.tikTokIcon} style={{ width: 24, height: 24 }} contentFit="contain" />
-              </View>
-              <View style={{ flex: 1, paddingLeft: 14 }}>
-                <Text style={{ fontSize: 15, fontWeight: "800", color: "#fff", letterSpacing: 0.1 }}>Continue with TikTok</Text>
-                <Text style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", fontWeight: "500", marginTop: 2 }}>Use your TikTok account</Text>
-              </View>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
-                <View style={{ width: 4, height: 16, borderRadius: 2, backgroundColor: "#EE1D52" }} />
-                <View style={{ width: 4, height: 16, borderRadius: 2, backgroundColor: "#69C9D0" }} />
               </View>
             </View>
           </Pressable>
