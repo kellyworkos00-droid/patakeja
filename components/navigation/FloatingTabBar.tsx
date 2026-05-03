@@ -1,6 +1,7 @@
 import { Pressable, Text, View } from "react-native";
 import { router } from "expo-router";
-import { Bed, CalendarDays, Home, Plus, Search, UserRound } from "lucide-react-native";
+import { Bed, CalendarDays, Home, MessageCircle, Plus, Search, UserRound } from "lucide-react-native";
+import { chats } from "@/data/mockChats";
 import { colors } from "@/constants/colors";
 
 type FloatingTabBarProps = {
@@ -13,11 +14,15 @@ const icons = {
   home: Home,
   explore: Search,
   post: Plus,
+  chat: MessageCircle,
   profile: UserRound,
   bookings: CalendarDays,
 };
 
+const chatUnread = chats.reduce((s, c) => s + c.unread, 0);
+
 const POST_ROUTE = "post";
+const CHAT_ROUTE = "chat";
 const TAB_PRESS_EVENT = "tabPress";
 
 const tabShadow = {
@@ -58,6 +63,7 @@ export function FloatingTabBar({ state, descriptors, navigation }: FloatingTabBa
           const label = options.title ?? route.name;
           const Icon = icons[route.name as keyof typeof icons] ?? Bed;
           const isPost = route.name === POST_ROUTE;
+          const showChatBadge = !isPost && route.name === CHAT_ROUTE && chatUnread > 0;
 
           const onPress = () => {
             if (isPost) {
@@ -128,6 +134,11 @@ export function FloatingTabBar({ state, descriptors, navigation }: FloatingTabBa
                     fill={focused ? colors.primary + "22" : "transparent"}
                     strokeWidth={focused ? 2.5 : 2}
                   />
+                  {showChatBadge ? (
+                    <View style={{ position: "absolute", top: 2, right: 2, minWidth: 16, height: 16, borderRadius: 8, paddingHorizontal: 4, backgroundColor: colors.primary, alignItems: "center", justifyContent: "center" }}>
+                      <Text style={{ color: "#fff", fontSize: 9.5, fontWeight: "800" }}>{chatUnread}</Text>
+                    </View>
+                  ) : null}
                 </View>
               )}
               {!isPost && (
