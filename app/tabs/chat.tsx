@@ -30,8 +30,8 @@ const FILTER_TABS = [
 
 function FilterTabIcon({ icon, active }: { icon: string; active: boolean }) {
   const col = active ? "#FFFFFF" : "#0F172A";
-  if (icon === "calendar") return <CalendarDays size={14} color={col} strokeWidth={2} />;
-  if (icon === "archive") return <Archive size={14} color={col} strokeWidth={2} />;
+  if (icon === "calendar") return <CalendarDays size={12} color={col} strokeWidth={2} />;
+  if (icon === "archive") return <Archive size={12} color={col} strokeWidth={2} />;
   return null;
 }
 
@@ -158,16 +158,16 @@ export default function ChatListScreen() {
       </View>
 
       {/* ── Filter Tabs ── */}
-      <View style={{ paddingHorizontal: 12, paddingBottom: 12 }}>
+      <View style={{ paddingHorizontal: 8, paddingBottom: 10 }}>
         <View style={{
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          gap: 4,
-          paddingHorizontal: 6,
-          paddingVertical: 6,
+          gap: 2,
+          paddingHorizontal: 4,
+          paddingVertical: 4,
           backgroundColor: "#FFFFFF",
-          borderRadius: 18,
+          borderRadius: 16,
           shadowColor: "#0F172A",
           shadowOpacity: 0.07,
           shadowOffset: { width: 0, height: 8 },
@@ -183,31 +183,31 @@ export default function ChatListScreen() {
                 style={{
                   flex: 1,
                   minWidth: 0,
-                  height: 36,
-                  borderRadius: 18,
+                  height: 34,
+                  borderRadius: 17,
                   backgroundColor: active ? "#0B1D45" : "#FFFFFF",
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "center",
-                  gap: 3,
-                  paddingHorizontal: 4,
+                  gap: 2,
+                  paddingHorizontal: 2,
                 }}
               >
                 <FilterTabIcon icon={tab.icon} active={active} />
-                <Text style={{ fontSize: 10.5, fontWeight: "700", color: active ? "#FFFFFF" : "#0F172A" }} numberOfLines={1}>
+                <Text style={{ fontSize: 9.5, fontWeight: "700", color: active ? "#FFFFFF" : "#0F172A" }} numberOfLines={1}>
                   {tab.label}
                 </Text>
                 {tab.count > 0 && (
                   <View style={{
-                    minWidth: 16,
-                    height: 16,
-                    borderRadius: 8,
-                    paddingHorizontal: 3,
+                    minWidth: 14,
+                    height: 14,
+                    borderRadius: 7,
+                    paddingHorizontal: 2,
                     backgroundColor: active ? "#71C949" : "#16A34A",
                     alignItems: "center",
                     justifyContent: "center",
                   }}>
-                    <Text style={{ color: "#FFFFFF", fontSize: 9, fontWeight: "800" }}>{tab.count}</Text>
+                    <Text style={{ color: "#FFFFFF", fontSize: 8, fontWeight: "800" }}>{tab.count}</Text>
                   </View>
                 )}
               </Pressable>
