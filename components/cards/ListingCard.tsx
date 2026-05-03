@@ -32,7 +32,7 @@ export function ListingCard({ listing, compact, variant = "default" }: ListingCa
     return (
       <Pressable onPress={openListing} className="flex-row gap-3 rounded-3xl bg-white p-2.5">
         <View className="relative">
-          <PropertyImage source={listing.image} className="h-[122px] w-[118px] rounded-2xl" />
+          <PropertyImage source={listing.image} className="h-[132px] w-[124px] rounded-2xl" />
           {cardPhotos > 0 ? (
             <View className="absolute bottom-2 left-2 flex-row items-center gap-1 rounded-full bg-navy/80 px-2 py-1">
               <Camera color={colors.card} size={13} />

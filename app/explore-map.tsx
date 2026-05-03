@@ -119,8 +119,8 @@ export default function ExploreMapScreen() {
   });
 
   const stickyBandOpacity = sheetProgress.interpolate({
-    inputRange: [1, 0.5, 0],
-    outputRange: [0, 0.62, 1],
+    inputRange: [0, 0.5, 1],
+    outputRange: [1, 0.62, 0],
     extrapolate: "clamp",
   });
 
