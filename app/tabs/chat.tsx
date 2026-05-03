@@ -1,8 +1,8 @@
-﻿import React, { useState } from "react";
+﻿import React, { useState, useRef } from "react";
 import {
   View,
   Text,
-  ScrollView,
+  Animated,
   Pressable,
   Image,
   useWindowDimensions,
@@ -109,6 +109,19 @@ export default function ChatListScreen() {
   // rail outer padding 6*2=12, inner padding 3*2=6, 3 gaps of 2px = 6 → subtract all from screen
   const tabWidth = Math.floor((screenWidth - 12 - 6 - 6) / 4);
 
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  // Header title/subtitle fades out and slides up as user scrolls
+  const titleOpacity = scrollY.interpolate({ inputRange: [0, 55], outputRange: [1, 0], extrapolate: "clamp" });
+  const titleTranslateY = scrollY.interpolate({ inputRange: [0, 55], outputRange: [0, -18], extrapolate: "clamp" });
+
+  // Inline search bar fades in and slides down from above
+  const searchBarOpacity = scrollY.interpolate({ inputRange: [25, 65], outputRange: [0, 1], extrapolate: "clamp" });
+  const searchBarTranslateY = scrollY.interpolate({ inputRange: [25, 65], outputRange: [-16, 0], extrapolate: "clamp" });
+
+  // Right search icon button fades out (replaced by inline bar)
+  const searchBtnOpacity = scrollY.interpolate({ inputRange: [0, 40], outputRange: [1, 0], extrapolate: "clamp" });
+
   const filteredChats =
     activeFilter === "unread" ? chats.filter((c) => c.unread > 0) :
     activeFilter === "bookings" || activeFilter === "archive" ? [] :
@@ -122,31 +135,63 @@ export default function ChatListScreen() {
       {/* ── Header ── */}
       <View style={{ paddingHorizontal: 20, paddingTop: 14, paddingBottom: 10 }}>
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-          <View style={{ flex: 1 }}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-              <Text style={{ fontSize: 30, fontWeight: "900", color: "#0F172A", letterSpacing: -0.6 }}>Chats</Text>
-              {totalUnread > 0 && (
-                <View style={{ backgroundColor: "#16A34A", borderRadius: 12, paddingHorizontal: 8, paddingVertical: 3 }}>
-                  <Text style={{ color: "#fff", fontSize: 12, fontWeight: "800" }}>{totalUnread}</Text>
-                </View>
-              )}
-            </View>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 2 }}>
-              <Text style={{ fontSize: 13, color: "#667085" }}>Secure conversations, safe and private.</Text>
-              <Shield size={13} color="#16A34A" fill="#16A34A" />
-            </View>
+
+          {/* Left: animated title+subtitle (fades out) ↔ search bar (fades in) */}
+          <View style={{ flex: 1, marginRight: 12, height: 52, overflow: "hidden", justifyContent: "center" }}>
+
+            {/* Title + subtitle row — slides up and fades out */}
+            <Animated.View style={{
+              position: "absolute", top: 0, left: 0, right: 0,
+              opacity: titleOpacity,
+              transform: [{ translateY: titleTranslateY }],
+            }}>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 3 }}>
+                <Text style={{ fontSize: 30, fontWeight: "900", color: "#0F172A", letterSpacing: -0.6 }}>Chats</Text>
+                {totalUnread > 0 && (
+                  <View style={{ backgroundColor: "#16A34A", borderRadius: 12, paddingHorizontal: 8, paddingVertical: 3 }}>
+                    <Text style={{ color: "#fff", fontSize: 12, fontWeight: "800" }}>{totalUnread}</Text>
+                  </View>
+                )}
+              </View>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                <Text style={{ fontSize: 13, color: "#667085" }}>Secure conversations, safe and private.</Text>
+                <Shield size={13} color="#16A34A" fill="#16A34A" />
+              </View>
+            </Animated.View>
+
+            {/* Inline search bar — slides down and fades in */}
+            <Animated.View style={{
+              position: "absolute", top: 6, left: 0, right: 0,
+              height: 40,
+              opacity: searchBarOpacity,
+              transform: [{ translateY: searchBarTranslateY }],
+              flexDirection: "row",
+              alignItems: "center",
+              backgroundColor: "#F1F5F9",
+              borderRadius: 22,
+              paddingHorizontal: 14,
+              gap: 8,
+            }}>
+              <Search size={16} color="#667085" strokeWidth={2} />
+              <Text style={{ fontSize: 14, color: "#94A3B8", flex: 1 }}>Search conversations...</Text>
+            </Animated.View>
+
           </View>
 
+          {/* Right buttons */}
           <View style={{ flexDirection: "row", gap: 10 }}>
-            <Pressable style={({ pressed }) => ({
-              width: 46, height: 46, borderRadius: 23,
-              backgroundColor: pressed ? "#EEF2F6" : "#FFFFFF",
-              alignItems: "center", justifyContent: "center",
-              shadowColor: "#0F172A", shadowOpacity: 0.08,
-              shadowOffset: { width: 0, height: 4 }, shadowRadius: 12, elevation: 4,
-            })}>
-              <Search size={18} color="#0F172A" strokeWidth={2} />
-            </Pressable>
+            {/* Search icon fades out when inline search appears */}
+            <Animated.View style={{ opacity: searchBtnOpacity }}>
+              <Pressable style={({ pressed }) => ({
+                width: 46, height: 46, borderRadius: 23,
+                backgroundColor: pressed ? "#EEF2F6" : "#FFFFFF",
+                alignItems: "center", justifyContent: "center",
+                shadowColor: "#0F172A", shadowOpacity: 0.08,
+                shadowOffset: { width: 0, height: 4 }, shadowRadius: 12, elevation: 4,
+              })}>
+                <Search size={18} color="#0F172A" strokeWidth={2} />
+              </Pressable>
+            </Animated.View>
             <Pressable style={({ pressed }) => ({
               width: 46, height: 46, borderRadius: 23,
               backgroundColor: pressed ? "#EEF2F6" : "#FFFFFF",
@@ -158,6 +203,7 @@ export default function ChatListScreen() {
               <View style={{ position: "absolute", top: 8, right: 9, width: 7, height: 7, borderRadius: 4, backgroundColor: "#16A34A" }} />
             </Pressable>
           </View>
+
         </View>
       </View>
 
@@ -223,7 +269,15 @@ export default function ChatListScreen() {
       <View style={{ height: 1, backgroundColor: "#EEF2F6", marginHorizontal: 14 }} />
 
       {/* ── Chat List ── */}
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120, backgroundColor: "#F7F9FC" }}>
+      <Animated.ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 120, backgroundColor: "#F7F9FC" }}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true }
+        )}
+        scrollEventThrottle={16}
+      >
         {filteredChats.length === 0 ? (
           <View style={{ alignItems: "center", paddingTop: 80, gap: 14 }}>
             <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: "#F4F8FB", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#E2E8F0" }}>
@@ -241,7 +295,7 @@ export default function ChatListScreen() {
             </React.Fragment>
           ))
         )}
-      </ScrollView>
+      </Animated.ScrollView>
 
       {/* ── FAB ── */}
       <Pressable
