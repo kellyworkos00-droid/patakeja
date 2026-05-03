@@ -67,6 +67,14 @@ const shadow = {
   elevation: 5,
 };
 
+const chipShadow = {
+  shadowColor: "#0F172A",
+  shadowOffset: { width: 0, height: 6 },
+  shadowOpacity: 0.08,
+  shadowRadius: 14,
+  elevation: 6,
+};
+
 const cardShadow = {
   shadowColor: "#0B1220",
   shadowOffset: { width: 0, height: 2 },
@@ -88,27 +96,44 @@ function Chip({
   icon?: LucideIcon;
 }) {
   const color = active ? "#FFFFFF" : colors.navy;
+  const iconBg = active ? "rgba(255,255,255,0.18)" : "#F8FAFC";
+
   return (
     <Pressable
       onPress={onPress}
       style={({ pressed }) => [
         {
-          height: 38,
-          borderRadius: 19,
+          height: 42,
+          borderRadius: 21,
           flexDirection: "row",
           alignItems: "center",
-          paddingHorizontal: 13,
-          gap: 5,
-          backgroundColor: active ? colors.navy : "#FFFFFF",
-          borderWidth: active ? 0 : 1,
-          borderColor: "#E8EDF3",
+          paddingHorizontal: 12,
+          gap: 8,
+          backgroundColor: active ? "#0B1220" : "#FFFFFF",
+          borderWidth: 1,
+          borderColor: active ? "#1E293B" : "#E2E8F0",
           transform: [{ scale: pressed ? 0.96 : 1 }],
         },
-        !active ? shadow : undefined,
+        chipShadow,
       ]}
     >
-      {Icon ? <Icon color={color} size={13} strokeWidth={2} /> : null}
-      <Text style={{ fontSize: 13, fontWeight: "700", color }}>{label}</Text>
+      {Icon ? (
+        <View
+          style={{
+            width: 24,
+            height: 24,
+            borderRadius: 12,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: iconBg,
+            borderWidth: active ? 0 : 1,
+            borderColor: "#E2E8F0",
+          }}
+        >
+          <Icon color={color} size={13} strokeWidth={2.1} />
+        </View>
+      ) : null}
+      <Text style={{ fontSize: 13, fontWeight: "700", color, letterSpacing: 0.1 }}>{label}</Text>
     </Pressable>
   );
 }
