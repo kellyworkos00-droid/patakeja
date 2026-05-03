@@ -1,78 +1,127 @@
-import { Image, Pressable, Text, View } from "react-native";
+import { useState } from "react";
+import { Image, Pressable, ScrollView, StatusBar, Text, View } from "react-native";
 import { router } from "expo-router";
-import { Bell, CalendarDays, ChevronRight, Clock } from "lucide-react-native";
+import { Bell, CalendarDays, ChevronRight, Clock, MapPin } from "lucide-react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { bookings } from "@/data/mockBookings";
 import { colors } from "@/constants/colors";
-import { AppButton } from "@/components/ui/AppButton";
-import { ScreenContainer } from "@/components/layout/ScreenContainer";
+
+const shadow = {
+  shadowColor: "#0F172A",
+  shadowOffset: { width: 0, height: 3 },
+  shadowOpacity: 0.07,
+  shadowRadius: 10,
+  elevation: 3,
+};
+const cardShadow = {
+  shadowColor: "#0F172A",
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.09,
+  shadowRadius: 14,
+  elevation: 4,
+};
+
+const statusColors: Record<string, { bg: string; text: string }> = {
+  Confirmed: { bg: "#EEF9F3", text: "#065F46" },
+  Pending: { bg: "#FEF9EC", text: "#854D0E" },
+  Completed: { bg: "#F1F5F9", text: "#475569" },
+};
 
 export default function MyBookingsScreen() {
-  const upcoming = bookings.filter((booking) => booking.status !== "Completed");
-  const past = bookings.filter((booking) => booking.status === "Completed");
+  const [activeTab, setActiveTab] = useState<"upcoming" | "past">("upcoming");
+  const upcoming = bookings.filter((b) => b.status !== "Completed");
+  const past = bookings.filter((b) => b.status === "Completed");
+  const shown = activeTab === "upcoming" ? upcoming : past;
 
   return (
-    <ScreenContainer contentClassName="pt-4">
-      <View className="mb-5 flex-row items-center justify-between">
-        <View>
-          <Text className="text-4xl font-extrabold text-navy">Bookings</Text>
-          <Text className="mt-1 text-base text-navy/60">Your viewing schedule</Text>
-        </View>
-        <Pressable onPress={() => router.push("/notifications")} className="h-12 w-12 items-center justify-center rounded-full bg-white">
-          <Bell color={colors.navy} size={22} />
-        </Pressable>
-      </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#F8FAFC" }} edges={["top", "left", "right"]}>
+      <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 110 }}>
 
-      <View className="mb-6 flex-row rounded-full bg-white p-1">
-        <View className="flex-1 rounded-full bg-primary py-3">
-          <Text className="text-center font-extrabold text-white">Upcoming</Text>
-        </View>
-        <View className="flex-1 rounded-full py-3">
-          <Text className="text-center font-extrabold text-navy/55">Past</Text>
-        </View>
-      </View>
-
-      <Text className="mb-3 text-xl font-extrabold text-navy">Upcoming Viewings</Text>
-      <View className="gap-4">
-        {upcoming.map((booking) => (
-          <Pressable key={booking.id} onPress={() => router.push("/payments/escrow-status")} className="flex-row gap-4 rounded-3xl bg-white p-3">
-            <Image source={booking.image} className="h-24 w-24 rounded-2xl" resizeMode="cover" />
-            <View className="flex-1 justify-center">
-              <Text className="text-lg font-extrabold text-navy">{booking.title}</Text>
-              <Text className="mt-1 text-sm text-navy/55">{booking.location}</Text>
-              <View className="mt-2 flex-row items-center gap-2">
-                <CalendarDays color={colors.navy} size={15} />
-                <Text className="text-sm text-navy/70">{booking.date}</Text>
-              </View>
-              <View className="mt-1 flex-row items-center gap-2">
-                <Clock color={colors.navy} size={15} />
-                <Text className="text-sm text-navy/70">{booking.time}</Text>
-              </View>
-              <View className="mt-2 self-start rounded-full bg-primary/10 px-3 py-1">
-                <Text className="text-xs font-extrabold text-primary">{booking.status}</Text>
-              </View>
-            </View>
-            <ChevronRight color={colors.navy} size={20} />
-          </Pressable>
-        ))}
-      </View>
-
-      <AppButton title="Book Another Viewing" onPress={() => router.push("/tabs/explore")} full style={{ marginTop: 22 }} />
-
-      <Text className="mb-3 mt-7 text-xl font-extrabold text-navy">Past Viewings</Text>
-      <View className="gap-4">
-        {past.map((booking) => (
-          <View key={booking.id} className="flex-row gap-4 rounded-3xl bg-white p-3 opacity-80">
-            <Image source={booking.image} className="h-20 w-20 rounded-2xl" resizeMode="cover" />
-            <View className="flex-1">
-              <Text className="text-base font-extrabold text-navy">{booking.title}</Text>
-              <Text className="mt-1 text-sm text-navy/55">{booking.location}</Text>
-              <Text className="mt-2 text-sm text-navy/70">
-                {booking.date} · {booking.time}
-              </Text>
-            </View>
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, paddingTop: 10, paddingBottom: 8 }}>
+          <View>
+            <Text style={{ fontSize: 24, fontWeight: "800", color: colors.navy }}>Bookings</Text>
+            <Text style={{ fontSize: 12, color: "#64748B", fontWeight: "500", marginTop: 1 }}>Your viewing schedule</Text>
           </View>
-        ))}
-      </View>
-    </ScreenContainer>
+          <Pressable onPress={() => router.push("/notifications")} style={[{ width: 36, height: 36, borderRadius: 18, backgroundColor: "#fff", alignItems: "center", justifyContent: "center" }, shadow]}>
+            <Bell size={16} color={colors.navy} />
+          </Pressable>
+        </View>
+
+        <View style={[{ marginHorizontal: 16, marginBottom: 14, borderRadius: 20, overflow: "hidden" }, cardShadow]}>
+          <LinearGradient colors={["#0F172A", "#1E3A5F"]} style={{ flexDirection: "row", paddingVertical: 16 }}>
+            {[
+              { value: String(upcoming.length), label: "Upcoming" },
+              { value: String(past.length), label: "Completed" },
+              { value: "0", label: "Cancelled" },
+            ].map((s, i) => (
+              <View key={s.label} style={{ flex: 1, alignItems: "center", borderRightWidth: i < 2 ? 1 : 0, borderRightColor: "rgba(255,255,255,0.12)" }}>
+                <Text style={{ fontSize: 22, fontWeight: "800", color: "#fff" }}>{s.value}</Text>
+                <Text style={{ fontSize: 10, color: "rgba(255,255,255,0.6)", marginTop: 2 }}>{s.label}</Text>
+              </View>
+            ))}
+          </LinearGradient>
+        </View>
+
+        <View style={[{ marginHorizontal: 16, marginBottom: 16, flexDirection: "row", backgroundColor: "#fff", borderRadius: 20, padding: 4 }, shadow]}>
+          {(["upcoming", "past"] as const).map((t) => (
+            <Pressable
+              key={t}
+              onPress={() => setActiveTab(t)}
+              style={{ flex: 1, paddingVertical: 9, borderRadius: 16, alignItems: "center", backgroundColor: activeTab === t ? colors.primary : "transparent" }}
+            >
+              <Text style={{ fontSize: 12, fontWeight: "800", color: activeTab === t ? "#fff" : "rgba(15,23,42,0.5)", textTransform: "capitalize" }}>{t}</Text>
+            </Pressable>
+          ))}
+        </View>
+
+        <View style={{ paddingHorizontal: 16, gap: 10 }}>
+          {shown.map((booking) => {
+            const sc = statusColors[booking.status] ?? statusColors.Completed;
+            return (
+              <Pressable
+                key={booking.id}
+                onPress={() => router.push("/payments/escrow-status")}
+                style={({ pressed }) => [
+                  { opacity: pressed ? 0.9 : 1, flexDirection: "row", gap: 12, backgroundColor: "#fff", borderRadius: 18, padding: 10 },
+                  cardShadow,
+                ]}
+              >
+                <Image source={booking.image} style={{ width: 82, height: 82, borderRadius: 14 }} resizeMode="cover" />
+                <View style={{ flex: 1, justifyContent: "center" }}>
+                  <Text style={{ fontSize: 13, fontWeight: "800", color: colors.navy }} numberOfLines={1}>{booking.title}</Text>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 3 }}>
+                    <MapPin size={11} color="#94A3B8" />
+                    <Text style={{ fontSize: 11, color: "#64748B" }} numberOfLines={1}>{booking.location}</Text>
+                  </View>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 }}>
+                    <CalendarDays size={11} color="#94A3B8" />
+                    <Text style={{ fontSize: 11, color: "#64748B" }}>{booking.date}</Text>
+                    <Clock size={11} color="#94A3B8" style={{ marginLeft: 4 }} />
+                    <Text style={{ fontSize: 11, color: "#64748B" }}>{booking.time}</Text>
+                  </View>
+                  <View style={{ marginTop: 6, alignSelf: "flex-start", backgroundColor: sc.bg, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 3 }}>
+                    <Text style={{ fontSize: 10, fontWeight: "700", color: sc.text }}>{booking.status}</Text>
+                  </View>
+                </View>
+                <ChevronRight size={16} color="#CBD5E1" style={{ alignSelf: "center" }} />
+              </Pressable>
+            );
+          })}
+        </View>
+
+        <Pressable
+          onPress={() => router.push("/tabs/explore")}
+          style={[{ marginHorizontal: 16, marginTop: 18, borderRadius: 18, overflow: "hidden" }, cardShadow]}
+        >
+          <LinearGradient colors={[colors.primary, "#0EA56B"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingVertical: 14, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 }}>
+            <CalendarDays size={16} color="#fff" />
+            <Text style={{ fontSize: 13, fontWeight: "800", color: "#fff" }}>Book Another Viewing</Text>
+          </LinearGradient>
+        </Pressable>
+
+      </ScrollView>
+    </SafeAreaView>
   );
 }
