@@ -1,6 +1,6 @@
 import { useState } from "react";
 import {
-  Image, Pressable, ScrollView, StatusBar, Text, View,
+  Pressable, ScrollView, StatusBar, Text, View,
 } from "react-native";
 import { router } from "expo-router";
 import {
@@ -9,22 +9,11 @@ import {
   Search, ShieldCheck, SlidersHorizontal,
 } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import MapView, { Marker } from "react-native-maps";
 import { listings } from "@/data/mockListings";
-import { images } from "@/constants/assets";
 import { colors } from "@/constants/colors";
 import { mapListings } from "@/data/mockMapListings";
 import { MapPriceMarker } from "@/components/map/MapPriceMarker";
-
-const ReactNativeMaps = (() => {
-  try {
-    return require("react-native-maps");
-  } catch {
-    return null;
-  }
-})();
-
-const MapView = ReactNativeMaps?.default;
-const Marker = ReactNativeMaps?.Marker;
 
 const filters = [
   { label: "All",        icon: Grid2X2 },
@@ -137,40 +126,36 @@ export default function ExploreScreen() {
 
         {/* ── Map preview ── */}
         <View style={[{ marginHorizontal: 20, marginBottom: 20, borderRadius: 28, overflow: "hidden", height: 246 }, shadowMd]}>
-          {MapView && Marker ? (
-            <MapView
-              style={{ width: "100%", height: "100%" }}
-              initialRegion={previewRegion}
-              mapType="standard"
-              customMapStyle={[
-                { elementType: "geometry", stylers: [{ color: "#f2f5f7" }] },
-                { elementType: "labels.text.fill", stylers: [{ color: "#5b6472" }] },
-                { elementType: "labels.text.stroke", stylers: [{ color: "#ffffff" }] },
-                { featureType: "poi", stylers: [{ visibility: "off" }] },
-                { featureType: "transit", stylers: [{ visibility: "off" }] },
-                { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] },
-                { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#dde5eb" }] },
-              ]}
-              scrollEnabled={false}
-              zoomEnabled={false}
-              rotateEnabled={false}
-              pitchEnabled={false}
-              toolbarEnabled={false}
-            >
-              {mapListings.map((listing) => (
-                <Marker
-                  key={listing.id}
-                  coordinate={{ latitude: listing.latitude, longitude: listing.longitude }}
-                  tracksViewChanges={false}
-                  anchor={{ x: 0.5, y: 1 }}
-                >
-                  <MapPriceMarker price={listing.price} selected={listing.id === "1"} onPress={() => router.push("/explore-map")} />
-                </Marker>
-              ))}
-            </MapView>
-          ) : (
-            <Image source={images.exploreDirection} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
-          )}
+          <MapView
+            style={{ width: "100%", height: "100%" }}
+            initialRegion={previewRegion}
+            mapType="standard"
+            customMapStyle={[
+              { elementType: "geometry", stylers: [{ color: "#f2f5f7" }] },
+              { elementType: "labels.text.fill", stylers: [{ color: "#5b6472" }] },
+              { elementType: "labels.text.stroke", stylers: [{ color: "#ffffff" }] },
+              { featureType: "poi", stylers: [{ visibility: "off" }] },
+              { featureType: "transit", stylers: [{ visibility: "off" }] },
+              { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] },
+              { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#dde5eb" }] },
+            ]}
+            scrollEnabled={false}
+            zoomEnabled={false}
+            rotateEnabled={false}
+            pitchEnabled={false}
+            toolbarEnabled={false}
+          >
+            {mapListings.map((listing) => (
+              <Marker
+                key={listing.id}
+                coordinate={{ latitude: listing.latitude, longitude: listing.longitude }}
+                tracksViewChanges={false}
+                anchor={{ x: 0.5, y: 1 }}
+              >
+                <MapPriceMarker price={listing.price} selected={listing.id === "1"} onPress={() => router.push("/explore-map")} />
+              </Marker>
+            ))}
+          </MapView>
           <View style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, backgroundColor: "rgba(15,23,42,0.03)" }} pointerEvents="none" />
 
           <Pressable onPress={() => router.push("/explore-map")} style={{ position: "absolute", bottom: 12, left: 0, right: 0, alignItems: "center" }}>
