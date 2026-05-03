@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
   Alert,
+  Animated,
   Pressable,
   StatusBar,
   Text,
@@ -49,6 +50,7 @@ export default function ExploreMapScreen() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [sheetExpanded, setSheetExpanded] = useState(false);
   const mapRef = useRef<MapView | null>(null);
+  const sheetProgress = useRef(new Animated.Value(1)).current;
 
   const selectedListing = useMemo(
     () => mapListings.find((listing) => listing.id === selectedId) ?? null,
@@ -100,6 +102,30 @@ export default function ExploreMapScreen() {
       Alert.alert("Could not get location", "Please try again after checking GPS and app permissions.");
     }
   }, [centerMap]);
+
+  const controlsOpacity = sheetProgress.interpolate({
+    inputRange: [0, 0.4, 1],
+    outputRange: [0.35, 0.7, 1],
+    extrapolate: "clamp",
+  });
+
+  const controlsTranslateY = sheetProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [22, 0],
+    extrapolate: "clamp",
+  });
+
+  const stickyBandOpacity = sheetProgress.interpolate({
+    inputRange: [1, 0.5, 0],
+    outputRange: [0, 0.62, 1],
+    extrapolate: "clamp",
+  });
+
+  const stickyBandTranslateY = sheetProgress.interpolate({
+    inputRange: [1, 0],
+    outputRange: [10, 0],
+    extrapolate: "clamp",
+  });
 
   return (
     <View style={{ flex: 1, backgroundColor: "#F8FAFC" }}>
@@ -207,14 +233,49 @@ export default function ExploreMapScreen() {
         </View>
       )}
 
+      <Animated.View
+        pointerEvents="none"
+        style={{
+          position: "absolute",
+          top: insets.top + 74,
+          left: 0,
+          right: 0,
+          alignItems: "center",
+          opacity: stickyBandOpacity,
+          transform: [{ translateY: stickyBandTranslateY }],
+        }}
+      >
+        <View
+          style={{
+            borderRadius: 999,
+            backgroundColor: "rgba(255,255,255,0.96)",
+            borderWidth: 1,
+            borderColor: "#DCFCE7",
+            paddingHorizontal: 12,
+            paddingVertical: 6,
+            shadowColor: "#0F172A",
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.12,
+            shadowRadius: 10,
+            elevation: 6,
+          }}
+        >
+          <Text style={{ fontSize: 11, fontWeight: "800", color: colors.primary }}>
+            {selectedListing ? `${selectedListing.price} • ${selectedListing.area}` : "KES 15K–45K"}
+          </Text>
+        </View>
+      </Animated.View>
+
       {/* ─── Floating controls (right side) ─── */}
-      <View
+      <Animated.View
         style={{
           position: "absolute",
           right: 16,
           bottom: CONTROLS_BOTTOM + 10,
           gap: 12,
           alignItems: "center",
+          opacity: controlsOpacity,
+          transform: [{ translateY: controlsTranslateY }],
         }}
       >
         {/* Near Me */}
@@ -223,16 +284,18 @@ export default function ExploreMapScreen() {
           icon={<LocateFixed size={20} color={colors.primary} strokeWidth={2.2} />}
           onPress={handleNearMe}
         />
-      </View>
+      </Animated.View>
 
       {/* ─── View List pill (bottom centre above sheet) ─── */}
-      <View
+      <Animated.View
         style={{
           position: "absolute",
           bottom: CONTROLS_BOTTOM + 10,
           left: 0,
           right: 0,
           alignItems: "center",
+          opacity: controlsOpacity,
+          transform: [{ translateY: controlsTranslateY }],
         }}
         pointerEvents="box-none"
       >
@@ -242,7 +305,7 @@ export default function ExploreMapScreen() {
           label="View List"
           onPress={() => router.back()}
         />
-      </View>
+      </Animated.View>
 
       {/* ─── Bottom sheet ─── */}
       <MapListingBottomSheet
@@ -251,6 +314,7 @@ export default function ExploreMapScreen() {
         onSelectListing={handleSelectMarker}
         isExpanded={sheetExpanded}
         onExpandChange={handleExpandChange}
+        onPositionChange={(progress) => sheetProgress.setValue(progress)}
         tabBarHeight={0}
       />
     </View>

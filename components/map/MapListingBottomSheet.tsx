@@ -55,7 +55,72 @@ interface MapListingBottomSheetProps {
   onSelectListing: (id: string) => void;
   isExpanded: boolean;
   onExpandChange: (expanded: boolean) => void;
+  onPositionChange?: (progress: number) => void;
   tabBarHeight?: number;
+}
+
+function MiniListingCard({
+  listing,
+  active,
+  onPress,
+}: {
+  listing: MapListing;
+  active: boolean;
+  onPress: () => void;
+}) {
+  const lift = useRef(new Animated.Value(active ? 1 : 0)).current;
+
+  useEffect(() => {
+    Animated.timing(lift, {
+      toValue: active ? 1 : 0,
+      duration: 180,
+      useNativeDriver: true,
+    }).start();
+  }, [active]);
+
+  return (
+    <Pressable onPress={onPress} style={{ width: 148 }}>
+      <Animated.View
+        style={[
+          {
+            backgroundColor: "#fff",
+            borderRadius: 16,
+            overflow: "hidden",
+            borderWidth: 2,
+            borderColor: active ? colors.primary : "#F1F5F9",
+          },
+          cardShadow,
+          {
+            transform: [
+              {
+                translateY: lift.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, -6],
+                }),
+              },
+              {
+                scale: lift.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [1, 1.02],
+                }),
+              },
+            ],
+          },
+        ]}
+      >
+        <Image source={listing.image} style={{ width: "100%", height: 86 }} resizeMode="cover" />
+        <View style={{ padding: 8 }}>
+          <Text style={{ fontSize: 12, fontWeight: "800", color: "#0F172A" }} numberOfLines={1}>
+            {listing.price}
+            <Text style={{ fontSize: 10, fontWeight: "500", color: "#94A3B8" }}>/mo</Text>
+          </Text>
+          <Text style={{ fontSize: 11, color: "#64748B", marginTop: 1 }} numberOfLines={1}>
+            {listing.area}
+          </Text>
+        </View>
+      </Animated.View>
+    </Pressable>
+  );
 }
 
 export function MapListingBottomSheet({
@@ -64,11 +129,16 @@ export function MapListingBottomSheet({
   onSelectListing,
   isExpanded,
   onExpandChange,
+  onPositionChange,
   tabBarHeight = 0,
 }: MapListingBottomSheetProps) {
   const translateY = useRef(new Animated.Value(COLLAPSED_OFFSET)).current;
   const lastY = useRef(COLLAPSED_OFFSET);
   const snapOffsets = useMemo(() => [0, MID_OFFSET, COLLAPSED_OFFSET], []);
+
+  const emitProgress = (offset: number) => {
+    onPositionChange?.(Math.max(0, Math.min(1, offset / COLLAPSED_OFFSET)));
+  };
 
   const animateToOffset = (target: number) => {
     Animated.spring(translateY, {
@@ -78,6 +148,7 @@ export function MapListingBottomSheet({
       useNativeDriver: true,
     }).start(() => {
       lastY.current = target;
+      emitProgress(target);
     });
   };
 
@@ -94,6 +165,7 @@ export function MapListingBottomSheet({
       onPanResponderMove: (_, gs) => {
         const next = Math.max(0, Math.min(COLLAPSED_OFFSET, lastY.current + gs.dy));
         translateY.setValue(next);
+        emitProgress(next);
       },
       onPanResponderRelease: (_, gs) => {
         const released = Math.max(0, Math.min(COLLAPSED_OFFSET, lastY.current + gs.dy));
@@ -181,39 +253,15 @@ export function MapListingBottomSheet({
         {listings.map((listing) => {
           const active = listing.id === (selectedId ?? listings[0].id);
           return (
-            <Pressable
+            <MiniListingCard
               key={listing.id}
+              listing={listing}
+              active={active}
               onPress={() => {
                 onSelectListing(listing.id);
                 onExpandChange(true);
               }}
-              style={[
-                {
-                  width: 148,
-                  backgroundColor: "#fff",
-                  borderRadius: 16,
-                  overflow: "hidden",
-                  borderWidth: 2,
-                  borderColor: active ? colors.primary : "#F1F5F9",
-                },
-                cardShadow,
-              ]}
-            >
-              <Image
-                source={listing.image}
-                style={{ width: "100%", height: 86 }}
-                resizeMode="cover"
-              />
-              <View style={{ padding: 8 }}>
-                <Text style={{ fontSize: 12, fontWeight: "800", color: "#0F172A" }} numberOfLines={1}>
-                  {listing.price}
-                  <Text style={{ fontSize: 10, fontWeight: "500", color: "#94A3B8" }}>/mo</Text>
-                </Text>
-                <Text style={{ fontSize: 11, color: "#64748B", marginTop: 1 }} numberOfLines={1}>
-                  {listing.area}
-                </Text>
-              </View>
-            </Pressable>
+            />
           );
         })}
       </ScrollView>
