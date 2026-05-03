@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from "react-native";
 import { router } from "expo-router";
-import { Bed, CalendarDays, Home, MessageCircle, Plus, Search, UserRound } from "lucide-react-native";
+import { Bed, CalendarDays, Home, Plus, Search, UserRound } from "lucide-react-native";
 import { colors } from "@/constants/colors";
 
 type FloatingTabBarProps = {
@@ -13,7 +13,6 @@ const icons = {
   home: Home,
   explore: Search,
   post: Plus,
-  chat: MessageCircle,
   profile: UserRound,
   bookings: CalendarDays,
 };
