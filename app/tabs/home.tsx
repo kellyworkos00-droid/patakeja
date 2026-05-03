@@ -37,9 +37,9 @@ function FeaturedCard({ listing }: { listing: Listing }) {
   return (
     <Pressable
       onPress={() => router.push(`/listing/${listing.id}`)}
-      style={[{ width: 180, borderRadius: 20, backgroundColor: "#fff", overflow: "hidden" }, shadow]}
+      style={[{ width: 148, borderRadius: 16, backgroundColor: "#fff", overflow: "hidden" }, shadow]}
     >
-      <View style={{ height: 108, position: "relative" }}>
+      <View style={{ height: 88, position: "relative" }}>
         <Image source={listing.image} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
         <LinearGradient
           colors={["transparent", "rgba(15,23,42,0.55)"]}
@@ -63,9 +63,9 @@ function FeaturedCard({ listing }: { listing: Listing }) {
         </Pressable>
       </View>
 
-      <View style={{ paddingHorizontal: 10, paddingVertical: 9 }}>
-        <Text style={{ fontSize: 14, fontWeight: "800", color: colors.navy }} numberOfLines={1}>{listing.price}</Text>
-        <Text style={{ fontSize: 12, fontWeight: "700", color: colors.navy, marginTop: 2 }} numberOfLines={1}>{listing.title}</Text>
+        <View style={{ paddingHorizontal: 8, paddingVertical: 7 }}>
+        <Text style={{ fontSize: 12, fontWeight: "800", color: colors.navy }} numberOfLines={1}>{listing.price}</Text>
+        <Text style={{ fontSize: 11, fontWeight: "700", color: colors.navy, marginTop: 1 }} numberOfLines={1}>{listing.title}</Text>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 3, marginTop: 5 }}>
           <MapPin size={11} color="#94A3B8" />
           <Text style={{ fontSize: 11, color: "#64748B", fontWeight: "600", flex: 1 }} numberOfLines={1}>{listing.location}</Text>
@@ -88,9 +88,9 @@ function RecommendedRow({ listing }: { listing: Listing }) {
   return (
     <Pressable
       onPress={() => router.push(`/listing/${listing.id}`)}
-      style={[{ flexDirection: "row", gap: 10, backgroundColor: "#fff", borderRadius: 18, padding: 9, marginBottom: 10 }, shadow]}
+      style={[{ flexDirection: "row", gap: 8, backgroundColor: "#fff", borderRadius: 14, padding: 7, marginBottom: 8 }, shadow]}
     >
-      <View style={{ width: 92, height: 82, borderRadius: 12, overflow: "hidden", position: "relative" }}>
+      <View style={{ width: 74, height: 66, borderRadius: 10, overflow: "hidden", position: "relative" }}>
         <Image source={listing.image} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
         <Pressable
           onPress={() => setSaved((s) => !s)}
@@ -111,8 +111,8 @@ function RecommendedRow({ listing }: { listing: Listing }) {
       </View>
 
       <View style={{ flex: 1, justifyContent: "center" }}>
-        <Text style={{ fontSize: 15, fontWeight: "800", color: colors.navy }}>{listing.price}</Text>
-        <Text style={{ fontSize: 12, fontWeight: "700", color: colors.navy, marginTop: 1 }} numberOfLines={1}>{listing.title}</Text>
+        <Text style={{ fontSize: 12, fontWeight: "800", color: colors.navy }}>{listing.price}</Text>
+        <Text style={{ fontSize: 11, fontWeight: "700", color: colors.navy, marginTop: 1 }} numberOfLines={1}>{listing.title}</Text>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 3, marginTop: 4 }}>
           <MapPin size={11} color="#94A3B8" />
           <Text style={{ fontSize: 11, color: "#64748B", fontWeight: "600" }} numberOfLines={1}>{listing.location}</Text>
@@ -130,11 +130,11 @@ export default function HomeScreen() {
       <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12 }}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 14, paddingTop: 6, paddingBottom: 8 }}>
           <Pressable
-            style={[{ width: 42, height: 42, borderRadius: 21, backgroundColor: "#fff", alignItems: "center", justifyContent: "center" }, shadow]}
+            style={[{ width: 34, height: 34, borderRadius: 17, backgroundColor: "#fff", alignItems: "center", justifyContent: "center" }, shadow]}
           >
-            <Menu size={20} color={colors.navy} strokeWidth={2.5} />
+            <Menu size={16} color={colors.navy} strokeWidth={2.5} />
           </Pressable>
 
           <Pressable
@@ -145,41 +145,41 @@ export default function HomeScreen() {
                 flexDirection: "row",
                 alignItems: "center",
                 backgroundColor: "#fff",
-                borderRadius: 22,
-                paddingLeft: 12,
-                paddingRight: 8,
-                height: 44,
-                gap: 8,
+                borderRadius: 18,
+                paddingLeft: 10,
+                paddingRight: 6,
+                height: 36,
+                gap: 6,
               },
               shadow,
             ]}
           >
-            <Search size={17} color="#94A3B8" />
-            <Text style={{ flex: 1, fontSize: 13, color: "#94A3B8", fontWeight: "600" }}>Search your dream home</Text>
-            <View style={{ width: 30, height: 30, borderRadius: 15, backgroundColor: colors.navy, alignItems: "center", justifyContent: "center" }}>
-              <SlidersHorizontal size={14} color="#fff" />
+            <Search size={14} color="#94A3B8" />
+            <Text style={{ flex: 1, fontSize: 12, color: "#94A3B8", fontWeight: "600" }}>Search your dream home</Text>
+            <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: colors.navy, alignItems: "center", justifyContent: "center" }}>
+              <SlidersHorizontal size={11} color="#fff" />
             </View>
           </Pressable>
 
           <Pressable
             onPress={() => router.push("/notifications")}
-            style={[{ width: 42, height: 42, borderRadius: 21, backgroundColor: "#fff", alignItems: "center", justifyContent: "center" }, shadow]}
+            style={[{ width: 34, height: 34, borderRadius: 17, backgroundColor: "#fff", alignItems: "center", justifyContent: "center" }, shadow]}
           >
-            <Bell size={18} color={colors.navy} />
-            <View style={{ position: "absolute", top: 8, right: 8, width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary }} />
+            <Bell size={15} color={colors.navy} />
+            <View style={{ position: "absolute", top: 6, right: 6, width: 7, height: 7, borderRadius: 3.5, backgroundColor: colors.primary }} />
           </Pressable>
         </View>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingHorizontal: 16, marginBottom: 12 }}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 6, paddingHorizontal: 14, marginBottom: 10 }}>
           {filters.map((label, index) => (
             <Pressable
               key={label}
               onPress={() => setActiveFilter(index)}
               style={[
                 {
-                  height: 34,
-                  borderRadius: 17,
-                  paddingHorizontal: 14,
+                  height: 28,
+                  borderRadius: 14,
+                  paddingHorizontal: 11,
                   alignItems: "center",
                   justifyContent: "center",
                   backgroundColor: activeFilter === index ? colors.navy : "#fff",
@@ -187,13 +187,13 @@ export default function HomeScreen() {
                 shadow,
               ]}
             >
-              <Text style={{ fontSize: 12, fontWeight: "700", color: activeFilter === index ? "#fff" : colors.navy }}>{label}</Text>
+              <Text style={{ fontSize: 11, fontWeight: "700", color: activeFilter === index ? "#fff" : colors.navy }}>{label}</Text>
             </Pressable>
           ))}
         </ScrollView>
 
-        <View style={{ marginHorizontal: 16, marginBottom: 16, borderRadius: 24, overflow: "hidden", backgroundColor: colors.navy }}>
-          <View style={{ width: SW - 32, height: 168, position: "relative" }}>
+        <View style={{ marginHorizontal: 14, marginBottom: 12, borderRadius: 18, overflow: "hidden", backgroundColor: colors.navy }}>
+          <View style={{ width: SW - 28, height: 130, position: "relative" }}>
             <Image source={images.homeDirection} style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: "52%", height: "100%" }} resizeMode="cover" />
             <LinearGradient
               colors={["#0F172A", "rgba(15,23,42,0.6)", "rgba(15,23,42,0.2)"]}
@@ -202,51 +202,51 @@ export default function HomeScreen() {
               style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0 }}
             />
 
-            <View style={{ position: "absolute", left: 14, top: 14 }}>
-              <Text style={{ fontSize: 11, fontWeight: "700", letterSpacing: 1, color: "#A7F3D0" }}>WELCOME HOME</Text>
-              <Text style={{ fontSize: 22, fontWeight: "800", lineHeight: 28, color: "#fff", marginTop: 4 }}>
+            <View style={{ position: "absolute", left: 12, top: 12 }}>
+              <Text style={{ fontSize: 9, fontWeight: "700", letterSpacing: 1, color: "#A7F3D0" }}>WELCOME HOME</Text>
+              <Text style={{ fontSize: 17, fontWeight: "800", lineHeight: 22, color: "#fff", marginTop: 3 }}>
                 Find your{"\n"}perfect place
               </Text>
-              <Text style={{ fontSize: 12, color: "rgba(255,255,255,0.8)", marginTop: 6 }}>
+              <Text style={{ fontSize: 11, color: "rgba(255,255,255,0.8)", marginTop: 4 }}>
                 Verified, secure, and affordable.
               </Text>
 
               <Pressable
                 onPress={() => router.push("/search")}
                 style={{
-                  marginTop: 10,
+                  marginTop: 8,
                   backgroundColor: colors.primary,
-                  borderRadius: 10,
-                  paddingHorizontal: 12,
-                  paddingVertical: 7,
+                  borderRadius: 8,
+                  paddingHorizontal: 10,
+                  paddingVertical: 5,
                   alignSelf: "flex-start",
                 }}
               >
-                <Text style={{ fontSize: 12, color: "#fff", fontWeight: "800" }}>Explore now</Text>
+                <Text style={{ fontSize: 11, color: "#fff", fontWeight: "800" }}>Explore now</Text>
               </Pressable>
             </View>
           </View>
         </View>
 
         <View style={{ marginBottom: 16 }}>
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, marginBottom: 10 }}>
-            <Text style={{ fontSize: 17, fontWeight: "800", color: colors.navy }}>Featured Homes</Text>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 14, marginBottom: 8 }}>
+            <Text style={{ fontSize: 14, fontWeight: "800", color: colors.navy }}>Featured Homes</Text>
             <Pressable onPress={() => router.push("/search")} style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
               <Text style={{ fontSize: 12, fontWeight: "700", color: colors.primary }}>See all</Text>
               <ChevronRight size={14} color={colors.primary} />
             </Pressable>
           </View>
 
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 16, gap: 10 }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 14, gap: 8 }}>
             {featuredHomes.map((item) => (
               <FeaturedCard key={item.id} listing={item} />
             ))}
           </ScrollView>
         </View>
 
-        <View style={{ paddingHorizontal: 16 }}>
-          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-            <Text style={{ fontSize: 17, fontWeight: "800", color: colors.navy }}>Recommended</Text>
+        <View style={{ paddingHorizontal: 14 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+            <Text style={{ fontSize: 14, fontWeight: "800", color: colors.navy }}>Recommended</Text>
             <Pressable onPress={() => router.push("/search")} style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
               <Text style={{ fontSize: 12, fontWeight: "700", color: colors.primary }}>See all</Text>
               <ChevronRight size={14} color={colors.primary} />
