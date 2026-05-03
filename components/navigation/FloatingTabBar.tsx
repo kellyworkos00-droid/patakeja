@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from "react-native";
 import { router } from "expo-router";
-import { Bed, Home, MessageCircle, Plus, Search, UserRound } from "lucide-react-native";
+import { Bed, CalendarDays, Home, MessageCircle, Plus, Search, UserRound } from "lucide-react-native";
 import { colors } from "@/constants/colors";
 
 type FloatingTabBarProps = {
@@ -15,7 +15,11 @@ const icons = {
   post: Plus,
   chat: MessageCircle,
   profile: UserRound,
+  bookings: CalendarDays,
 };
+
+const POST_ROUTE = "post";
+const TAB_PRESS_EVENT = "tabPress";
 
 const tabShadow = {
   shadowColor: "#0F172A",
@@ -54,7 +58,7 @@ export function FloatingTabBar({ state, descriptors, navigation }: FloatingTabBa
           const { options } = descriptors[route.key];
           const label = options.title ?? route.name;
           const Icon = icons[route.name as keyof typeof icons] ?? Bed;
-          const isPost = route.name === "post";
+          const isPost = route.name === POST_ROUTE;
 
           const onPress = () => {
             if (isPost) {
@@ -62,7 +66,7 @@ export function FloatingTabBar({ state, descriptors, navigation }: FloatingTabBa
               return;
             }
             const event = navigation.emit({
-              type: "tabPress",
+              type: TAB_PRESS_EVENT,
               target: route.key,
               canPreventDefault: true,
             });

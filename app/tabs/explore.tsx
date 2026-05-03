@@ -1,241 +1,173 @@
-import { useState } from "react";
-import {
-  Image, Pressable, ScrollView, StatusBar, Text, View,
-} from "react-native";
+import { useMemo, useState } from "react";
+import { Modal, Pressable, ScrollView, StatusBar, Text, View } from "react-native";
 import { router } from "expo-router";
 import {
-  BedDouble, ChevronDown, Grid2X2, Heart, Home,
-  LocateFixed, LockKeyhole, Map, MapPin, MoreVertical,
-  Search, ShieldCheck, SlidersHorizontal,
+  SlidersHorizontal,
 } from "lucide-react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import MapView, { Marker } from "react-native-maps";
-import { listings } from "@/data/mockListings";
 import { colors } from "@/constants/colors";
-import { mapListings } from "@/data/mockMapListings";
-import { MapPriceMarker } from "@/components/map/MapPriceMarker";
+import { ScreenContainer } from "@/components/layout/ScreenContainer";
+import { FloatingSearchBar } from "@/components/forms/FloatingSearchBar";
+import { CategoryChip } from "@/components/ui/CategoryChip";
+import { MapPreviewCard } from "@/components/map/MapPreviewCard";
+import { SortDropdown } from "@/components/ui/SortDropdown";
+import { ListingCard } from "@/components/cards/ListingCard";
+import { exploreListings, ExploreListing } from "@/data/mockExploreListings";
 
-const filters = [
-  { label: "All",        icon: Grid2X2 },
-  { label: "Bedsitters", icon: Home },
-  { label: "1 Bedroom",  icon: BedDouble },
-  { label: "2 Bedroom",  icon: BedDouble },
-  { label: "3+ Bedroom", icon: BedDouble },
-];
+type Category = "All" | "Bedsitters" | "1 Bedroom" | "2 Bedroom" | "3+ Bedroom" | "Houses" | "Apartments";
+type SortOption = "Newest" | "Price: Low to High" | "Price: High to Low" | "Distance";
 
-const previewRegion = {
-  latitude: -1.286389,
-  longitude: 36.817223,
-  latitudeDelta: 0.22,
-  longitudeDelta: 0.14,
-};
+const categories: Category[] = ["All", "Bedsitters", "1 Bedroom", "2 Bedroom", "3+ Bedroom", "Houses", "Apartments"];
+const budgetOptions = ["KES 15K-25K", "KES 25K-40K", "KES 40K+"];
+const propertyTypeOptions: Array<"Bedsitters" | "Apartments" | "Houses"> = ["Bedsitters", "Apartments", "Houses"];
 
-const shadow = {
+const cardShadow = {
   shadowColor: "#0F172A",
   shadowOffset: { width: 0, height: 4 },
-  shadowOpacity: 0.07,
-  shadowRadius: 12,
+  shadowOpacity: 0.08,
+  shadowRadius: 10,
   elevation: 4,
 };
 
-const shadowMd = {
-  shadowColor: "#0F172A",
-  shadowOffset: { width: 0, height: 6 },
-  shadowOpacity: 0.10,
-  shadowRadius: 18,
-  elevation: 7,
-};
+const parsePrice = (price: string) => Number(price.replace(/[^\d]/g, ""));
+const parseDistance = (distance: string) => Number.parseFloat(distance.replace(" km away", ""));
 
-function TrustPill({ type }: { type: "Verified" | "Secure Chat" | "Escrow" }) {
-  const cfg = {
-    Verified:      { icon: ShieldCheck, bg: "#DCFCE7", color: colors.primary },
-    "Secure Chat": { icon: LockKeyhole, bg: "#FEF3C7", color: "#D97706" },
-    Escrow:        { icon: ShieldCheck, bg: "#EDE9FE", color: "#7C3AED" },
-  }[type];
-  const Icon = cfg.icon;
-  return (
-    <View style={{ flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: cfg.bg, borderRadius: 20, paddingHorizontal: 8, paddingVertical: 4 }}>
-      <Icon size={11} color={cfg.color} strokeWidth={2.8} />
-      <Text style={{ fontSize: 11, fontWeight: "700", color: cfg.color }}>{type}</Text>
-    </View>
-  );
+function filterByCategory(listing: ExploreListing, category: Category) {
+  if (category === "All") return true;
+  if (category === "Bedsitters") return listing.propertyType === "Bedsitters";
+  if (category === "Houses") return listing.propertyType === "Houses";
+  if (category === "Apartments") return listing.propertyType === "Apartments";
+  if (category === "1 Bedroom") return listing.bedrooms === 1;
+  if (category === "2 Bedroom") return listing.bedrooms === 2;
+  if (category === "3+ Bedroom") return listing.bedrooms >= 3;
+  return true;
 }
 
 export default function ExploreScreen() {
-  const [activeFilter, setActiveFilter] = useState(0);
-  const [saved, setSaved] = useState<Record<string, boolean>>(
-    Object.fromEntries(listings.map((l) => [l.id, l.saved ?? false]))
-  );
-  const toggleSaved = (id: string) => setSaved((s) => ({ ...s, [id]: !s[id] }));
+  const [activeCategory, setActiveCategory] = useState<Category>("All");
+  const [sortBy, setSortBy] = useState<SortOption>("Newest");
+  const [showFilters, setShowFilters] = useState(false);
+
+  const visibleListings = useMemo(() => {
+    const filtered = exploreListings.filter((listing) => filterByCategory(listing, activeCategory));
+
+    return filtered.sort((a, b) => {
+      if (sortBy === "Price: Low to High") return parsePrice(a.price) - parsePrice(b.price);
+      if (sortBy === "Price: High to Low") return parsePrice(b.price) - parsePrice(a.price);
+      if (sortBy === "Distance") return parseDistance(a.distance) - parseDistance(b.distance);
+      return new Date(b.listedAt).getTime() - new Date(a.listedAt).getTime();
+    });
+  }, [activeCategory, sortBy]);
+
+  const displayResultCount = activeCategory === "All" ? 256 : visibleListings.length;
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#F8FAFC" }} edges={["top", "left", "right"]}>
+    <ScreenContainer padded={false} contentClassName="pb-36">
       <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 110 }}>
-
-        {/* ── Header ── */}
-        <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", paddingHorizontal: 20, paddingTop: 10, paddingBottom: 14 }}>
-          <View>
-            <Text style={{ fontSize: 32, fontWeight: "800", color: colors.navy, letterSpacing: -0.6 }}>Explore</Text>
-            <Text style={{ fontSize: 14, color: "#64748B", fontWeight: "500", marginTop: 2 }}>Find your perfect home</Text>
-          </View>
-          <Pressable
-            onPress={() => router.push("/search")}
-            style={[{ width: 58, height: 58, borderRadius: 29, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", marginTop: 4 }, shadowMd]}
-          >
-            <SlidersHorizontal color={colors.navy} size={21} />
-            <View style={{ position: "absolute", top: 14, right: 14, width: 9, height: 9, borderRadius: 5, backgroundColor: colors.primary, borderWidth: 1.5, borderColor: "#F8FAFC" }} />
-          </Pressable>
+      <View style={{ paddingHorizontal: 20, paddingTop: 10, paddingBottom: 12, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+        <View>
+          <Text style={{ fontSize: 34, fontWeight: "800", color: colors.navy, letterSpacing: -0.5 }}>Explore</Text>
+          <Text style={{ fontSize: 15, color: "#64748B", fontWeight: "500", marginTop: 2 }}>Find your perfect home</Text>
         </View>
 
-        {/* ── Search bar ── */}
         <Pressable
-          onPress={() => router.push("/search")}
-          style={[{ flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: "#fff", borderRadius: 24, paddingHorizontal: 20, paddingVertical: 17, marginHorizontal: 20, marginBottom: 16 }, shadowMd]}
+          onPress={() => setShowFilters(true)}
+          style={[
+            {
+              width: 52,
+              height: 52,
+              borderRadius: 26,
+              backgroundColor: "#FFFFFF",
+              alignItems: "center",
+              justifyContent: "center",
+            },
+            cardShadow,
+          ]}
         >
-          <Search color={colors.primary} size={22} strokeWidth={2.4} />
-          <Text style={{ flex: 1, fontSize: 18, color: "#94A3B8", fontWeight: "500" }}>Search location, area or property...</Text>
-          <View style={{ width: 1, height: 24, backgroundColor: "#E2E8F0", marginHorizontal: 2 }} />
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
-            <SlidersHorizontal size={17} color={colors.navy} />
-            <Text style={{ fontSize: 15, fontWeight: "700", color: colors.navy }}>Filters</Text>
-          </View>
+          <SlidersHorizontal color={colors.navy} size={20} strokeWidth={2.2} />
+          <View style={{ position: "absolute", top: 12, right: 12, width: 8, height: 8, borderRadius: 4, backgroundColor: colors.primary }} />
         </Pressable>
+      </View>
 
-        {/* ── Filter chips ── */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 20, gap: 12, paddingBottom: 6, marginBottom: 18 }}
-        >
-          {filters.map((f, i) => {
-            const Icon = f.icon;
-            const active = i === activeFilter;
-            return (
-              <Pressable
-                key={f.label}
-                onPress={() => setActiveFilter(i)}
-                style={[{ flexDirection: "row", alignItems: "center", gap: 7, height: 52, borderRadius: 26, paddingHorizontal: 20, backgroundColor: active ? colors.navy : "#fff" }, active ? shadow : shadow]}
-              >
-                <Icon color={active ? "#fff" : colors.navy} size={18} strokeWidth={active ? 2.6 : 2.2} />
-                <Text style={{ fontSize: 15, fontWeight: "700", color: active ? "#fff" : colors.navy }}>{f.label}</Text>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
+      <FloatingSearchBar onPress={() => router.push("/search")} onFilterPress={() => setShowFilters(true)} />
 
-        {/* ── Map preview ── */}
-        <View style={[{ marginHorizontal: 20, marginBottom: 20, borderRadius: 28, overflow: "hidden", height: 246 }, shadowMd]}>
-          <MapView
-            style={{ width: "100%", height: "100%" }}
-            initialRegion={previewRegion}
-            mapType="standard"
-            customMapStyle={[
-              { elementType: "geometry", stylers: [{ color: "#f2f5f7" }] },
-              { elementType: "labels.text.fill", stylers: [{ color: "#5b6472" }] },
-              { elementType: "labels.text.stroke", stylers: [{ color: "#ffffff" }] },
-              { featureType: "poi", stylers: [{ visibility: "off" }] },
-              { featureType: "transit", stylers: [{ visibility: "off" }] },
-              { featureType: "road", elementType: "geometry", stylers: [{ color: "#ffffff" }] },
-              { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#dde5eb" }] },
-            ]}
-            scrollEnabled={false}
-            zoomEnabled={false}
-            rotateEnabled={false}
-            pitchEnabled={false}
-            toolbarEnabled={false}
-          >
-            {mapListings.map((listing) => (
-              <Marker
-                key={listing.id}
-                coordinate={{ latitude: listing.latitude, longitude: listing.longitude }}
-                tracksViewChanges={false}
-                anchor={{ x: 0.5, y: 1 }}
-              >
-                <MapPriceMarker price={listing.price} selected={listing.id === "1"} onPress={() => router.push("/explore-map")} />
-              </Marker>
-            ))}
-          </MapView>
-          <View style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, backgroundColor: "rgba(15,23,42,0.03)" }} pointerEvents="none" />
-
-          <Pressable onPress={() => router.push("/explore-map")} style={{ position: "absolute", bottom: 12, left: 0, right: 0, alignItems: "center" }}>
-            <View style={[{ flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "#fff", borderRadius: 26, paddingHorizontal: 22, paddingVertical: 12 }, shadowMd]}>
-              <Map color={colors.navy} size={20} strokeWidth={2.2} />
-              <Text style={{ fontSize: 16, fontWeight: "800", color: colors.navy }}>View on Map</Text>
-            </View>
-          </Pressable>
-
-          <Pressable onPress={() => router.push("/explore-map")} style={[{ position: "absolute", bottom: 12, right: 12, width: 46, height: 46, borderRadius: 23, backgroundColor: "#fff", alignItems: "center", justifyContent: "center" }, shadowMd]}>
-            <LocateFixed color={colors.navy} size={21} strokeWidth={2.2} />
-          </Pressable>
-        </View>
-
-        {/* ── Results bar ── */}
-        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, marginBottom: 16 }}>
-          <Text style={{ fontSize: 14, fontWeight: "600", color: "#64748B" }}>
-            <Text style={{ color: colors.navy, fontWeight: "800" }}>256</Text> homes found
-          </Text>
-          <Pressable style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-            <Text style={{ fontSize: 14, fontWeight: "700", color: colors.navy }}>Sort by: Newest</Text>
-            <ChevronDown color={colors.navy} size={16} strokeWidth={2.4} />
-          </Pressable>
-        </View>
-
-        {/* ── Listing cards ── */}
-        <View style={{ paddingHorizontal: 20, gap: 12 }}>
-          {listings.map((listing) => (
-            <Pressable
-              key={listing.id}
-              onPress={() => router.push(`/listing/${listing.id}`)}
-              style={[{ flexDirection: "row", backgroundColor: "#fff", borderRadius: 20, overflow: "hidden" }, shadow]}
-            >
-              <View style={{ width: 122, height: 124, position: "relative" }}>
-                <Image source={listing.image} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
-                <View style={{ position: "absolute", bottom: 8, left: 8, flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: "rgba(0,0,0,0.55)", borderRadius: 10, paddingHorizontal: 7, paddingVertical: 3 }}>
-                  <Text style={{ fontSize: 11, color: "#fff", fontWeight: "700" }}>📷 {listing.photos}</Text>
-                </View>
-                <Pressable
-                  onPress={() => toggleSaved(listing.id)}
-                  style={{ position: "absolute", top: 8, right: 8, width: 28, height: 28, borderRadius: 14, backgroundColor: "rgba(255,255,255,0.92)", alignItems: "center", justifyContent: "center" }}
-                >
-                  <Heart size={15} color={saved[listing.id] ? "#EF4444" : "#94A3B8"} fill={saved[listing.id] ? "#EF4444" : "transparent"} strokeWidth={2.2} />
-                </Pressable>
-              </View>
-
-              <View style={{ flex: 1, paddingHorizontal: 12, paddingVertical: 10, justifyContent: "space-between" }}>
-                <View>
-                  <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between" }}>
-                    <Text style={{ fontSize: 17, fontWeight: "800", color: colors.navy }}>
-                      {listing.price}{" "}
-                      <Text style={{ fontSize: 12, fontWeight: "600", color: "#94A3B8" }}>/month</Text>
-                    </Text>
-                    <Pressable style={{ padding: 2 }}>
-                      <MoreVertical size={18} color="#94A3B8" />
-                    </Pressable>
-                  </View>
-                  <Text style={{ fontSize: 13, fontWeight: "700", color: colors.navy, marginTop: 2 }} numberOfLines={1}>
-                    {listing.title}
-                  </Text>
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 5 }}>
-                    <MapPin size={12} color="#94A3B8" />
-                    <Text style={{ fontSize: 12, color: "#64748B", fontWeight: "500" }} numberOfLines={1}>
-                      {listing.location}
-                    </Text>
-                    <Text style={{ fontSize: 12, color: "#CBD5E1" }}>·</Text>
-                    <Text style={{ fontSize: 12, color: colors.primary, fontWeight: "700" }}>{listing.distance}</Text>
-                  </View>
-                </View>
-                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 5, marginTop: 8 }}>
-                  <TrustPill type="Verified" />
-                  <TrustPill type="Secure Chat" />
-                  <TrustPill type="Escrow" />
-                </View>
-              </View>
-            </Pressable>
-          ))}
-        </View>
-
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 20, gap: 10, paddingTop: 14, paddingBottom: 6 }}
+      >
+        {categories.map((category) => (
+          <CategoryChip
+            key={category}
+            label={category}
+            active={activeCategory === category}
+            onPress={() => setActiveCategory(category)}
+          />
+        ))}
       </ScrollView>
-    </SafeAreaView>
+
+      <View style={{ marginTop: 12, marginBottom: 18 }}>
+        <MapPreviewCard onOpenMap={() => router.push("/explore-map")} />
+      </View>
+
+      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, marginBottom: 14 }}>
+        <Text style={{ fontSize: 14, fontWeight: "600", color: "#64748B" }}>
+          <Text style={{ color: colors.navy, fontWeight: "800" }}>{displayResultCount}</Text> homes found
+        </Text>
+        <SortDropdown value={sortBy} onChange={setSortBy} />
+      </View>
+
+      <View style={{ paddingHorizontal: 20, gap: 11 }}>
+        {visibleListings.map((listing) => (
+          <View key={listing.id} style={cardShadow}>
+            <ListingCard listing={listing} variant="explore" />
+          </View>
+        ))}
+      </View>
+
+      <Modal visible={showFilters} animationType="slide" transparent onRequestClose={() => setShowFilters(false)}>
+        <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(15,23,42,0.34)" }}>
+          <View style={{ backgroundColor: "#FFFFFF", borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingHorizontal: 20, paddingTop: 14, paddingBottom: 28 }}>
+            <View style={{ alignItems: "center", marginBottom: 12 }}>
+              <View style={{ width: 50, height: 5, borderRadius: 3, backgroundColor: "#E2E8F0" }} />
+            </View>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+              <Text style={{ fontSize: 20, fontWeight: "800", color: colors.navy }}>Filters</Text>
+              <Pressable onPress={() => setShowFilters(false)}>
+                <Text style={{ color: colors.primary, fontSize: 14, fontWeight: "800" }}>Done</Text>
+              </Pressable>
+            </View>
+
+            <Text style={{ fontSize: 14, color: colors.navy, fontWeight: "700", marginBottom: 8 }}>Budget</Text>
+            <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
+              {budgetOptions.map((budget) => (
+                <View key={budget} style={{ borderRadius: 16, paddingHorizontal: 12, paddingVertical: 9, backgroundColor: "#F1F5F9" }}>
+                  <Text style={{ color: colors.navy, fontSize: 12, fontWeight: "700" }}>{budget}</Text>
+                </View>
+              ))}
+            </View>
+
+            <Text style={{ fontSize: 14, color: colors.navy, fontWeight: "700", marginBottom: 8 }}>Property Type</Text>
+            <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
+              {propertyTypeOptions.map((kind) => (
+                <Pressable
+                  key={kind}
+                  onPress={() => setActiveCategory(kind as Category)}
+                  style={{
+                    borderRadius: 16,
+                    paddingHorizontal: 12,
+                    paddingVertical: 9,
+                    backgroundColor: activeCategory === kind ? "#DCFCE7" : "#F1F5F9",
+                  }}
+                >
+                  <Text style={{ color: colors.navy, fontSize: 12, fontWeight: "700" }}>{kind}</Text>
+                </Pressable>
+              ))}
+            </View>
+
+            <Text style={{ fontSize: 12, color: "#64748B" }}>Approximate locations only. Communication stays inside app via Secure Chat.</Text>
+          </View>
+        </View>
+      </Modal>
+    </ScreenContainer>
   );
 }
