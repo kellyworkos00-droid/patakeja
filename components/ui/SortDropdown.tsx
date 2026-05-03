@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { Check, ChevronDown } from "lucide-react-native";
 import { colors } from "@/constants/colors";
@@ -12,10 +12,10 @@ type SortDropdownProps = {
 
 const shadow = {
   shadowColor: "#0F172A",
-  shadowOffset: { width: 0, height: 4 },
+  shadowOffset: { width: 0, height: 8 },
   shadowOpacity: 0.1,
-  shadowRadius: 10,
-  elevation: 5,
+  shadowRadius: 16,
+  elevation: 7,
 };
 
 const options: SortOption[] = ["Newest", "Price: Low to High", "Price: High to Low", "Distance"];
@@ -30,8 +30,22 @@ export function SortDropdown({ value, onChange }: SortDropdownProps) {
 
   return (
     <View style={{ position: "relative", zIndex: 10 }}>
-      <Pressable onPress={() => setOpen((prev) => !prev)} style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-        <Text style={{ fontSize: 14, fontWeight: "700", color: colors.navy }}>Sort by: {value}</Text>
+      <Pressable
+        onPress={() => setOpen((prev) => !prev)}
+        style={({ pressed }) => ({
+          flexDirection: "row",
+          alignItems: "center",
+          gap: 6,
+          borderRadius: 16,
+          backgroundColor: "#FFFFFF",
+          borderWidth: 1,
+          borderColor: "#E2E8F0",
+          paddingHorizontal: 10,
+          paddingVertical: 8,
+          opacity: pressed ? 0.85 : 1,
+        })}
+      >
+        <Text style={{ fontSize: 13, fontWeight: "800", color: colors.navy }}>Sort: {value}</Text>
         <ChevronDown color={colors.navy} size={16} strokeWidth={2.4} />
       </Pressable>
 
@@ -41,11 +55,11 @@ export function SortDropdown({ value, onChange }: SortDropdownProps) {
             {
               position: "absolute",
               right: 0,
-              top: 28,
+              top: 44,
               backgroundColor: "#FFFFFF",
               borderRadius: 14,
               paddingVertical: 6,
-              width: 190,
+              width: 198,
             },
             shadow,
           ]}
@@ -56,13 +70,14 @@ export function SortDropdown({ value, onChange }: SortDropdownProps) {
               <Pressable
                 key={option}
                 onPress={() => selectOption(option)}
-                style={{
+                style={({ pressed }) => ({
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "space-between",
                   paddingHorizontal: 12,
-                  paddingVertical: 9,
-                }}
+                  paddingVertical: 10,
+                  backgroundColor: pressed ? "#F8FAFC" : "#FFFFFF",
+                })}
               >
                 <Text style={{ fontSize: 13, color: active ? colors.navy : "#334155", fontWeight: active ? "800" : "600" }}>{option}</Text>
                 {active ? <Check size={14} color={colors.primary} /> : null}

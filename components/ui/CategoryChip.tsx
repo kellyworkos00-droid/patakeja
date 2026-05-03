@@ -1,4 +1,4 @@
-import { Pressable, Text } from "react-native";
+﻿import { Pressable, Text } from "react-native";
 import { colors } from "@/constants/colors";
 
 type CategoryChipProps = {
@@ -9,23 +9,26 @@ type CategoryChipProps = {
 
 const shadow = {
   shadowColor: "#0F172A",
-  shadowOffset: { width: 0, height: 4 },
-  shadowOpacity: 0.07,
-  shadowRadius: 10,
-  elevation: 4,
+  shadowOffset: { width: 0, height: 6 },
+  shadowOpacity: 0.08,
+  shadowRadius: 14,
+  elevation: 5,
 };
 
 export function CategoryChip({ label, active, onPress }: CategoryChipProps) {
   return (
     <Pressable
       onPress={onPress}
-      style={[
+      style={({ pressed }) => [
         {
           height: 44,
           borderRadius: 22,
           justifyContent: "center",
           paddingHorizontal: 16,
           backgroundColor: active ? colors.navy : "#FFFFFF",
+          borderWidth: active ? 0 : 1,
+          borderColor: "#E2E8F0",
+          transform: [{ scale: pressed ? 0.97 : 1 }],
         },
         !active ? shadow : undefined,
       ]}
