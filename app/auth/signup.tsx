@@ -10,9 +10,7 @@ import * as WebBrowser from "expo-web-browser";
 import { images } from "@/constants/assets";
 import { colors } from "@/constants/colors";
 
-export const useWarmUpBrowser = () => {
-  WebBrowser.maybeCompleteAuthSession();
-};
+WebBrowser.maybeCompleteAuthSession();
 
 export default function SignupScreen() {
   const { signUp, setActive, isLoaded } = useSignUp();
@@ -28,8 +26,6 @@ export default function SignupScreen() {
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [loading, setLoading] = useState(false);
   const insets = useSafeAreaInsets();
-
-  useWarmUpBrowser();
 
   const passwordStrength =
     password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password)
