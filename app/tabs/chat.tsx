@@ -22,7 +22,7 @@ import {
 import { chats, ChatThread } from "@/data/mockChats";
 
 const FILTER_TABS = [
-  { key: "all",      label: "All Chats", count: 12, icon: "" },
+  { key: "all",      label: "All",       count: 12, icon: "" },
   { key: "unread",   label: "Unread",    count: 5,  icon: "" },
   { key: "bookings", label: "Bookings",  count: 0,  icon: "calendar" },
   { key: "archive",  label: "Archive",   count: 0,  icon: "archive" },
@@ -158,13 +158,13 @@ export default function ChatListScreen() {
       </View>
 
       {/* ── Filter Tabs ── */}
-      <View style={{ paddingHorizontal: 8, paddingBottom: 10 }}>
+      <View style={{ paddingHorizontal: 6, paddingBottom: 10 }}>
         <View style={{
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
           gap: 2,
-          paddingHorizontal: 4,
+          paddingHorizontal: 3,
           paddingVertical: 4,
           backgroundColor: "#FFFFFF",
           borderRadius: 16,
@@ -183,7 +183,7 @@ export default function ChatListScreen() {
                 style={{
                   flex: 1,
                   minWidth: 0,
-                  height: 34,
+                  height: 33,
                   borderRadius: 17,
                   backgroundColor: active ? "#0B1D45" : "#FFFFFF",
                   flexDirection: "row",
@@ -194,7 +194,7 @@ export default function ChatListScreen() {
                 }}
               >
                 <FilterTabIcon icon={tab.icon} active={active} />
-                <Text style={{ fontSize: 9.5, fontWeight: "700", color: active ? "#FFFFFF" : "#0F172A" }} numberOfLines={1}>
+                <Text allowFontScaling={false} style={{ fontSize: 9.5, fontWeight: "700", color: active ? "#FFFFFF" : "#0F172A" }} numberOfLines={1}>
                   {tab.label}
                 </Text>
                 {tab.count > 0 && (
@@ -207,7 +207,7 @@ export default function ChatListScreen() {
                     alignItems: "center",
                     justifyContent: "center",
                   }}>
-                    <Text style={{ color: "#FFFFFF", fontSize: 8, fontWeight: "800" }}>{tab.count}</Text>
+                    <Text allowFontScaling={false} style={{ color: "#FFFFFF", fontSize: 8, fontWeight: "800" }}>{tab.count}</Text>
                   </View>
                 )}
               </Pressable>
