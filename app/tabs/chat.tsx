@@ -22,10 +22,10 @@ import {
 import { chats, ChatThread } from "@/data/mockChats";
 
 const FILTER_TABS = [
-  { key: "all",      label: "All Chats", count: 12, icon: "", width: 92 },
-  { key: "unread",   label: "Unread",    count: 5,  icon: "", width: 78 },
-  { key: "bookings", label: "Bookings",  count: 0,  icon: "calendar", width: 96 },
-  { key: "archive",  label: "Archive",   count: 0,  icon: "archive", width: 88 },
+  { key: "all",      label: "All Chats", count: 12, icon: "" },
+  { key: "unread",   label: "Unread",    count: 5,  icon: "" },
+  { key: "bookings", label: "Bookings",  count: 0,  icon: "calendar" },
+  { key: "archive",  label: "Archive",   count: 0,  icon: "archive" },
 ];
 
 function FilterTabIcon({ icon, active }: { icon: string; active: boolean }) {
@@ -51,31 +51,39 @@ function ChatRow({ thread, onPress }: { thread: ChatThread; onPress: () => void 
       style={({ pressed }) => ({
         flexDirection: "row",
         alignItems: "center",
-        paddingHorizontal: 20,
-        paddingVertical: 13,
+        marginHorizontal: 14,
+        marginTop: 10,
+        borderRadius: 18,
+        paddingHorizontal: 14,
+        paddingVertical: 12,
         backgroundColor: pressed ? "#F8FAFC" : "#FFFFFF",
+        shadowColor: "#0F172A",
+        shadowOpacity: 0.04,
+        shadowOffset: { width: 0, height: 4 },
+        shadowRadius: 12,
+        elevation: 2,
       })}
     >
       {/* Avatar with online dot */}
       <View style={{ position: "relative", marginRight: 14 }}>
-        <Image source={thread.avatar} style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: "#E2E8F0" }} />
+        <Image source={thread.avatar} style={{ width: 58, height: 58, borderRadius: 29, backgroundColor: "#E2E8F0" }} />
         {thread.online && (
-          <View style={{ position: "absolute", bottom: -2, right: -2, width: 14, height: 14, borderRadius: 7, backgroundColor: "#16A34A", borderWidth: 2.5, borderColor: "#FFFFFF" }} />
+          <View style={{ position: "absolute", bottom: 1, left: 1, width: 13, height: 13, borderRadius: 7, backgroundColor: "#16A34A", borderWidth: 2.5, borderColor: "#FFFFFF" }} />
         )}
       </View>
 
       <View style={{ flex: 1 }}>
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 3 }}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 7, flex: 1, marginRight: 8 }}>
-            <Text style={{ fontSize: 18, fontWeight: "800", color: "#0F172A" }} numberOfLines={1}>{thread.name}</Text>
+            <Text style={{ fontSize: 16, fontWeight: "800", color: "#0F172A" }} numberOfLines={1}>{thread.name}</Text>
             {thread.verified && <VerifiedBadge />}
           </View>
           <Text style={{ fontSize: 11.5, color: "#98A2B3", fontWeight: "500" }}>{thread.time}</Text>
         </View>
-        <Text style={{ fontSize: 12, color: "#667085", marginBottom: 4 }} numberOfLines={1}>{thread.listingSubtitle}</Text>
+        <Text style={{ fontSize: 11.5, color: "#667085", marginBottom: 5 }} numberOfLines={1}>{thread.listingSubtitle}</Text>
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
           <Text
-            style={{ fontSize: 14, color: "#0F172A", fontWeight: thread.lastFromMe ? "500" : "500", flex: 1, marginRight: 8 }}
+            style={{ fontSize: 13.5, color: "#0F172A", fontWeight: "500", flex: 1, marginRight: 8 }}
             numberOfLines={1}
           >
             {thread.lastFromMe ? <Text style={{ color: "#16A34A", fontWeight: "600" }}>You: </Text> : null}
@@ -108,26 +116,26 @@ export default function ChatListScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: "#F7F9FC" }} edges={["top"]}>
 
       {/* ── Header ── */}
-      <View style={{ paddingHorizontal: 20, paddingTop: 14, paddingBottom: 12 }}>
+      <View style={{ paddingHorizontal: 20, paddingTop: 14, paddingBottom: 10 }}>
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-              <Text style={{ fontSize: 56 / 2, fontWeight: "900", color: "#0F172A", letterSpacing: -0.5 }}>Chats</Text>
+              <Text style={{ fontSize: 30, fontWeight: "900", color: "#0F172A", letterSpacing: -0.6 }}>Chats</Text>
               {totalUnread > 0 && (
                 <View style={{ backgroundColor: "#16A34A", borderRadius: 12, paddingHorizontal: 8, paddingVertical: 3 }}>
                   <Text style={{ color: "#fff", fontSize: 12, fontWeight: "800" }}>{totalUnread}</Text>
                 </View>
               )}
             </View>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 5, marginTop: 2 }}>
-              <Text style={{ fontSize: 12.5, color: "#667085" }}>Secure conversations, safe and private.</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 2 }}>
+              <Text style={{ fontSize: 13, color: "#667085" }}>Secure conversations, safe and private.</Text>
               <Shield size={13} color="#16A34A" fill="#16A34A" />
             </View>
           </View>
 
-          <View style={{ flexDirection: "row", gap: 12 }}>
+          <View style={{ flexDirection: "row", gap: 10 }}>
             <Pressable style={({ pressed }) => ({
-              width: 50, height: 50, borderRadius: 25,
+              width: 46, height: 46, borderRadius: 23,
               backgroundColor: pressed ? "#EEF2F6" : "#FFFFFF",
               alignItems: "center", justifyContent: "center",
               shadowColor: "#0F172A", shadowOpacity: 0.08,
@@ -136,14 +144,14 @@ export default function ChatListScreen() {
               <Search size={18} color="#0F172A" strokeWidth={2} />
             </Pressable>
             <Pressable style={({ pressed }) => ({
-              width: 50, height: 50, borderRadius: 25,
+              width: 46, height: 46, borderRadius: 23,
               backgroundColor: pressed ? "#EEF2F6" : "#FFFFFF",
               alignItems: "center", justifyContent: "center",
               shadowColor: "#0F172A", shadowOpacity: 0.08,
               shadowOffset: { width: 0, height: 4 }, shadowRadius: 12, elevation: 4,
             })}>
-              <SlidersHorizontal size={18} color="#0F172A" strokeWidth={2} />
-              <View style={{ position: "absolute", top: 10, right: 11, width: 7, height: 7, borderRadius: 4, backgroundColor: "#16A34A" }} />
+              <SlidersHorizontal size={17} color="#0F172A" strokeWidth={2} />
+              <View style={{ position: "absolute", top: 8, right: 9, width: 7, height: 7, borderRadius: 4, backgroundColor: "#16A34A" }} />
             </Pressable>
           </View>
         </View>
@@ -155,10 +163,11 @@ export default function ChatListScreen() {
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
-          paddingHorizontal: 10,
-          paddingVertical: 10,
+          gap: 6,
+          paddingHorizontal: 8,
+          paddingVertical: 8,
           backgroundColor: "#FFFFFF",
-          borderRadius: 20,
+          borderRadius: 18,
           shadowColor: "#0F172A",
           shadowOpacity: 0.07,
           shadowOffset: { width: 0, height: 8 },
@@ -172,31 +181,33 @@ export default function ChatListScreen() {
                 key={tab.key}
                 onPress={() => setActiveFilter(tab.key)}
                 style={{
-                  width: tab.width,
-                  height: 46,
-                  borderRadius: 23,
+                  flex: 1,
+                  minWidth: 0,
+                  height: 40,
+                  borderRadius: 20,
                   backgroundColor: active ? "#0B1D45" : "#FFFFFF",
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "center",
-                  gap: 7,
+                  gap: 4,
+                  paddingHorizontal: 5,
                 }}
               >
                 <FilterTabIcon icon={tab.icon} active={active} />
-                <Text style={{ fontSize: 13, fontWeight: "700", color: active ? "#FFFFFF" : "#0F172A" }} numberOfLines={1}>
+                <Text style={{ fontSize: 11.5, fontWeight: "700", color: active ? "#FFFFFF" : "#0F172A" }} numberOfLines={1}>
                   {tab.label}
                 </Text>
                 {tab.count > 0 && (
                   <View style={{
-                    minWidth: 24,
-                    height: 24,
-                    borderRadius: 12,
-                    paddingHorizontal: 6,
+                    minWidth: 18,
+                    height: 18,
+                    borderRadius: 9,
+                    paddingHorizontal: 4,
                     backgroundColor: active ? "#71C949" : "#16A34A",
                     alignItems: "center",
                     justifyContent: "center",
                   }}>
-                    <Text style={{ color: "#FFFFFF", fontSize: 11, fontWeight: "800" }}>{tab.count}</Text>
+                    <Text style={{ color: "#FFFFFF", fontSize: 10, fontWeight: "800" }}>{tab.count}</Text>
                   </View>
                 )}
               </Pressable>
@@ -206,10 +217,10 @@ export default function ChatListScreen() {
       </View>
 
       {/* ── Divider ── */}
-      <View style={{ height: 1, backgroundColor: "#EEF2F6" }} />
+      <View style={{ height: 1, backgroundColor: "#EEF2F6", marginHorizontal: 14 }} />
 
       {/* ── Chat List ── */}
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120, backgroundColor: "#FFFFFF" }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120, backgroundColor: "#F7F9FC" }}>
         {filteredChats.length === 0 ? (
           <View style={{ alignItems: "center", paddingTop: 80, gap: 14 }}>
             <View style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: "#F4F8FB", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "#E2E8F0" }}>
@@ -224,7 +235,6 @@ export default function ChatListScreen() {
           filteredChats.map((thread) => (
             <React.Fragment key={thread.id}>
               <ChatRow thread={thread} onPress={() => router.push(`/chat/${thread.id}` as any)} />
-              <View style={{ height: 1, backgroundColor: "#EEF2F6", marginLeft: 94 }} />
             </React.Fragment>
           ))
         )}
