@@ -431,7 +431,7 @@ export default function ChatDetailScreen() {
               <Plus size={20} color="#FFFFFF" strokeWidth={2.5} />
             </Pressable>
 
-            <View style={{ flex: 1, flexDirection: "row", alignItems: "center", backgroundColor: "#F8FAFC", borderRadius: 24, paddingHorizontal: 14, borderWidth: 1, borderColor: "#E2E8F0", minHeight: 44 }}>
+            <View style={{ flex: 1, flexDirection: "row", alignItems: "center", backgroundColor: "#F8FAFC", borderRadius: 24, paddingLeft: 14, paddingRight: 6, borderWidth: 1, borderColor: "#E2E8F0", minHeight: 44 }}>
               {recording ? (
                 <View style={{ flex: 1, flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 10 }}>
                   <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: "#EF4444" }} />
@@ -449,38 +449,42 @@ export default function ChatDetailScreen() {
                   multiline
                 />
               )}
-              <Pressable onPress={() => setShowEmoji((v) => !v)} style={{ marginLeft: 8 }}>
+
+              {/* Emoji toggle */}
+              <Pressable onPress={() => setShowEmoji((v) => !v)} style={{ paddingHorizontal: 6, paddingVertical: 4 }}>
                 <Smile size={22} color={showEmoji ? "#16A34A" : "#94A3B8"} strokeWidth={1.8} />
               </Pressable>
-            </View>
 
-            {/* Send button (green) when text exists, otherwise Mic (hold to record) */}
-            {inputText.trim().length > 0 ? (
-              <Pressable
-                onPress={sendMessage}
-                style={({ pressed }) => ({
-                  width: 44, height: 44, borderRadius: 22,
-                  backgroundColor: pressed ? "#15803D" : "#16A34A",
-                  alignItems: "center", justifyContent: "center",
-                  shadowColor: "#16A34A", shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.3, shadowRadius: 8, elevation: 4,
-                })}
-              >
-                <Send size={18} color="#FFFFFF" strokeWidth={2.5} />
-              </Pressable>
-            ) : (
-              <Pressable
-                onPressIn={() => setRecording(true)}
-                onPressOut={sendVoice}
-                style={({ pressed }) => ({
-                  width: 44, height: 44, borderRadius: 22,
-                  backgroundColor: recording ? "#EF4444" : pressed ? "#334155" : "#0F172A",
-                  alignItems: "center", justifyContent: "center",
-                })}
-              >
-                <Mic size={18} color="#FFFFFF" strokeWidth={2} />
-              </Pressable>
-            )}
+              {/* Send (green) when typing, Mic (dark) when idle */}
+              {inputText.trim().length > 0 ? (
+                <Pressable
+                  onPress={sendMessage}
+                  style={({ pressed }) => ({
+                    width: 38, height: 38, borderRadius: 19,
+                    backgroundColor: pressed ? "#15803D" : "#16A34A",
+                    alignItems: "center", justifyContent: "center",
+                    marginRight: 2,
+                    shadowColor: "#16A34A", shadowOffset: { width: 0, height: 3 },
+                    shadowOpacity: 0.3, shadowRadius: 6, elevation: 4,
+                  })}
+                >
+                  <Send size={17} color="#FFFFFF" strokeWidth={2.5} />
+                </Pressable>
+              ) : (
+                <Pressable
+                  onPressIn={() => setRecording(true)}
+                  onPressOut={sendVoice}
+                  style={({ pressed }) => ({
+                    width: 38, height: 38, borderRadius: 19,
+                    backgroundColor: recording ? "#EF4444" : pressed ? "#334155" : "#0F172A",
+                    alignItems: "center", justifyContent: "center",
+                    marginRight: 2,
+                  })}
+                >
+                  <Mic size={17} color="#FFFFFF" strokeWidth={2} />
+                </Pressable>
+              )}
+            </View>
           </View>
         </View>
       </KeyboardAvoidingView>
