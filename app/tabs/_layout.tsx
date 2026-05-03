@@ -9,7 +9,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="post" options={{ title: "Post" }} />
       <Tabs.Screen name="chat" options={{ title: "Chats" }} />
       <Tabs.Screen name="profile" options={{ title: "Profile" }} />
-      <Tabs.Screen name="bookings" options={{ title: "Bookings" }} />
+      <Tabs.Screen name="bookings" options={{ title: "Bookings", href: null }} />
     </Tabs>
   );
 }

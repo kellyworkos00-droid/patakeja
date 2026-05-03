@@ -32,20 +32,11 @@ export function SortDropdown({ value, onChange }: SortDropdownProps) {
     <View style={{ position: "relative", zIndex: 10 }}>
       <Pressable
         onPress={() => setOpen((prev) => !prev)}
-        style={({ pressed }) => ({
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 6,
-          borderRadius: 16,
-          backgroundColor: "#FFFFFF",
-          borderWidth: 1,
-          borderColor: "#E2E8F0",
-          paddingHorizontal: 10,
-          paddingVertical: 8,
-          opacity: pressed ? 0.85 : 1,
-        })}
+        style={({ pressed }) => ({ flexDirection: "row", alignItems: "center", gap: 4, opacity: pressed ? 0.7 : 1 })}
       >
-        <Text style={{ fontSize: 13, fontWeight: "800", color: colors.navy }}>Sort: {value}</Text>
+        <Text style={{ fontSize: 14, color: "#64748B", fontWeight: "600" }}>
+          Sort by: <Text style={{ fontWeight: "700", color: colors.navy }}>{value}</Text>
+        </Text>
         <ChevronDown color={colors.navy} size={16} strokeWidth={2.4} />
       </Pressable>
 

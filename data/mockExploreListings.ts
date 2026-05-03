@@ -1,4 +1,4 @@
-import { images } from "@/constants/assets";
+﻿import { images } from "@/constants/assets";
 
 export type ExploreListing = {
   id: string;
@@ -7,6 +7,7 @@ export type ExploreListing = {
   location: string;
   distance: string;
   image: number;
+  photos: number;
   bedrooms: number;
   bathrooms: number;
   verified: boolean;
@@ -24,6 +25,7 @@ export const exploreListings: ExploreListing[] = [
     location: "Kilimani, Nairobi",
     distance: "2.3 km away",
     image: images.propertyLiving,
+    photos: 8,
     bedrooms: 2,
     bathrooms: 2,
     verified: true,
@@ -36,9 +38,10 @@ export const exploreListings: ExploreListing[] = [
     id: "2",
     title: "1 Bedroom Apartment",
     price: "KES 28,000",
-    location: "Westlands, Nairobi",
+    location: "South B, Nairobi",
     distance: "3.1 km away",
     image: images.homeDirection,
+    photos: 6,
     bedrooms: 1,
     bathrooms: 1,
     verified: true,
@@ -49,17 +52,18 @@ export const exploreListings: ExploreListing[] = [
   },
   {
     id: "3",
-    title: "3 Bedroom Townhouse",
+    title: "3 Bedroom Apartment",
     price: "KES 45,000",
-    location: "Lavington, Nairobi",
+    location: "Westlands, Nairobi",
     distance: "1.8 km away",
     image: images.propertyHouse,
+    photos: 10,
     bedrooms: 3,
     bathrooms: 2,
     verified: true,
     escrowAvailable: true,
     secureChat: true,
-    propertyType: "Houses",
+    propertyType: "Apartments",
     listedAt: "2026-04-25",
   },
   {
@@ -69,6 +73,7 @@ export const exploreListings: ExploreListing[] = [
     location: "Rongai, Nairobi",
     distance: "4.2 km away",
     image: images.propertyDetailMock,
+    photos: 7,
     bedrooms: 0,
     bathrooms: 1,
     verified: true,

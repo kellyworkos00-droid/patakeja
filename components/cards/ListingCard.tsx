@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from "react-native";
 import { router } from "expo-router";
-import { BedDouble, CalendarDays, Camera, MapPin, MessageCircle, MoreVertical } from "lucide-react-native";
+import { BedDouble, CalendarDays, Camera, Heart, MapPin, MessageCircle, MoreVertical } from "lucide-react-native";
 import { colors } from "@/constants/colors";
 import { Listing } from "@/data/mockListings";
 import { ExploreListing } from "@/data/mockExploreListings";
@@ -22,7 +22,7 @@ export function ListingCard({ listing, compact, variant = "default" }: ListingCa
   const openListing = () => router.push(`/listing/${listing.id}`);
   const bookViewing = () => router.push(`/bookings/create?listingId=${listing.id}`);
   const openChat = () => router.push(`/chat/${listing.id}`);
-  const hasPhotos = !isExploreListing(listing);
+  const cardPhotos = isExploreListing(listing) ? listing.photos : listing.photos;
 
   if (compact || variant === "explore") {
     const showVerified = isExploreListing(listing) ? listing.verified : true;
@@ -33,12 +33,27 @@ export function ListingCard({ listing, compact, variant = "default" }: ListingCa
       <Pressable onPress={openListing} className="flex-row gap-3 rounded-3xl bg-white p-2.5">
         <View className="relative">
           <PropertyImage source={listing.image} className="h-[122px] w-[118px] rounded-2xl" />
-          {hasPhotos ? (
+          {cardPhotos > 0 ? (
             <View className="absolute bottom-2 left-2 flex-row items-center gap-1 rounded-full bg-navy/80 px-2 py-1">
               <Camera color={colors.card} size={13} />
-              <Text className="text-xs font-bold text-white">{listing.photos}</Text>
+              <Text className="text-xs font-bold text-white">{cardPhotos}</Text>
             </View>
           ) : null}
+          <Pressable
+            style={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              width: 30,
+              height: 30,
+              borderRadius: 15,
+              backgroundColor: "rgba(255,255,255,0.88)",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Heart color={colors.navy} size={14} strokeWidth={2} />
+          </Pressable>
         </View>
 
         <View className="flex-1 justify-between py-1">
