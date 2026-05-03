@@ -71,31 +71,31 @@ export default function ExploreScreen() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 110 }}>
 
         {/* ── Header ── */}
-        <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", paddingHorizontal: 20, paddingTop: 14, paddingBottom: 16 }}>
+        <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", paddingHorizontal: 20, paddingTop: 10, paddingBottom: 14 }}>
           <View>
-            <Text style={{ fontSize: 34, fontWeight: "800", color: colors.navy, letterSpacing: -0.5 }}>Explore</Text>
+            <Text style={{ fontSize: 46, fontWeight: "800", color: colors.navy, letterSpacing: -0.8 }}>Explore</Text>
             <Text style={{ fontSize: 14, color: "#64748B", fontWeight: "500", marginTop: 2 }}>Find your perfect home</Text>
           </View>
           <Pressable
             onPress={() => router.push("/search")}
-            style={[{ width: 48, height: 48, borderRadius: 24, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", marginTop: 4 }, shadow]}
+            style={[{ width: 58, height: 58, borderRadius: 29, backgroundColor: "#fff", alignItems: "center", justifyContent: "center", marginTop: 4 }, shadowMd]}
           >
-            <SlidersHorizontal color={colors.navy} size={20} />
-            <View style={{ position: "absolute", top: 10, right: 10, width: 9, height: 9, borderRadius: 5, backgroundColor: colors.primary, borderWidth: 1.5, borderColor: "#F8FAFC" }} />
+            <SlidersHorizontal color={colors.navy} size={21} />
+            <View style={{ position: "absolute", top: 14, right: 14, width: 9, height: 9, borderRadius: 5, backgroundColor: colors.primary, borderWidth: 1.5, borderColor: "#F8FAFC" }} />
           </Pressable>
         </View>
 
         {/* ── Search bar ── */}
         <Pressable
           onPress={() => router.push("/search")}
-          style={[{ flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: "#fff", borderRadius: 18, paddingHorizontal: 16, paddingVertical: 15, marginHorizontal: 20, marginBottom: 16 }, shadow]}
+          style={[{ flexDirection: "row", alignItems: "center", gap: 10, backgroundColor: "#fff", borderRadius: 24, paddingHorizontal: 20, paddingVertical: 17, marginHorizontal: 20, marginBottom: 16 }, shadowMd]}
         >
-          <Search color={colors.primary} size={20} strokeWidth={2.4} />
-          <Text style={{ flex: 1, fontSize: 15, color: "#94A3B8", fontWeight: "500" }}>Search location, area or property...</Text>
-          <View style={{ width: 1, height: 22, backgroundColor: "#E2E8F0", marginHorizontal: 2 }} />
+          <Search color={colors.primary} size={22} strokeWidth={2.4} />
+          <Text style={{ flex: 1, fontSize: 18, color: "#94A3B8", fontWeight: "500" }}>Search location, area or property...</Text>
+          <View style={{ width: 1, height: 24, backgroundColor: "#E2E8F0", marginHorizontal: 2 }} />
           <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
-            <SlidersHorizontal size={15} color={colors.navy} />
-            <Text style={{ fontSize: 14, fontWeight: "700", color: colors.navy }}>Filters</Text>
+            <SlidersHorizontal size={17} color={colors.navy} />
+            <Text style={{ fontSize: 15, fontWeight: "700", color: colors.navy }}>Filters</Text>
           </View>
         </Pressable>
 
@@ -103,7 +103,7 @@ export default function ExploreScreen() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 20, gap: 10, paddingBottom: 4, marginBottom: 18 }}
+          contentContainerStyle={{ paddingHorizontal: 20, gap: 12, paddingBottom: 6, marginBottom: 18 }}
         >
           {filters.map((f, i) => {
             const Icon = f.icon;
@@ -112,45 +112,45 @@ export default function ExploreScreen() {
               <Pressable
                 key={f.label}
                 onPress={() => setActiveFilter(i)}
-                style={[{ flexDirection: "row", alignItems: "center", gap: 7, height: 44, borderRadius: 22, paddingHorizontal: 18, backgroundColor: active ? colors.navy : "#fff" }, active ? {} : shadow]}
+                style={[{ flexDirection: "row", alignItems: "center", gap: 7, height: 52, borderRadius: 26, paddingHorizontal: 20, backgroundColor: active ? colors.navy : "#fff" }, active ? shadow : shadow]}
               >
-                <Icon color={active ? "#fff" : colors.navy} size={17} strokeWidth={active ? 2.6 : 2.2} />
-                <Text style={{ fontSize: 14, fontWeight: "700", color: active ? "#fff" : colors.navy }}>{f.label}</Text>
+                <Icon color={active ? "#fff" : colors.navy} size={18} strokeWidth={active ? 2.6 : 2.2} />
+                <Text style={{ fontSize: 15, fontWeight: "700", color: active ? "#fff" : colors.navy }}>{f.label}</Text>
               </Pressable>
             );
           })}
         </ScrollView>
 
         {/* ── Map preview ── */}
-        <View style={[{ marginHorizontal: 20, marginBottom: 22, borderRadius: 24, overflow: "hidden", height: 188 }, shadowMd]}>
+        <View style={[{ marginHorizontal: 20, marginBottom: 22, borderRadius: 28, overflow: "hidden", height: 292 }, shadowMd]}>
           <Image source={images.exploreDirection} style={{ width: "100%", height: "100%" }} resizeMode="cover" />
-          <View style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, backgroundColor: "rgba(15,23,42,0.15)" }} />
+          <View style={{ position: "absolute", top: 0, bottom: 0, left: 0, right: 0, backgroundColor: "rgba(255,255,255,0.08)" }} />
 
           {clusters.map((c) => (
             <View
               key={c.label}
               style={{
                 position: "absolute", top: c.top as any, left: c.left as any,
-                width: 42, height: 42, borderRadius: 21,
+                width: 58, height: 58, borderRadius: 29,
                 backgroundColor: colors.primary,
                 alignItems: "center", justifyContent: "center",
                 borderWidth: 3, borderColor: "#fff",
                 shadowColor: "#000", shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.25, shadowRadius: 6, elevation: 5,
               }}
             >
-              <Text style={{ fontSize: 14, fontWeight: "800", color: "#fff" }}>{c.label}</Text>
+              <Text style={{ fontSize: 29, fontWeight: "800", color: "#fff", lineHeight: 31 }}>{c.label}</Text>
             </View>
           ))}
 
-          <Pressable onPress={() => router.push("/explore-map")} style={{ position: "absolute", bottom: 14, left: 0, right: 0, alignItems: "center" }}>
-            <View style={[{ flexDirection: "row", alignItems: "center", gap: 7, backgroundColor: "#fff", borderRadius: 24, paddingHorizontal: 18, paddingVertical: 10 }, shadowMd]}>
-              <Map color={colors.navy} size={18} strokeWidth={2.2} />
-              <Text style={{ fontSize: 14, fontWeight: "800", color: colors.navy }}>View on Map</Text>
+          <Pressable onPress={() => router.push("/explore-map")} style={{ position: "absolute", bottom: 16, left: 0, right: 0, alignItems: "center" }}>
+            <View style={[{ flexDirection: "row", alignItems: "center", gap: 8, backgroundColor: "#fff", borderRadius: 26, paddingHorizontal: 22, paddingVertical: 12 }, shadowMd]}>
+              <Map color={colors.navy} size={20} strokeWidth={2.2} />
+              <Text style={{ fontSize: 16, fontWeight: "800", color: colors.navy }}>View on Map</Text>
             </View>
           </Pressable>
 
-          <Pressable style={[{ position: "absolute", bottom: 14, right: 14, width: 40, height: 40, borderRadius: 20, backgroundColor: "#fff", alignItems: "center", justifyContent: "center" }, shadow]}>
-            <LocateFixed color={colors.navy} size={18} strokeWidth={2.2} />
+          <Pressable style={[{ position: "absolute", bottom: 16, right: 16, width: 50, height: 50, borderRadius: 25, backgroundColor: "#fff", alignItems: "center", justifyContent: "center" }, shadowMd]}>
+            <LocateFixed color={colors.navy} size={21} strokeWidth={2.2} />
           </Pressable>
         </View>
 
