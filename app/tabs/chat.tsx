@@ -10,6 +10,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import {
   Search,
+  Shield,
+  ChevronRight,
   Check,
   CalendarDays,
   Archive,
@@ -42,23 +44,6 @@ function VerifiedBadge() {
   );
 }
 
-function Avatar({ thread }: { thread: ChatThread }) {
-  const hasUnread = thread.unread > 0;
-  return (
-    <View style={{ position: "relative", width: 62, height: 62, marginRight: 14 }}>
-      {thread.online && (
-        <View style={{ position: "absolute", top: -2, left: -2, width: 66, height: 66, borderRadius: 33, borderWidth: 2.5, borderColor: "#16A34A" }} />
-      )}
-      <Image source={thread.avatar} style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: "#E2E8F0", margin: 1 }} />
-      {hasUnread && (
-        <View style={{ position: "absolute", top: -1, right: -1, minWidth: 20, height: 20, borderRadius: 10, paddingHorizontal: 3, backgroundColor: "#16A34A", borderWidth: 2.5, borderColor: "#FFFFFF", alignItems: "center", justifyContent: "center" }}>
-          <Text style={{ color: "#FFFFFF", fontSize: 10, fontWeight: "800" }}>{thread.unread > 9 ? "9+" : thread.unread}</Text>
-        </View>
-      )}
-    </View>
-  );
-}
-
 function ChatRow({ thread, onPress }: { thread: ChatThread; onPress: () => void }) {
   const hasUnread = thread.unread > 0;
   return (
@@ -72,27 +57,38 @@ function ChatRow({ thread, onPress }: { thread: ChatThread; onPress: () => void 
         backgroundColor: pressed ? "#F8FAFC" : "#FFFFFF",
       })}
     >
-      <Avatar thread={thread} />
+      {/* Avatar with online dot */}
+      <View style={{ position: "relative", marginRight: 13 }}>
+        <Image source={thread.avatar} style={{ width: 58, height: 58, borderRadius: 29, backgroundColor: "#E2E8F0" }} />
+        {thread.online && (
+          <View style={{ position: "absolute", bottom: 1, left: 1, width: 13, height: 13, borderRadius: 7, backgroundColor: "#16A34A", borderWidth: 2.5, borderColor: "#FFFFFF" }} />
+        )}
+      </View>
+
       <View style={{ flex: 1 }}>
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 3 }}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 5, flex: 1, marginRight: 8 }}>
-            <Text style={{ fontSize: 15.5, fontWeight: "800", color: "#0F172A", letterSpacing: -0.2 }} numberOfLines={1}>{thread.name}</Text>
+            <Text style={{ fontSize: 15, fontWeight: "700", color: "#0F172A" }} numberOfLines={1}>{thread.name}</Text>
             {thread.verified && <VerifiedBadge />}
           </View>
-          <Text style={{ fontSize: 11.5, color: hasUnread ? "#16A34A" : "#94A3B8", fontWeight: hasUnread ? "700" : "500" }}>{thread.time}</Text>
+          <Text style={{ fontSize: 12, color: "#94A3B8", fontWeight: "500" }}>{thread.time}</Text>
         </View>
-        <Text style={{ fontSize: 12, color: "#94A3B8", marginBottom: 4 }} numberOfLines={1}>{thread.listingSubtitle}</Text>
+        <Text style={{ fontSize: 12.5, color: "#64748B", marginBottom: 3 }} numberOfLines={1}>{thread.listingSubtitle}</Text>
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
           <Text
-            style={{ fontSize: 13.5, color: hasUnread ? "#1E293B" : "#64748B", fontWeight: hasUnread ? "600" : "400", flex: 1, marginRight: 8, lineHeight: 18 }}
+            style={{ fontSize: 13.5, color: hasUnread ? "#334155" : "#64748B", fontWeight: hasUnread ? "600" : "400", flex: 1, marginRight: 8 }}
             numberOfLines={1}
           >
-            {thread.lastFromMe ? <Text style={{ color: "#16A34A", fontWeight: "700" }}>You: </Text> : null}
+            {thread.lastFromMe ? <Text style={{ color: "#16A34A", fontWeight: "600" }}>You: </Text> : null}
             {thread.lastMessage}
           </Text>
-          {!hasUnread && thread.lastFromMe && (
-            <CheckCheck size={15} color="#16A34A" strokeWidth={2.5} />
-          )}
+          {hasUnread ? (
+            <View style={{ minWidth: 22, height: 22, borderRadius: 11, paddingHorizontal: 5, backgroundColor: "#16A34A", alignItems: "center", justifyContent: "center" }}>
+              <Text style={{ color: "#FFFFFF", fontSize: 11.5, fontWeight: "700" }}>{thread.unread}</Text>
+            </View>
+          ) : thread.lastFromMe ? (
+            <CheckCheck size={16} color="#16A34A" strokeWidth={2.5} />
+          ) : null}
         </View>
       </View>
     </Pressable>
@@ -200,6 +196,21 @@ export default function ChatListScreen() {
         })}
       </ScrollView>
 
+      {/* ── Security Card ── */}
+      <View style={{ marginHorizontal: 20, marginBottom: 10, marginTop: 4, padding: 14, backgroundColor: "#F0FDF4", borderRadius: 16, borderWidth: 1, borderColor: "#BBF7D0", flexDirection: "row", alignItems: "center", gap: 12 }}>
+        <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: "#DCFCE7", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <Shield size={19} color="#16A34A" />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 13, fontWeight: "700", color: "#0F172A" }}>Your conversations are secure</Text>
+          <Text style={{ fontSize: 12, color: "#64748B", marginTop: 2, lineHeight: 17 }}>Phone numbers are hidden. Payments protected.</Text>
+        </View>
+        <Pressable style={{ flexDirection: "row", alignItems: "center", gap: 1, flexShrink: 0 }}>
+          <Text style={{ fontSize: 12.5, color: "#16A34A", fontWeight: "600" }}>Learn more</Text>
+          <ChevronRight size={13} color="#16A34A" strokeWidth={2.5} />
+        </Pressable>
+      </View>
+
       {/* ── Divider ── */}
       <View style={{ height: 1, backgroundColor: "#F1F5F9" }} />
 
@@ -216,12 +227,10 @@ export default function ChatListScreen() {
             </Text>
           </View>
         ) : (
-          filteredChats.map((thread, i) => (
+          filteredChats.map((thread) => (
             <React.Fragment key={thread.id}>
               <ChatRow thread={thread} onPress={() => router.push(`/chat/${thread.id}` as any)} />
-              {i < filteredChats.length - 1 && (
-                <View style={{ height: 1, backgroundColor: "#F1F5F9", marginLeft: 94 }} />
-              )}
+              <View style={{ height: 1, backgroundColor: "#F1F5F9", marginLeft: 91 }} />
             </React.Fragment>
           ))
         )}
