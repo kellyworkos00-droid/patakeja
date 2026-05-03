@@ -5,6 +5,7 @@ import {
   ScrollView,
   Pressable,
   Image,
+  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
@@ -104,6 +105,9 @@ function ChatRow({ thread, onPress }: { thread: ChatThread; onPress: () => void 
 
 export default function ChatListScreen() {
   const [activeFilter, setActiveFilter] = useState("all");
+  const { width: screenWidth } = useWindowDimensions();
+  // rail outer padding 6*2=12, inner padding 3*2=6, 3 gaps of 2px = 6 → subtract all from screen
+  const tabWidth = Math.floor((screenWidth - 12 - 6 - 6) / 4);
 
   const filteredChats =
     activeFilter === "unread" ? chats.filter((c) => c.unread > 0) :
@@ -181,16 +185,15 @@ export default function ChatListScreen() {
                 key={tab.key}
                 onPress={() => setActiveFilter(tab.key)}
                 style={{
-                  flex: 1,
-                  minWidth: 0,
+                  width: tabWidth,
                   height: 33,
                   borderRadius: 17,
                   backgroundColor: active ? "#0B1D45" : "#FFFFFF",
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "center",
-                  gap: 2,
-                  paddingHorizontal: 2,
+                  gap: 3,
+                  overflow: "hidden",
                 }}
               >
                 <FilterTabIcon icon={tab.icon} active={active} />
