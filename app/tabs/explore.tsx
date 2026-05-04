@@ -8,7 +8,9 @@ import {
   StatusBar,
   Text,
   View,
+  Dimensions,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import {
   BedDouble,
@@ -25,6 +27,8 @@ import { colors } from "@/constants/colors";
 import { MapPreviewCard } from "@/components/map/MapPreviewCard";
 import { ListingCard } from "@/components/cards/ListingCard";
 import { exploreListings, ExploreListing } from "@/data/mockExploreListings";
+
+const { width: SW } = Dimensions.get("window");
 
 type Category = "All" | "Bedsitters" | "1 Bedroom" | "2 Bedroom" | "3+ Bedroom" | "Houses" | "Apartments";
 type SortOption = "Newest" | "Price: Low to High" | "Price: High to Low" | "Distance";
@@ -76,11 +80,11 @@ const chipShadow = {
 };
 
 const cardShadow = {
-  shadowColor: "#0B1220",
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.05,
-  shadowRadius: 9,
-  elevation: 3,
+  shadowColor: "#0F172A",
+  shadowOffset: { width: 0, height: 6 },
+  shadowOpacity: 0.1,
+  shadowRadius: 18,
+  elevation: 8,
 };
 
 // ─── Chip ──────────────────────────────────────────────────────────────────
@@ -292,18 +296,15 @@ export default function ExploreScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#F4F8FB" }} edges={["top", "left", "right"]}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F4F8FB" />
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#EEF2F7" }} edges={["top", "left", "right"]}>
+      <StatusBar barStyle="dark-content" backgroundColor="#EEF2F7" />
 
       {/* ── Floating search bar (appears on scroll) ─────────────────────── */}
       <Animated.View
         pointerEvents="box-none"
         style={{
           position: "absolute",
-          top: 10,
-          left: 14,
-          right: 14,
-          zIndex: 20,
+          top: 10, left: 14, right: 14, zIndex: 20,
           opacity: floatOpacity,
           transform: [{ translateY: floatTranslateY }, { scale: floatScale }],
         }}
@@ -311,37 +312,24 @@ export default function ExploreScreen() {
         <Pressable
           onPress={() => router.push("/search")}
           style={{
-            flexDirection: "row",
-            alignItems: "center",
-            backgroundColor: "#FFFFFF",
-            borderRadius: 20,
-            height: 42,
-            paddingLeft: 14,
-            paddingRight: 8,
-            gap: 8,
-            shadowColor: "#0F172A",
-            shadowOffset: { width: 0, height: 10 },
-            shadowOpacity: 0.13,
-            shadowRadius: 20,
-            elevation: 10,
+            flexDirection: "row", alignItems: "center", backgroundColor: "#fff",
+            borderRadius: 24, height: 46, paddingLeft: 14, paddingRight: 9, gap: 8,
+            shadowColor: "#0F172A", shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.13, shadowRadius: 20, elevation: 10,
           }}
         >
-          <Search size={16} color={colors.primary} strokeWidth={2.4} />
+          <Search size={16} color="#16A34A" strokeWidth={2.4} />
           <Text style={{ flex: 1, fontSize: 13, color: "#94A3B8", fontWeight: "600" }}>Search location, area or property...</Text>
           <Pressable
             onPress={() => setShowFilters(true)}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              gap: 5,
-              backgroundColor: colors.navy,
-              borderRadius: 15,
-              paddingHorizontal: 10,
-              paddingVertical: 6,
-            }}
+            style={{ overflow: "hidden", borderRadius: 16 }}
           >
-            <SlidersHorizontal size={13} color="#fff" strokeWidth={2.2} />
-            <Text style={{ fontSize: 12, fontWeight: "800", color: "#fff" }}>Filters</Text>
+            <LinearGradient
+              colors={["#1E3A5F", "#0F172A"]}
+              style={{ flexDirection: "row", alignItems: "center", gap: 5, borderRadius: 16, paddingHorizontal: 11, paddingVertical: 7 }}
+            >
+              <SlidersHorizontal size={13} color="#fff" strokeWidth={2.2} />
+              <Text style={{ fontSize: 12, fontWeight: "800", color: "#fff" }}>Filters</Text>
+            </LinearGradient>
           </Pressable>
         </Pressable>
       </Animated.View>
@@ -355,96 +343,60 @@ export default function ExploreScreen() {
         )}
         contentContainerStyle={{ paddingBottom: 140 }}
       >
-        {/* ── Header ────────────────────────────────────────────────────── */}
+        {/* ── Header ─────────────────────────────────────────────────── */}
         <Animated.View
-          style={[
-            {
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginHorizontal: 16,
-              marginTop: 8,
-              marginBottom: 14,
-              paddingHorizontal: 16,
-              paddingVertical: 14,
-              borderRadius: 22,
-              backgroundColor: "#FFFFFF",
-              opacity: headerOpacity,
-              transform: [{ translateY: headerTranslateY }],
-            },
-            shadow,
-          ]}
+          style={[{
+            marginHorizontal: 16, marginTop: 8, marginBottom: 14,
+            borderRadius: 24, overflow: "hidden",
+            opacity: headerOpacity, transform: [{ translateY: headerTranslateY }],
+          }, shadow]}
         >
-          <View>
-            <Text style={{ fontSize: 12, fontWeight: "700", color: "#64748B", letterSpacing: 0.3 }}>DISCOVER</Text>
-            <Text style={{ fontSize: 27, fontWeight: "800", color: colors.navy, letterSpacing: -0.6, marginTop: 1 }}>Explore</Text>
-            <Text style={{ fontSize: 12, color: "#64748B", fontWeight: "500", marginTop: 2 }}>Find your perfect home</Text>
-          </View>
-          <Pressable
-            onPress={() => setShowFilters(true)}
-            style={[
-              {
-                width: 44,
-                height: 44,
-                borderRadius: 22,
-                backgroundColor: "#F8FAFC",
-                alignItems: "center",
-                justifyContent: "center",
-              },
-            ]}
+          <LinearGradient
+            colors={["#0F172A", "#1E3A5F"]}
+            start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
+            style={{ paddingHorizontal: 18, paddingVertical: 16, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}
           >
-            <SlidersHorizontal color={colors.navy} size={18} strokeWidth={2.2} />
-            <View
-              style={{
-                position: "absolute",
-                top: 10,
-                right: 10,
-                width: 8,
-                height: 8,
-                borderRadius: 4,
-                backgroundColor: colors.primary,
-                borderWidth: 1.5,
-                borderColor: "#FFFFFF",
-              }}
-            />
-          </Pressable>
-        </Animated.View>
-
-        {/* ── Search bar (inline, fades out on scroll) ──────────────────── */}
-        <Animated.View style={[{ paddingHorizontal: 16, marginBottom: 10 }, s(0)]}>
-          <Pressable
-            onPress={() => router.push("/search")}
-            style={[
-              {
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 10,
-                backgroundColor: "#FFFFFF",
-                borderRadius: 18,
-                borderWidth: 1,
-                borderColor: "#EEF2F7",
-                paddingHorizontal: 14,
-                paddingVertical: 12,
-              },
-              shadow,
-            ]}
-          >
-            <Search color={colors.primary} size={18} strokeWidth={2.4} />
-            <Text style={{ flex: 1, fontSize: 14, color: "#94A3B8", fontWeight: "600" }}>Search location, area or property...</Text>
-            <View style={{ width: 1, height: 20, backgroundColor: "#E2E8F0" }} />
+            <View>
+              <Text style={{ fontSize: 11, fontWeight: "700", color: "#16A34A", letterSpacing: 1.5 }}>DISCOVER</Text>
+              <Text style={{ fontSize: 28, fontWeight: "900", color: "#fff", letterSpacing: -0.8, marginTop: 2 }}>Explore</Text>
+              <Text style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", fontWeight: "500", marginTop: 3 }}>Find your perfect home</Text>
+            </View>
             <Pressable
               onPress={() => setShowFilters(true)}
-              style={{ flexDirection: "row", alignItems: "center", gap: 5 }}
+              style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
             >
+              <View style={{ width: 46, height: 46, borderRadius: 23, backgroundColor: "rgba(255,255,255,0.12)", alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: "rgba(255,255,255,0.18)" }}>
+                <SlidersHorizontal color="#fff" size={19} strokeWidth={2.2} />
+                <View style={{ position: "absolute", top: 9, right: 9, width: 9, height: 9, borderRadius: 5, backgroundColor: "#16A34A", borderWidth: 1.5, borderColor: "#1E3A5F" }} />
+              </View>
+            </Pressable>
+          </LinearGradient>
+        </Animated.View>
+
+        {/* ── Search bar ─────────────────────────────────────────────── */}
+        <Animated.View style={[{ paddingHorizontal: 16, marginBottom: 12 }, s(0)]}>
+          <Pressable
+            onPress={() => router.push("/search")}
+            style={({ pressed }) => [{
+              flexDirection: "row", alignItems: "center", gap: 10,
+              backgroundColor: "#fff", borderRadius: 20,
+              paddingHorizontal: 14, paddingVertical: 13,
+              opacity: pressed ? 0.9 : 1,
+            }, shadow]}
+          >
+            <Search color="#16A34A" size={18} strokeWidth={2.4} />
+            <Text style={{ flex: 1, fontSize: 14, color: "#94A3B8", fontWeight: "600" }}>Search location, area or property...</Text>
+            <View style={{ width: 1, height: 20, backgroundColor: "#E2E8F0" }} />
+            <Pressable onPress={() => setShowFilters(true)} style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
               <SlidersHorizontal size={15} color={colors.navy} strokeWidth={2.2} />
               <Text style={{ fontSize: 13, fontWeight: "800", color: colors.navy }}>Filters</Text>
             </Pressable>
           </Pressable>
         </Animated.View>
 
-        {/* ── Category chips ────────────────────────────────────────────── */}
-        <Animated.View style={[{ marginBottom: 8, paddingHorizontal: 16 }, s(1)]}>
-          <Text style={{ fontSize: 12, fontWeight: "700", color: "#64748B", marginBottom: 8, paddingHorizontal: 4 }}>Categories</Text>
+        {/* ── Category chips ─────────────────────────────────────────── */}
+        <Animated.View style={[{ marginBottom: 10, paddingHorizontal: 16 }, s(1)]}>
+          <Text style={{ fontSize: 11, fontWeight: "700", color: "#94A3B8", marginBottom: 9, paddingHorizontal: 4, letterSpacing: 0.8 }}>CATEGORIES</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -463,35 +415,28 @@ export default function ExploreScreen() {
         </Animated.View>
 
         {/* ── Map card ──────────────────────────────────────────────────── */}
-        <Animated.View style={[{ marginBottom: 16, paddingHorizontal: 16 }, s(2)]}>
-          <Text style={{ fontSize: 12, fontWeight: "700", color: "#64748B", marginBottom: 8, paddingHorizontal: 4 }}>Map Snapshot</Text>
+        <Animated.View style={[{ marginBottom: 18, paddingHorizontal: 16 }, s(2)]}>
+          <Text style={{ fontSize: 11, fontWeight: "700", color: "#94A3B8", marginBottom: 9, paddingHorizontal: 4, letterSpacing: 0.8 }}>MAP SNAPSHOT</Text>
           <MapPreviewCard onOpenMap={() => router.push("/explore-map")} />
         </Animated.View>
 
-        {/* ── Results row ───────────────────────────────────────────────── */}
-        <Animated.View
-          style={[
-            {
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              paddingHorizontal: 20,
-              marginBottom: 10,
-            },
-            s(3),
-          ]}
-        >
-          <Text style={{ fontSize: 13, color: "#64748B", fontWeight: "600" }}>
-            <Text style={{ color: colors.navy, fontWeight: "800", fontSize: 14 }}>{displayCount}</Text>
-            {" "}homes found
-          </Text>
+        {/* ── Section divider ───────────────────────────────────────────── */}
+        <View style={{ height: 1, backgroundColor: "#DDE3EC", marginHorizontal: 16, marginBottom: 18 }} />
+
+        {/* ── Results row ────────────────────────────────────────────── */}
+        <Animated.View style={[{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 16, marginBottom: 12 }, s(3)]}>
+          <View>
+            <Text style={{ fontSize: 18, fontWeight: "900", color: "#0F172A", letterSpacing: -0.3 }}>
+              {displayCount} <Text style={{ color: "#64748B", fontWeight: "600", fontSize: 14 }}>homes found</Text>
+            </Text>
+          </View>
           <SortPill value={sortBy} onChange={setSortBy} />
         </Animated.View>
 
         {/* ── Listing cards ─────────────────────────────────────────────── */}
-        <View style={{ paddingHorizontal: 16, gap: 9 }}>
+        <View style={{ paddingHorizontal: 16, gap: 12 }}>
           {visibleListings.map((listing, i) => (
-            <Animated.View key={listing.id} style={[cardShadow, s(4 + i * 0.25)]}>
+            <Animated.View key={listing.id} style={s(4 + i * 0.25)}>
               <ListingCard listing={listing} variant="explore" />
             </Animated.View>
           ))}
@@ -500,60 +445,74 @@ export default function ExploreScreen() {
 
       {/* ── Filter modal ──────────────────────────────────────────────────── */}
       <Modal visible={showFilters} animationType="slide" transparent onRequestClose={() => setShowFilters(false)}>
-        <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(15,23,42,0.32)" }}>
-          <View
-            style={{
-              backgroundColor: "#FFFFFF",
-              borderTopLeftRadius: 28,
-              borderTopRightRadius: 28,
-              paddingHorizontal: 20,
-              paddingTop: 14,
-              paddingBottom: 32,
-            }}
-          >
-            <View style={{ alignItems: "center", marginBottom: 16 }}>
-              <View style={{ width: 44, height: 5, borderRadius: 3, backgroundColor: "#E2E8F0" }} />
+        <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(15,23,42,0.45)" }}>
+          <View style={{ backgroundColor: "#fff", borderTopLeftRadius: 32, borderTopRightRadius: 32, paddingHorizontal: 20, paddingTop: 12, paddingBottom: 36 }}>
+            {/* Handle */}
+            <View style={{ alignItems: "center", marginBottom: 18 }}>
+              <View style={{ width: 40, height: 5, borderRadius: 3, backgroundColor: "#E2E8F0" }} />
             </View>
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
-              <Text style={{ fontSize: 20, fontWeight: "800", color: colors.navy }}>Filters</Text>
+
+            {/* Title row */}
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 22 }}>
+              <View>
+                <Text style={{ fontSize: 22, fontWeight: "900", color: "#0F172A", letterSpacing: -0.4 }}>Filters</Text>
+                <Text style={{ fontSize: 12, color: "#94A3B8", marginTop: 2 }}>Narrow down your search</Text>
+              </View>
               <Pressable
                 onPress={() => setShowFilters(false)}
-                style={{ paddingHorizontal: 14, paddingVertical: 7, backgroundColor: colors.navy, borderRadius: 20 }}
+                style={({ pressed }) => ({ opacity: pressed ? 0.8 : 1 })}
               >
-                <Text style={{ color: "#fff", fontSize: 13, fontWeight: "800" }}>Done</Text>
+                <LinearGradient
+                  colors={["#0F172A", "#1E3A5F"]}
+                  style={{ paddingHorizontal: 18, paddingVertical: 9, borderRadius: 20 }}
+                >
+                  <Text style={{ color: "#fff", fontSize: 13, fontWeight: "800" }}>Apply</Text>
+                </LinearGradient>
               </Pressable>
             </View>
 
-            <Text style={{ fontSize: 13, color: colors.navy, fontWeight: "700", marginBottom: 10 }}>Budget</Text>
-            <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
+            {/* Budget */}
+            <Text style={{ fontSize: 11, fontWeight: "700", color: "#94A3B8", letterSpacing: 0.8, marginBottom: 10 }}>BUDGET</Text>
+            <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap", marginBottom: 22 }}>
               {budgetOptions.map((b) => (
-                <View key={b} style={{ borderRadius: 20, paddingHorizontal: 14, paddingVertical: 9, backgroundColor: "#F1F5F9" }}>
-                  <Text style={{ color: colors.navy, fontSize: 12, fontWeight: "700" }}>{b}</Text>
-                </View>
-              ))}
-            </View>
-
-            <Text style={{ fontSize: 13, color: colors.navy, fontWeight: "700", marginBottom: 10 }}>Property Type</Text>
-            <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
-              {propertyTypeOptions.map((kind) => (
                 <Pressable
-                  key={kind}
-                  onPress={() => { setActiveCategory(kind as Category); setShowFilters(false); }}
-                  style={{
-                    borderRadius: 20,
-                    paddingHorizontal: 14,
-                    paddingVertical: 9,
-                    backgroundColor: activeCategory === kind ? "#DCFCE7" : "#F1F5F9",
-                    borderWidth: activeCategory === kind ? 1.5 : 0,
-                    borderColor: activeCategory === kind ? colors.primary : "transparent",
-                  }}
+                  key={b}
+                  style={({ pressed }) => ({
+                    borderRadius: 14, paddingHorizontal: 16, paddingVertical: 10,
+                    backgroundColor: "#F1F5F9", opacity: pressed ? 0.8 : 1,
+                    borderWidth: 1.5, borderColor: "#E2E8F0",
+                  })}
                 >
-                  <Text style={{ color: colors.navy, fontSize: 12, fontWeight: "700" }}>{kind}</Text>
+                  <Text style={{ color: colors.navy, fontSize: 13, fontWeight: "700" }}>{b}</Text>
                 </Pressable>
               ))}
             </View>
 
-            <Text style={{ fontSize: 11, color: "#94A3B8", lineHeight: 16 }}>Approximate locations only. Communication stays inside the app via Secure Chat.</Text>
+            {/* Property type */}
+            <Text style={{ fontSize: 11, fontWeight: "700", color: "#94A3B8", letterSpacing: 0.8, marginBottom: 10 }}>PROPERTY TYPE</Text>
+            <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap", marginBottom: 24 }}>
+              {propertyTypeOptions.map((kind) => {
+                const active = activeCategory === kind;
+                return (
+                  <Pressable
+                    key={kind}
+                    onPress={() => { setActiveCategory(kind as Category); setShowFilters(false); }}
+                    style={({ pressed }) => ({
+                      borderRadius: 14, paddingHorizontal: 16, paddingVertical: 10,
+                      backgroundColor: active ? "#DCFCE7" : "#F1F5F9",
+                      borderWidth: 1.5,
+                      borderColor: active ? colors.primary : "#E2E8F0",
+                      opacity: pressed ? 0.8 : 1,
+                    })}
+                  >
+                    <Text style={{ color: active ? "#15803D" : colors.navy, fontSize: 13, fontWeight: "700" }}>{kind}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+
+            <View style={{ height: 1, backgroundColor: "#F1F5F9", marginBottom: 16 }} />
+            <Text style={{ fontSize: 11, color: "#94A3B8", lineHeight: 17 }}>Approximate locations only. Communication stays inside the app via Secure Chat.</Text>
           </View>
         </View>
       </Modal>

@@ -1,6 +1,8 @@
-import { Pressable, Text, View } from "react-native";
+import { useState } from "react";
+import { Image, Pressable, Text, View } from "react-native";
 import { router } from "expo-router";
-import { BedDouble, CalendarDays, Camera, Heart, MapPin, MessageCircle, MoreVertical } from "lucide-react-native";
+import { BedDouble, Bath, CalendarDays, Camera, CheckCircle, Heart, MapPin, MessageCircle, ShieldCheck, Star } from "lucide-react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { colors } from "@/constants/colors";
 import { Listing } from "@/data/mockListings";
 import { ExploreListing } from "@/data/mockExploreListings";
@@ -19,111 +21,151 @@ function isExploreListing(listing: Listing | ExploreListing): listing is Explore
 }
 
 export function ListingCard({ listing, compact, variant = "default" }: ListingCardProps) {
+  const [saved, setSaved] = useState(false);
   const openListing = () => router.push(`/listing/${listing.id}`);
   const bookViewing = () => router.push(`/bookings/create?listingId=${listing.id}`);
   const openChat = () => router.push(`/chat/${listing.id}`);
-  const cardPhotos = isExploreListing(listing) ? listing.photos : listing.photos;
+  const cardPhotos = listing.photos;
 
   if (compact || variant === "explore") {
     const showVerified = isExploreListing(listing) ? listing.verified : true;
     const showEscrow = isExploreListing(listing) ? listing.escrowAvailable : true;
     const showSecureChat = isExploreListing(listing) ? listing.secureChat : true;
-
     const beds = isExploreListing(listing) ? listing.bedrooms : listing.beds;
     const baths = isExploreListing(listing) ? listing.bathrooms : listing.baths;
 
     return (
       <Pressable
         onPress={openListing}
-        style={{
+        style={({ pressed }) => ({
           flexDirection: "row",
-          gap: 10,
-          borderRadius: 24,
+          gap: 12,
+          borderRadius: 22,
           backgroundColor: "#FFFFFF",
-          borderWidth: 1,
-          borderColor: "#EDF2F7",
-          padding: 8,
-        }}
+          padding: 10,
+          opacity: pressed ? 0.9 : 1,
+          shadowColor: "#0F172A",
+          shadowOffset: { width: 0, height: 6 },
+          shadowOpacity: 0.1,
+          shadowRadius: 18,
+          elevation: 8,
+        })}
       >
-        <View style={{ position: "relative" }}>
-          <PropertyImage source={listing.image} className="h-[104px] w-[96px] rounded-[18px]" />
-          {cardPhotos > 0 ? (
-            <View
-              style={{
-                position: "absolute",
-                left: 6,
-                bottom: 6,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 4,
-                borderRadius: 999,
-                backgroundColor: "rgba(15,23,42,0.82)",
-                paddingHorizontal: 7,
-                paddingVertical: 4,
-              }}
-            >
-              <Camera color={colors.card} size={11} />
-              <Text style={{ color: "#FFFFFF", fontSize: 10, fontWeight: "800" }}>{cardPhotos}</Text>
+        {/* Image */}
+        <View style={{ position: "relative", width: 110, height: 110 }}>
+          <Image
+            source={listing.image as number}
+            style={{ width: 110, height: 110, borderRadius: 16 }}
+            resizeMode="cover"
+          />
+          <LinearGradient
+            colors={["transparent", "rgba(15,23,42,0.55)"]}
+            style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 55, borderBottomLeftRadius: 16, borderBottomRightRadius: 16 }}
+          />
+          {/* Photo count */}
+          {cardPhotos > 0 && (
+            <View style={{
+              position: "absolute", left: 7, bottom: 7,
+              flexDirection: "row", alignItems: "center", gap: 3,
+              borderRadius: 8, backgroundColor: "rgba(0,0,0,0.5)",
+              paddingHorizontal: 6, paddingVertical: 3,
+            }}>
+              <Camera color="#fff" size={10} />
+              <Text style={{ color: "#fff", fontSize: 10, fontWeight: "700" }}>{cardPhotos}</Text>
             </View>
-          ) : null}
-
+          )}
+          {/* Verified badge on image */}
+          {showVerified && (
+            <View style={{
+              position: "absolute", top: 7, left: 7,
+              backgroundColor: "#16A34A", borderRadius: 6,
+              paddingHorizontal: 5, paddingVertical: 2,
+              flexDirection: "row", alignItems: "center", gap: 3,
+            }}>
+              <CheckCircle size={9} color="#fff" strokeWidth={2.5} />
+              <Text style={{ fontSize: 9, color: "#fff", fontWeight: "800" }}>VERIFIED</Text>
+            </View>
+          )}
+          {/* Heart */}
           <Pressable
+            onPress={() => setSaved((s) => !s)}
             style={{
-              position: "absolute",
-              top: 6,
-              right: 6,
-              width: 24,
-              height: 24,
-              borderRadius: 12,
-              backgroundColor: "rgba(255,255,255,0.9)",
-              alignItems: "center",
-              justifyContent: "center",
+              position: "absolute", top: 7, right: 7,
+              width: 26, height: 26, borderRadius: 13,
+              backgroundColor: "rgba(255,255,255,0.95)",
+              alignItems: "center", justifyContent: "center",
             }}
           >
-            <Heart color={colors.navy} size={12} strokeWidth={2.1} />
+            <Heart size={13} color={saved ? "#EF4444" : "#94A3B8"} fill={saved ? "#EF4444" : "transparent"} strokeWidth={2.2} />
           </Pressable>
         </View>
 
-        <View style={{ flex: 1, justifyContent: "space-between", paddingTop: 2, paddingBottom: 2 }}>
-          <View>
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-              <Text style={{ fontSize: 19, fontWeight: "800", color: colors.navy }}>
-                {listing.price} <Text style={{ fontSize: 10, color: "#94A3B8", fontWeight: "700" }}>/ month</Text>
+        {/* Content */}
+        <View style={{ flex: 1, justifyContent: "space-between", paddingVertical: 2 }}>
+          {/* Price + Rating */}
+          <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between" }}>
+            <View>
+              <Text style={{ fontSize: 15, fontWeight: "900", color: "#0F172A", letterSpacing: -0.3 }}>
+                {listing.price}
               </Text>
-              <Pressable style={{ width: 22, height: 22, borderRadius: 11, alignItems: "center", justifyContent: "center" }}>
-                <MoreVertical color="#94A3B8" size={13} />
-              </Pressable>
+              <Text style={{ fontSize: 10, fontWeight: "600", color: "#94A3B8", marginTop: 1 }}>/month</Text>
             </View>
-
-            <Text style={{ marginTop: 2, fontSize: 13, fontWeight: "700", color: colors.navy }} numberOfLines={1}>
-              {listing.title}
-            </Text>
-
-            <View style={{ marginTop: 4, flexDirection: "row", alignItems: "center", gap: 4 }}>
-              <MapPin color="#94A3B8" size={12} />
-              <Text style={{ flexShrink: 1, fontSize: 11, color: "#64748B", fontWeight: "600" }} numberOfLines={1}>
-                {listing.location}
-              </Text>
-              <Text style={{ color: "#CBD5E1", fontSize: 11 }}>•</Text>
-              <Text style={{ fontSize: 11, color: colors.primary, fontWeight: "800" }}>{listing.distance}</Text>
+            <View style={{
+              flexDirection: "row", alignItems: "center", gap: 3,
+              backgroundColor: "#FEF3C7", borderRadius: 7,
+              paddingHorizontal: 6, paddingVertical: 3,
+            }}>
+              <Star size={11} color="#F59E0B" fill="#F59E0B" />
+              <Text style={{ fontSize: 11, fontWeight: "800", color: "#92400E" }}>4.8</Text>
             </View>
           </View>
 
-          <View>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 6 }}>
-              <View style={{ borderRadius: 999, backgroundColor: "#EEF2FF", paddingHorizontal: 8, paddingVertical: 4 }}>
-                <Text style={{ fontSize: 10, color: "#334155", fontWeight: "700" }}>{beds} Bed</Text>
-              </View>
-              <View style={{ borderRadius: 999, backgroundColor: "#F1F5F9", paddingHorizontal: 8, paddingVertical: 4 }}>
-                <Text style={{ fontSize: 10, color: "#334155", fontWeight: "700" }}>{baths} Bath</Text>
-              </View>
-            </View>
+          {/* Title */}
+          <Text style={{ fontSize: 13, fontWeight: "700", color: "#1E293B", marginTop: 4 }} numberOfLines={1}>
+            {listing.title}
+          </Text>
 
-            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 5 }}>
-              {showVerified ? <TrustBadge label="Verified" compact /> : null}
-              {showSecureChat ? <TrustBadge label="Secure Chat" compact /> : null}
-              {showEscrow ? <TrustBadge label="Escrow" compact /> : null}
+          {/* Location */}
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 3, marginTop: 4 }}>
+            <MapPin color="#16A34A" size={11} strokeWidth={2.5} />
+            <Text style={{ fontSize: 11, color: "#64748B", fontWeight: "600", flex: 1 }} numberOfLines={1}>
+              {listing.location}
+            </Text>
+            <Text style={{ fontSize: 11, color: "#16A34A", fontWeight: "700" }}>{listing.distance}</Text>
+          </View>
+
+          {/* Beds / Baths */}
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 7 }}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: "#EEF2FF", borderRadius: 8, paddingHorizontal: 7, paddingVertical: 4 }}>
+              <BedDouble size={11} color="#6366F1" strokeWidth={2} />
+              <Text style={{ fontSize: 10, color: "#4338CA", fontWeight: "700" }}>{beds} Bed</Text>
             </View>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 4, backgroundColor: "#F1F5F9", borderRadius: 8, paddingHorizontal: 7, paddingVertical: 4 }}>
+              <Bath size={11} color="#475569" strokeWidth={2} />
+              <Text style={{ fontSize: 10, color: "#334155", fontWeight: "700" }}>{baths} Bath</Text>
+            </View>
+          </View>
+
+          {/* Trust badges */}
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 4, marginTop: 7 }}>
+            {showVerified && (
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 3, backgroundColor: "#DCFCE7", borderRadius: 6, paddingHorizontal: 6, paddingVertical: 3 }}>
+                <CheckCircle size={9} color="#16A34A" strokeWidth={2.5} />
+                <Text style={{ fontSize: 9, color: "#15803D", fontWeight: "700" }}>Verified</Text>
+              </View>
+            )}
+            {showSecureChat && (
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 3, backgroundColor: "#FEF3C7", borderRadius: 6, paddingHorizontal: 6, paddingVertical: 3 }}>
+                <MessageCircle size={9} color="#D97706" strokeWidth={2.5} />
+                <Text style={{ fontSize: 9, color: "#B45309", fontWeight: "700" }}>Secure Chat</Text>
+              </View>
+            )}
+            {showEscrow && (
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 3, backgroundColor: "#FEF3C7", borderRadius: 6, paddingHorizontal: 6, paddingVertical: 3 }}>
+                <ShieldCheck size={9} color="#D97706" strokeWidth={2.5} />
+                <Text style={{ fontSize: 9, color: "#B45309", fontWeight: "700" }}>Escrow</Text>
+              </View>
+            )}
           </View>
         </View>
       </Pressable>
